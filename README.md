@@ -1,2 +1,2 @@
-# Tusk (The univesal simulation kit) Engine 
+# Tusk (The Univesal Simulation Kit) Engine 
 An engine built for CMP316

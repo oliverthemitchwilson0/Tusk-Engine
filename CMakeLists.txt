@@ -25,25 +25,22 @@ add_library(Engine STATIC
     Engine/src/Engine.cpp
     #*Engine/src/Renderer.cpp
 )
+add_library(Game STATIC Game/src/Game.cpp)
 
-#add_library(Game STATIC Game/src/Game.cpp)
-
-#add_executable(GameApp GameApp/src/NeoGame.cpp)
-#add_executable(EditorApp EditorApp/src/NeoEditor.cpp)
+add_executable(GameApp GameApp/src/GameApp.cpp)
 
 target_include_directories(Engine PUBLIC Engine/include)
-#target_include_directories(Game PUBLIC Game/include)
+target_include_directories(Game PUBLIC Game/include)
 
 target_link_libraries(Engine PRIVATE SDL3::SDL3)
-#target_link_libraries(Game PUBLIC Engine)
-#target_link_libraries(GameApp PRIVATE Game)
-#target_link_libraries(EditorApp PRIVATE Game)
+target_link_libraries(Game PUBLIC Engine)
+target_link_libraries(GameApp PRIVATE Game)
 
 if(WIN32)
     add_custom_target(StageRuntime
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:SDL3::SDL3> #$<TARGET_FILE_DIR:GameApp>
+            $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:GameApp>
         VERBATIM)
-    #add_dependencies(GameApp StageRuntime)
+    add_dependencies(GameApp StageRuntime)
     #add_dependencies(EditorApp StageRuntime)
 endif()
