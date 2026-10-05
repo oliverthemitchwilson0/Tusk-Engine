@@ -34,7 +34,7 @@ namespace Tusk
 		void    Quit() noexcept;
 
 	private:
-		sturct Impl;
+		struct Impl;
 		std::unique_ptr<Impl> impl;
 	};
 }
