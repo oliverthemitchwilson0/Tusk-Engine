@@ -70,6 +70,13 @@ namespace Tusk
 			return false; //Return false if SDL window fails to create.
 		}
 
+		auto debugActive = true;
+		if(!renderer.Initilise(impl->window.get(), debugActive))
+		{
+			impl->Shutdown();
+			return false;
+		}
+
 		return true;
 	}
 	 

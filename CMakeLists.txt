@@ -23,7 +23,7 @@ FetchContent_MakeAvailable(SDL3)
 #Engine
 add_library(Engine STATIC
     Engine/src/Engine.cpp
-    #*Engine/src/Renderer.cpp
+    Engine/src/Renderer.cpp
 )
 add_library(Game STATIC Game/src/Game.cpp)
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Tusk/Renderer.h>
 #include <memory>
 
 namespace Tusk 
@@ -36,5 +37,7 @@ namespace Tusk
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
+
+		Renderer renderer;
 	};
 }
