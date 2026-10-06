@@ -20,6 +20,18 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL3)
 
+#macro(complileShaders)
+#endmacro()
+
+#FetchContent_Declare(
+#    SDL3_shadercross
+#    GIT_REPOSITORY https://github.com/libsdl-org/SDL_shadercross.git
+#    GIT_TAG main
+#    GIT_SHALLOW TRUE
+#)
+#
+#FetchContent_MakeAvailable(SDL3_shadercross)
+
 #Engine
 add_library(Engine STATIC
     Engine/src/Engine.cpp
@@ -42,5 +54,4 @@ if(WIN32)
             $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:GameApp>
         VERBATIM)
     add_dependencies(GameApp StageRuntime)
-    #add_dependencies(EditorApp StageRuntime)
 endif()
