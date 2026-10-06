@@ -3,6 +3,10 @@ project(NeoGrengine)
 
 include(FetchContent)
 
+#C++ Version
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 #SDL3
 set(SDL_SHARED ON CACHE BOOL "Build shared SDL3" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "Do not build static SDL3" FORCE)

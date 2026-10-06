@@ -84,11 +84,12 @@ namespace Tusk
 			//impl->Shutdown();
 		}
 
-		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };
-		colorTargetInfo.texture = impl->swapchainTexture;
-		colorTargetInfo.clear_color = { red, green, blue, 1.0f };
-		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
-		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+		SDL_GPUColorTargetInfo colorTargetInfo = {
+			.texture = impl->swapchainTexture,
+			.clear_color = { red, green, blue, 1.0f },
+			.load_op = SDL_GPU_LOADOP_CLEAR,
+			.store_op = SDL_GPU_STOREOP_STORE,
+		};
 
 		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr); //Begin Render Pass.
 		SDL_EndGPURenderPass(renderPass); //End Render Pass.

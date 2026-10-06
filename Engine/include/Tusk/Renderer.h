@@ -6,6 +6,11 @@ struct SDL_Window;
 
 namespace Tusk
 {
+	struct Vertex
+	{
+		float x, y, z;
+	};
+
 	class Renderer
 	{
 	public:
