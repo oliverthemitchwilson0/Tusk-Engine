@@ -144,6 +144,11 @@ namespace Tusk
 	}
 
 	void Engine::Quit() noexcept { impl->quit = true; }
+
+	Renderer& Engine::GetRenderer()
+	{
+		return renderer;
+	}
 }
 
 

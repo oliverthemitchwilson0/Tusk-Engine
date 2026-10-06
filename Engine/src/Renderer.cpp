@@ -79,4 +79,18 @@ namespace Tusk
 
 		return true;
 	}
+
+	void Renderer::Clear(float red, float green, float blue)
+	{
+		SDL_GPUColorTargetInfo colorTargetInfo = { 0 };
+		colorTargetInfo.texture = impl->swapchainTexture;
+		colorTargetInfo.clear_color = { 0.4f, 0.6f, 0.9f, 1.0f };
+		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
+		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
+
+		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr);
+		SDL_EndGPURenderPass(renderPass);
+
+		SDL_SubmitGPUCommandBuffer(impl->commandBuffer);
+	}
 }

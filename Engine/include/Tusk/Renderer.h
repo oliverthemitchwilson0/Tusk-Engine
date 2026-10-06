@@ -21,7 +21,7 @@ namespace Tusk
 		//bool IsActive();
 
 		//Renderer Commands
-		//void Clear(std::uint8_t red, std::uint8_t green, std::uint8_t blue);
+		void Clear(float red, float green, float blue);
 		//void DrawRectangle(Color color, float x, float y, float w, float h);
 		//void RenderPresent();
 

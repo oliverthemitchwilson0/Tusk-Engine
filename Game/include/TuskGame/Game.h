@@ -17,11 +17,11 @@ namespace TuskGame {
         void Stop(Tusk::Engine& engine) override;
 
     private:
-        /*std::uint8_t red_;
+        std::uint8_t red_;
         std::uint8_t green_;
         std::uint8_t blue_;
         float previousTime_ = 0.0f;
-        float currentTime_ = 0.0f;*/
+        float currentTime_ = 0.0f;
     };
 
 }

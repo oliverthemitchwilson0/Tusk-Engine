@@ -34,6 +34,8 @@ namespace Tusk
 		int     Run(Application& application);
 		void    Quit() noexcept;
 
+		Renderer& GetRenderer();
+
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
