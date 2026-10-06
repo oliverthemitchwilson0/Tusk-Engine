@@ -22,6 +22,7 @@ namespace Tusk
 
 		void Shutdown()
 		{
+			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
 			device.reset();
 		}
 	};
