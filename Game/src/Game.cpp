@@ -5,24 +5,22 @@
 
 namespace TuskGame {
 
-    DemoGame::DemoGame(/*std::uint8_t red, std::uint8_t green, std::uint8_t blue*/) noexcept {};
+    DemoGame::DemoGame() noexcept {};
 
-    bool DemoGame::Start(Tusk::Engine&) {
-        previousTime_ = currentTime_ = 0.0f;
+    bool DemoGame::Start(Tusk::Engine&) 
+    {
         return true;
     }
 
-    void DemoGame::FixedUpdate(Tusk::Engine&, float seconds) {
-        previousTime_ = currentTime_;
-        currentTime_ += seconds;
+    void DemoGame::FixedUpdate(Tusk::Engine&, float seconds) 
+    {
+
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
-       const float time = previousTime_ + (currentTime_ - previousTime_);
-        const int glow = static_cast<int>(16.0f * (1.0f + std::sin(time)));
         auto& renderer = engine.GetRenderer();
 
-        renderer.Clear(red_, green_, static_cast<float>(std::min(255, int(blue_) + glow)));
+        renderer.Clear(1, 165.f / 255.f, 0.f);
 
         //renderer.DrawRectangle(Color(255, 0, 0), 50, 50, 50, 50);*/
     }
