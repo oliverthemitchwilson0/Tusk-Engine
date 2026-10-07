@@ -24,17 +24,42 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL3)
 
-#macro(complileShaders)
-#endmacro()
+#Shader Conversion Macro
+#https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
+macro(compileShaders)
+    set(shadersOutputDir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders) #sets variable as the location of the shaders in the build
 
-#FetchContent_Declare(
-#    SDL3_shadercross
-#    GIT_REPOSITORY https://github.com/libsdl-org/SDL_shadercross.git
-#    GIT_TAG main
-#    GIT_SHALLOW TRUE
-#)
-#
-#FetchContent_MakeAvailable(SDL3_shadercross)
+    #Recursivly search for any files ending in .hlsl, adding it to srcShaderFiles 
+    file(GLOB_RECURSE srcShaderFiles 
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.hlsl"
+    )
+
+    file(GLOB scDirs "${CMAKE_SOURCE_DIR}/Engine/Tools/SDL*_shadercross*")
+    find_program(
+        shadercrossExe 
+        shadercross 
+        REQUIRED
+        HINTS ${scDirs}
+    )
+
+    foreach(shader ${srcShaderFiles})
+        set(inShader "${CMAKE_CURRENT_SOURCE_DIR}/${shader}")
+        set(outShader "${shadersOutputDir}/${shader}")
+        string(REPLACE ".hlsl" ".spv" shaderSpv ${outShader})
+        string(REPLACE ".hlsl" ".msl" shaderMsl ${outShader})
+		string(REPLACE ".hlsl" ".dxil" shaderDxil ${outShader})
+        add_custom_command(
+				OUTPUT ${outShader}
+				COMMAND ${shadercrossExe} ${inShader} -o ${shaderSpv}
+				COMMAND ${shadercrossExe} ${inShader} -o ${shaderMsl}
+				COMMAND ${shadercrossExe} ${inShader} -o ${shaderDxil}
+				MAIN_DEPENDENCY ${inShader}
+		)
+        list(APPEND shadersOutputDir ${outShader})
+    endforeach()
+
+endmacro()
 
 #Engine
 add_library(Engine STATIC
@@ -59,3 +84,5 @@ if(WIN32)
         VERBATIM)
     add_dependencies(GameApp StageRuntime)
 endif()
+
+compileShaders()
