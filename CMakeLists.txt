@@ -26,42 +26,39 @@ FetchContent_MakeAvailable(SDL3)
 
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
-macro(compile_shaders)
-    set(SHADERS_INPUT_DIR ${CMAKE_SOURCE_DIR}/Engine/Shaders)
-    set(SHADERS_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Shaders)
+macro(compile_shaders shader_dir_in)
 
-    file(GLOB_RECURSE src_shader_files
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}"${SHADERS_INPUT_DIR}/*.hlsl"
-    )
+    #Find all hlsl files. Saves whole directory in string
+    file(GLOB 
+        HLSL_SHADERS
+        CONFIGURE_DEPENDS
+        "${shader_dir_in}/*.hlsl"
+    )    
 
-    file(GLOB SC_DIRS "${CMAKE_SOURCE_DIR}/Engine/Tools/SDL*_shadercross*")
+    #Output HLSL GLOB STATUS
+    message(HLSL_GLOB_STATUS " HLSL Shaders Found: ")
+    foreach(SHADER ${HLSL_SHADERS})
+        message(HLSL_GLOB_STATUS " ${SHADER}")
+    endforeach()
+
     find_program(
-        SC_EXECUTABLE 
+        sc_executable 
         shadercross 
         REQUIRED
-        HINTS ${SC_DIRS}
-        PATH_SUFFIXES bin 
+        HINTS "Engine/Tools/SDL_shadercross"
     )
-    
-    foreach (fn ${src_shader_files})
-		set(in_f "${CMAKE_CURRENT_SOURCE_DIR}/${fn}")
-		set(out_f "${SHADERS_OUTPUT_DIR}/${fn}")
-		string(REPLACE ".hlsl" ".spv" fn_spv ${out_f})
-		string(REPLACE ".hlsl" ".msl" fn_msl ${out_f})
-		string(REPLACE ".hlsl" ".dxil" fn_dxil ${out_f})
-		add_custom_command(
-				OUTPUT ${out_f}
-				COMMAND ${SC_EXECUTABLE} ${in_f} -o ${fn_spv}
-				COMMAND ${SC_EXECUTABLE} ${in_f} -o ${fn_msl}
-				COMMAND ${SC_EXECUTABLE} ${in_f} -o ${fn_dxil}
-				MAIN_DEPENDENCY ${in_f}
-		)
-		list(APPEND out_shader_files ${out_f})
-	endforeach ()
 
-	add_custom_target(${PROJECT_NAME}_shaders DEPENDS ${out_shader_files})
+    message(SC_EXECUTABLE_STATUS " Shadercross Found: ")
+    foreach(PROGRAM_ ${sc_executable})
+        message(SC_EXECUTABLE_STATUS " ${PROGRAM_}")
+    endforeach()
 
-	add_dependencies(Game ${PROJECT_NAME}_shaders)
+    set(shader_dir_out ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+    #message("${shader_dir_out}")
+
+    foreach(SHADER ${HLSL_SHADERS})
+    #set(SHADEROUT 
+    endforeach()
 
 endmacro()
 
@@ -89,4 +86,4 @@ if(WIN32)
     add_dependencies(GameApp StageRuntime)
 endif()
 
-compile_shaders()
+compile_shaders("Engine/Shaders")
