@@ -28,10 +28,11 @@ FetchContent_MakeAvailable(SDL3)
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
 macro(compile_shaders shader_dir_in)
 
-    #Find all hlsl files. Saves whole directory in string
+    #Find all hlsl files.
     file(GLOB 
         HLSL_SHADERS
         CONFIGURE_DEPENDS
+        RELATIVE ${shader_dir_in}/
         "${shader_dir_in}/*.hlsl"
     )    
 
@@ -54,11 +55,66 @@ macro(compile_shaders shader_dir_in)
     endforeach()
 
     set(shader_dir_out ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
-    #message("${shader_dir_out}")
 
-    foreach(SHADER ${HLSL_SHADERS})
-    #set(SHADEROUT 
+    foreach(FN ${HLSL_SHADERS})
+        set(FILE_IN "${shader_dir_in}/${FN}")
+        set(FILE_OUT "${shader_dir_out}/${FN}")
+        
+        #Create the output files
+        string(REPLACE ".hlsl" ".spv" FN_SPV ${FILE_OUT})
+		string(REPLACE ".hlsl" ".msl" FN_MSL ${FILE_OUT})
+		string(REPLACE ".hlsl" ".dxil" FN_DXIL ${FILE_OUT})
+
+        #Create Custom Command - called automatically
+        add_custom_command(
+            OUTPUT #Define the command's output
+                "${FN_SPV}" 
+                "${FN_MSL}"
+                "${FN_DXIL}"
+            
+            COMMAND #Create shader compatibility
+                "${CMAKE_COMMAND}" -E make_directory 
+                "${shader_dir_out}"
+
+            #Shadercross commands
+            COMMAND 
+                "${sc_executable}"
+                "${FILE_IN}" 
+                -o 
+                "${FN_SPV}" 
+
+            COMMAND 
+                "${sc_executable}" 
+                "${FILE_IN}" 
+                -o 
+                "${FN_MSL}" 
+
+            COMMAND 
+                "${sc_executable}"
+                "${FILE_IN}" 
+                -o 
+                "${FN_DXIL}" 
+
+            DEPENDS 
+                "${FILE_IN}"
+
+            VERBATIM #Follow commands exactly
+        )
+        list(APPEND compiled_shaders "${FN_SPV}" "${FN_MSL}" "${FN_DXIL}") #Add outputs to compiled shaderslist
+
     endforeach()
+
+    add_custom_target( #Creates a target that defines TUSKShaders is complete when all files are generated?
+        TUSKShaders
+        ALL
+        DEPENDS
+        ${compiled_shaders}
+    )
+
+    add_dependencies( #Build TuskShaders before Game
+        Game
+        TUSKShaders
+    )
 
 endmacro()
 
@@ -86,4 +142,4 @@ if(WIN32)
     add_dependencies(GameApp StageRuntime)
 endif()
 
-compile_shaders("Engine/Shaders")
+compile_shaders("${CMAKE_SOURCE_DIR}/Engine/Shaders")
