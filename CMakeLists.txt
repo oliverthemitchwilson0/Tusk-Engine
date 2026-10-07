@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(NeoGrengine)
+project(TuskEngine)
 
 include(FetchContent)
 
@@ -26,38 +26,43 @@ FetchContent_MakeAvailable(SDL3)
 
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
-macro(compileShaders)
-    set(shadersOutputDir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders) #sets variable as the location of the shaders in the build
+macro(compile_shaders)
+    #set(SHADERS_INPUT_DIR ${CMAKE_SOURCE_DIR}/Engine/Shaders)
+    set(SHADERS_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Shaders)
 
-    #Recursivly search for any files ending in .hlsl, adding it to srcShaderFiles 
-    file(GLOB_RECURSE srcShaderFiles 
+    file(GLOB_RECURSE src_shader_files
         RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
         "${CMAKE_CURRENT_SOURCE_DIR}/*.hlsl"
     )
 
-    file(GLOB scDirs "${CMAKE_SOURCE_DIR}/Engine/Tools/SDL*_shadercross*")
+    file(GLOB SC_DIRS "${CMAKE_SOURCE_DIR}/SDL*_shadercross*")
     find_program(
-        shadercrossExe 
+        SC_EXECUTABLE 
         shadercross 
         REQUIRED
-        HINTS ${scDirs}
+        HINTS ${SC_DIRS}
+        PATH_SUFFIXES bin 
     )
-
-    foreach(shader ${srcShaderFiles})
-        set(inShader "${CMAKE_CURRENT_SOURCE_DIR}/${shader}")
-        set(outShader "${shadersOutputDir}/${shader}")
-        string(REPLACE ".hlsl" ".spv" shaderSpv ${outShader})
-        string(REPLACE ".hlsl" ".msl" shaderMsl ${outShader})
-		string(REPLACE ".hlsl" ".dxil" shaderDxil ${outShader})
-        add_custom_command(
-				OUTPUT ${outShader}
-				COMMAND ${shadercrossExe} ${inShader} -o ${shaderSpv}
-				COMMAND ${shadercrossExe} ${inShader} -o ${shaderMsl}
-				COMMAND ${shadercrossExe} ${inShader} -o ${shaderDxil}
-				MAIN_DEPENDENCY ${inShader}
+    
+    foreach (fn ${src_shader_files})
+		set(in_f "${CMAKE_CURRENT_SOURCE_DIR}/${fn}")
+		set(out_f "${SHADERS_OUTPUT_DIR}/${fn}")
+		string(REPLACE ".hlsl" ".spv" fn_spv ${out_f})
+		string(REPLACE ".hlsl" ".msl" fn_msl ${out_f})
+		string(REPLACE ".hlsl" ".dxil" fn_dxil ${out_f})
+		add_custom_command(
+				OUTPUT ${out_f}
+				COMMAND ${SC_EXECUTABLE} ${in_f} -o ${fn_spv}
+				COMMAND ${SC_EXECUTABLE} ${in_f} -o ${fn_msl}
+				COMMAND ${SC_EXECUTABLE} ${in_f} -o ${fn_dxil}
+				MAIN_DEPENDENCY ${in_f}
 		)
-        list(APPEND shadersOutputDir ${outShader})
-    endforeach()
+		list(APPEND out_shader_files ${out_f})
+	endforeach ()
+
+	add_custom_target(${PROJECT_NAME}_shaders DEPENDS ${out_shader_files})
+
+	add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_shaders)
 
 endmacro()
 
@@ -85,4 +90,4 @@ if(WIN32)
     add_dependencies(GameApp StageRuntime)
 endif()
 
-compileShaders()
+compile_shaders()
