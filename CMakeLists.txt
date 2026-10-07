@@ -27,15 +27,14 @@ FetchContent_MakeAvailable(SDL3)
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
 macro(compile_shaders)
-    #set(SHADERS_INPUT_DIR ${CMAKE_SOURCE_DIR}/Engine/Shaders)
+    set(SHADERS_INPUT_DIR ${CMAKE_SOURCE_DIR}/Engine/Shaders)
     set(SHADERS_OUTPUT_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Shaders)
 
     file(GLOB_RECURSE src_shader_files
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.hlsl"
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}"${SHADERS_INPUT_DIR}/*.hlsl"
     )
 
-    file(GLOB SC_DIRS "${CMAKE_SOURCE_DIR}/SDL*_shadercross*")
+    file(GLOB SC_DIRS "${CMAKE_SOURCE_DIR}/Engine/Tools/SDL*_shadercross*")
     find_program(
         SC_EXECUTABLE 
         shadercross 
@@ -62,7 +61,7 @@ macro(compile_shaders)
 
 	add_custom_target(${PROJECT_NAME}_shaders DEPENDS ${out_shader_files})
 
-	add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_shaders)
+	add_dependencies(Game ${PROJECT_NAME}_shaders)
 
 endmacro()
 
