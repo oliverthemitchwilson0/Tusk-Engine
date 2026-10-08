@@ -14,7 +14,6 @@ set(SDL_TEST_LIBRARY OFF CACHE BOOL "Do not build SDL3 test support" FORCE)
 set(SDL_TESTS OFF CACHE BOOL "Do not build SDL3 tests" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "Do not build SDL3 examples" FORCE)
 
-
 FetchContent_Declare(
     SDL3 
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
@@ -23,6 +22,17 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(SDL3)
+
+#GLM
+
+FetchContent_Declare(
+    GLM
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 1.0.3
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(GLM)
 
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
@@ -130,7 +140,10 @@ add_executable(GameApp GameApp/src/GameApp.cpp)
 target_include_directories(Engine PUBLIC Engine/include)
 target_include_directories(Game PUBLIC Game/include)
 
-target_link_libraries(Engine PRIVATE SDL3::SDL3)
+target_link_libraries(Engine PRIVATE 
+    SDL3::SDL3
+    glm::glm
+)
 target_link_libraries(Game PUBLIC Engine)
 target_link_libraries(GameApp PRIVATE Game)
 

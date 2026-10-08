@@ -5,8 +5,6 @@
 #include <filesystem>
 #include <array>
 
-#include <iostream>
-
 //https://gpuforbeginners.com/
 
 namespace Tusk
