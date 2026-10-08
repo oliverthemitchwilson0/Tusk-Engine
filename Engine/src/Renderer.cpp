@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <string>
 #include <filesystem>
+#include <array>
 
 #include <iostream>
 
@@ -17,6 +18,7 @@ namespace Tusk
 			void operator()(SDL_GPUDevice* device) { SDL_DestroyGPUDevice(device); }
 		};
 
+		//https://gpuforbeginners.com/chapter03/
 		SDL_GPUShader* LoadShader(const std::string& shaderFilename)
 		{
 			if(!this->device.get())
@@ -105,6 +107,7 @@ namespace Tusk
 		SDL_Window* window = nullptr;
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPUTexture* swapchainTexture;
+		SDL_GPUGraphicsPipeline* pipeline = nullptr;
 
 		~Impl() { Shutdown(); }
 
@@ -175,5 +178,93 @@ namespace Tusk
 		SDL_SubmitGPUCommandBuffer(impl->commandBuffer); //Submit to GPU.
 		impl->commandBuffer = nullptr;
 		impl->swapchainTexture = nullptr;
+	}
+
+	//https://gpuforbeginners.com/chapter03/
+	bool Renderer::CreatePipeline()
+	{
+		//Load Shaders
+		SDL_GPUShader* vertexShader = impl->LoadShader("Default.vert");
+		if (vertexShader == nullptr)
+		{
+			SDL_Log("Couldn't create vertex shader!");
+			return false;
+		}
+
+		SDL_GPUShader* fragmentShader = impl->LoadShader("Default.frag");
+		if (fragmentShader == nullptr)
+		{
+			SDL_Log("Couldn't create fragment shader!");
+			return false;
+		}
+
+		//Description of the vertex buffer layout.
+		std::array vertexBufferDescriptions{
+			SDL_GPUVertexBufferDescription{
+				.slot = 0,
+				.pitch = sizeof(Vertex), //Stride of one vertex
+				.input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+				.instance_step_rate = 0,
+			},
+		};
+
+		//Detail of each value inside the vertex buffer.
+		std::array vertexAttributes{
+			SDL_GPUVertexAttribute{
+				.location = 0, //First data point
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+				.offset = 0 * sizeof(float),
+			},
+			SDL_GPUVertexAttribute{
+				.location = 1, 
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+				.offset = 1 * sizeof(float), //Describes the offset to get to this value
+			},
+			SDL_GPUVertexAttribute{
+				.location = 2,
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+				.offset = 2 * sizeof(float),
+			},
+		};
+
+		std::array colorTargetDescriptions{
+			SDL_GPUColorTargetDescription{
+				.format = SDL_GetGPUSwapchainTextureFormat(impl->device.get(), impl->window)
+			}
+		};
+
+		SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = SDL_GPUGraphicsPipelineCreateInfo{
+			.vertex_shader = vertexShader,
+			.fragment_shader = fragmentShader,
+			.vertex_input_state = SDL_GPUVertexInputState{
+				.vertex_buffer_descriptions = vertexBufferDescriptions.data(),
+				.num_vertex_buffers = vertexBufferDescriptions.size(),
+				.vertex_attributes = vertexAttributes.data(),
+				.num_vertex_attributes = vertexAttributes.size(),
+			},
+			.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST, //Drawing with triangle list
+			.rasterizer_state = SDL_GPURasterizerState{
+				.fill_mode = SDL_GPU_FILLMODE_FILL,
+			},
+			.target_info = SDL_GPUGraphicsPipelineTargetInfo{ //Draw to our swapchain.
+				.color_target_descriptions = colorTargetDescriptions.data(),
+				.num_color_targets = colorTargetDescriptions.size(),
+			},
+		};
+
+		impl->pipeline = SDL_CreateGPUGraphicsPipeline(impl->device.get(), &pipelineCreateInfo);
+		if (impl->pipeline == nullptr)
+		{
+			SDL_Log("Couldn't create graphics pipeline! %s", SDL_GetError());
+			return false;
+		}
+
+		SDL_ReleaseGPUShader(impl->device.get(), vertexShader);
+		SDL_ReleaseGPUShader(impl->device.get(), fragmentShader);
+
+		return true;
 	}
 }

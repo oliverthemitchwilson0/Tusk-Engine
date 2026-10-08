@@ -30,7 +30,7 @@ namespace Tusk
 		Engine(Engine&&) = delete;
 		Engine& operator=(Engine&&) = delete;
 
-		bool    Initialise(const char* title, int width = 640, int height = 480);
+		bool    Initialise(const char* title, int width = 1040, int height = 880);
 		int     Run(Application& application);
 		void    Quit() noexcept;
 

@@ -33,5 +33,7 @@ namespace Tusk
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
+
+		bool CreatePipeline();
 	};
 }
