@@ -19,6 +19,11 @@ namespace Tusk
 
 		SDL_GPUShader* LoadShader(const std::string& shaderFilename)
 		{
+			if(!this->device.get())
+			{
+				return nullptr;
+			}
+
 			//Find the stage of the shader.
 			SDL_GPUShaderStage stage;
 			if (shaderFilename.ends_with(".vert"))
@@ -75,7 +80,7 @@ namespace Tusk
 				return nullptr;
 			}
 
-			//Create SDL GPU Shader
+			//Bundle collected shader info
 			SDL_GPUShaderCreateInfo shaderInfo = SDL_GPUShaderCreateInfo{
 				.code_size = fileSize,
 				.code = static_cast<Uint8*>(code),
@@ -84,6 +89,7 @@ namespace Tusk
 				.stage = stage,
 			};
 
+			//Create SDL GPU Shader.
 			SDL_GPUShader* shader = SDL_CreateGPUShader(this->device.get(), &shaderInfo);
 			SDL_free(code);
 			if (shader == nullptr)
