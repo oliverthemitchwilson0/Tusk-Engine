@@ -1,6 +1,10 @@
 #include <Tusk/Renderer.h>
 
 #include <SDL3/SDL.h>
+#include <string>
+#include <filesystem>
+
+#include <iostream>
 
 //https://gpuforbeginners.com/
 
@@ -12,6 +16,84 @@ namespace Tusk
 		{
 			void operator()(SDL_GPUDevice* device) { SDL_DestroyGPUDevice(device); }
 		};
+
+		SDL_GPUShader* LoadShader(const std::string& shaderFilename)
+		{
+			//Find the stage of the shader.
+			SDL_GPUShaderStage stage;
+			if (shaderFilename.ends_with(".vert"))
+			{
+				stage = SDL_GPU_SHADERSTAGE_VERTEX;
+			}
+			else if (shaderFilename.ends_with(".frag"))
+			{
+				stage = SDL_GPU_SHADERSTAGE_FRAGMENT;
+			}
+			else
+			{
+				std::fprintf(stderr, "Couldn't deduce shader stage from file name: %s\n", shaderFilename.c_str());
+				return nullptr;
+			}
+
+			std::filesystem::path fullPath = std::filesystem::path(SDL_GetBasePath()) / "Shaders";
+			//std::cout << fullPath << std::endl;
+			SDL_GPUShaderFormat format = SDL_GPU_SHADERFORMAT_INVALID;
+			const char* entrypoint;
+
+			SDL_GPUShaderFormat backendFormats = SDL_GetGPUShaderFormats(this->device.get()); //Find what platform we are using.
+			//Define the format based on platform
+			if (backendFormats & SDL_GPU_SHADERFORMAT_SPIRV)
+			{
+				fullPath /= shaderFilename + ".spv";
+				format = SDL_GPU_SHADERFORMAT_SPIRV;
+				entrypoint = "main";
+			}
+			else if (backendFormats & SDL_GPU_SHADERFORMAT_MSL)
+			{
+				fullPath /= shaderFilename + ".msl";
+				format = SDL_GPU_SHADERFORMAT_MSL;
+				entrypoint = "main0";
+			}
+			else if (backendFormats & SDL_GPU_SHADERFORMAT_DXIL)
+			{
+				fullPath /= shaderFilename + ".dxil";
+				format = SDL_GPU_SHADERFORMAT_DXIL;
+				entrypoint = "main";
+			}
+			else
+			{
+				std::fprintf(stderr, "Couldn't find a supported shader format for backend %s\n", SDL_GetGPUDeviceDriver(this->device.get()));
+				return nullptr;
+			}
+
+			//Load Shaderfile from Disk.
+			size_t fileSize;
+			void* code = SDL_LoadFile(fullPath.string().c_str(), &fileSize);
+			if (code == nullptr)
+			{
+				std::fprintf(stderr, "Couldn't load shader file from disk %s\n", SDL_GetError());
+				return nullptr;
+			}
+
+			//Create SDL GPU Shader
+			SDL_GPUShaderCreateInfo shaderInfo = SDL_GPUShaderCreateInfo{
+				.code_size = fileSize,
+				.code = static_cast<Uint8*>(code),
+				.entrypoint = entrypoint,
+				.format = format,
+				.stage = stage,
+			};
+
+			SDL_GPUShader* shader = SDL_CreateGPUShader(this->device.get(), &shaderInfo);
+			SDL_free(code);
+			if (shader == nullptr)
+			{
+				//SDL_Log("Couldn't create shader from file %s: %s", fullPath.c_str(), SDL_GetError());
+				return nullptr;
+			}
+	
+			return shader;
+		}
 		
 		std::unique_ptr<SDL_GPUDevice, DeviceDeleter> device;
 		SDL_Window* window = nullptr;
@@ -53,18 +135,8 @@ namespace Tusk
 			return false;
 		}
 
-		//TEMP
-
-		/*SDL_GPUColorTargetInfo colorTargetInfo;
-		colorTargetInfo.texture = impl->swapchainTexture;
-		colorTargetInfo.clear_color = { 0.4f, 0.6f, 0.9f, 1.0f };
-		colorTargetInfo.load_op = SDL_GPU_LOADOP_CLEAR;
-		colorTargetInfo.store_op = SDL_GPU_STOREOP_STORE;
-
-		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 0, nullptr);
-		SDL_EndGPURenderPass(renderPass);
-
-		SDL_SubmitGPUCommandBuffer(impl->commandBuffer);*/
+		//Test
+		SDL_GPUShader* shader = impl->LoadShader("Default.frag");
 
 		return true;
 	}
