@@ -13,7 +13,7 @@ struct Output
 Output main(Input input)
 {
     Output output;
-    output.position - float4(input.x, input.y, input.z, 1.f);
+    output.position = float4(input.x, input.y, input.z, 1.f);
     
     return output;
 }

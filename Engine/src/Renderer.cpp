@@ -143,7 +143,11 @@ namespace Tusk
 		}
 
 		//Test
-		SDL_GPUShader* shader = impl->LoadShader("Default.frag");
+		if(!CreatePipeline())
+		{
+			impl->Shutdown();
+			return false;
+		}
 
 		return true;
 	}
@@ -246,6 +250,8 @@ namespace Tusk
 			.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST, //Drawing with triangle list
 			.rasterizer_state = SDL_GPURasterizerState{
 				.fill_mode = SDL_GPU_FILLMODE_FILL,
+				.cull_mode = SDL_GPU_CULLMODE_BACK,
+				.front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
 			},
 			.target_info = SDL_GPUGraphicsPipelineTargetInfo{ //Draw to our swapchain.
 				.color_target_descriptions = colorTargetDescriptions.data(),
