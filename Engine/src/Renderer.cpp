@@ -182,10 +182,93 @@ namespace Tusk
 		impl->swapchainTexture = nullptr;
 	}
 
+	bool Renderer::CreateVertexBuffer(std::span<Vertex> vertices)
+	{
+		Uint32 verticesSize = vertices.size() * static_cast<Uint32>(sizeof(Vertex));
+
+		//Vertex Buffer
+		//Define the usage of the new buffer
+		SDL_GPUBufferCreateInfo vertexBufferCreateInfo = SDL_GPUBufferCreateInfo{
+			.usage = SDL_GPU_BUFFERUSAGE_VERTEX,
+			.size = verticesSize,
+		};
+
+		//Create buffer with defined ussage.
+		SDL_GPUBuffer* vertexBuffer = SDL_CreateGPUBuffer(impl->device.get(), &vertexBufferCreateInfo);
+		if (vertexBuffer == nullptr)
+		{
+			SDL_Log("Couldn't create vertex buffer: %s", SDL_GetError());
+			return false;
+		}
+
+		//Transfer buffer - Temporary buffer used for uploading data.
+		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo = SDL_GPUTransferBufferCreateInfo{	
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.size = verticesSize,
+		};
+		SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(impl->device.get(), &transferBufferCreateInfo);
+		if (transferBuffer == nullptr)
+		{
+			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
+			return false;
+		}
+
+		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices.
+		Vertex* transferData = static_cast<Vertex*>(SDL_MapGPUTransferBuffer(impl->device.get(), transferBuffer, false));
+		if (transferData == nullptr)
+		{
+			SDL_Log("Couldn't map transfer buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
+			return false;
+		}
+
+		SDL_memcpy(transferData, vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
+
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), transferBuffer); //Unmap transfer buffer.
+
+		// 
+		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
+		if (uploadCmdBuf == nullptr)
+		{
+			SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
+			return false;
+		}
+
+		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
+
+		//Location of Data.
+		SDL_GPUTransferBufferLocation bufferLocation = SDL_GPUTransferBufferLocation{
+			.transfer_buffer = transferBuffer,
+			.offset = 0,
+		};
+
+		//Destination of Data.
+		SDL_GPUBufferRegion bufferRegion = SDL_GPUBufferRegion{
+			.buffer = vertexBuffer,
+			.offset = 0,
+			.size = verticesSize,
+		};
+
+		//Record copy opperation into Copy Pass.
+		SDL_UploadToGPUBuffer(copyPass, &bufferLocation, &bufferRegion, false);
+
+		SDL_EndGPUCopyPass(copyPass);
+		if (!SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
+		{
+			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
+			return false;
+		}
+
+		SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+	}
+
 	//https://gpuforbeginners.com/chapter03/
 	bool Renderer::CreatePipeline()
 	{
-		//Load Shaders
+		//Load Shaders to CPU
 		SDL_GPUShader* vertexShader = impl->LoadShader("Default.vert");
 		if (vertexShader == nullptr)
 		{
@@ -199,6 +282,8 @@ namespace Tusk
 			SDL_Log("Couldn't create fragment shader!");
 			return false;
 		}
+
+		//Define information for the Input Assembler/
 
 		//Description of the vertex buffer layout.
 		std::array vertexBufferDescriptions{
@@ -232,12 +317,14 @@ namespace Tusk
 			},
 		};
 
+		//Define the swapcahin texture format.
 		std::array colorTargetDescriptions{
 			SDL_GPUColorTargetDescription{
 				.format = SDL_GetGPUSwapchainTextureFormat(impl->device.get(), impl->window)
 			}
 		};
 
+		//Create full pipeline info.
 		SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = SDL_GPUGraphicsPipelineCreateInfo{
 			.vertex_shader = vertexShader,
 			.fragment_shader = fragmentShader,
@@ -259,6 +346,7 @@ namespace Tusk
 			},
 		};
 
+		//Submit and create pipeline.
 		impl->pipeline = SDL_CreateGPUGraphicsPipeline(impl->device.get(), &pipelineCreateInfo);
 		if (impl->pipeline == nullptr)
 		{

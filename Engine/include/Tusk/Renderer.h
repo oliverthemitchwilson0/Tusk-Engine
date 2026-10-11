@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <span>
 
 struct SDL_Window;
 
@@ -29,7 +30,7 @@ namespace Tusk
 		void Clear(float red, float green, float blue);
 		//void DrawRectangle(Color color, float x, float y, float w, float h);
 		//void RenderPresent();
-		//bool CreateVertexBuffer(std::span<Vertex> vertices);
+		bool CreateVertexBuffer(std::span<Vertex> vertices);
 
 	private:
 		struct Impl;
