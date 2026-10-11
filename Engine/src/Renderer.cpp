@@ -104,6 +104,7 @@ namespace Tusk
 		std::unique_ptr<SDL_GPUDevice, DeviceDeleter> device;
 		SDL_Window* window = nullptr;
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
+		SDL_GPURenderPass* renderPass = nullptr;
 		SDL_GPUTexture* swapchainTexture;
 		SDL_GPUGraphicsPipeline* pipeline = nullptr;
 
@@ -174,15 +175,38 @@ namespace Tusk
 			.store_op = SDL_GPU_STOREOP_STORE,
 		};
 
-		SDL_GPURenderPass* renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr); //Begin Render Pass.
-		SDL_EndGPURenderPass(renderPass); //End Render Pass.
+		impl->renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr); //Begin Render Pass.
+
+		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline);
+	}
+
+	void Renderer::Draw(SDL_GPUBuffer* vertexBuffer, int vertexCount)
+	{
+
+		std::array vertexBuffers{
+			SDL_GPUBufferBinding{
+				.buffer = vertexBuffer,
+				.offset = 0,
+			},
+		};
+		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
+
+		SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
+	}
+
+	void Renderer::Present()
+	{
+		SDL_EndGPURenderPass(impl->renderPass); //End Render Pass.
 
 		SDL_SubmitGPUCommandBuffer(impl->commandBuffer); //Submit to GPU.
 		impl->commandBuffer = nullptr;
 		impl->swapchainTexture = nullptr;
+		impl->renderPass = nullptr;
 	}
 
-	bool Renderer::CreateVertexBuffer(std::span<Vertex> vertices)
+
+
+	SDL_GPUBuffer* Renderer::CreateVertexBuffer(std::span<Vertex> vertices)
 	{
 		Uint32 verticesSize = vertices.size() * static_cast<Uint32>(sizeof(Vertex));
 
@@ -198,7 +222,7 @@ namespace Tusk
 		if (vertexBuffer == nullptr)
 		{
 			SDL_Log("Couldn't create vertex buffer: %s", SDL_GetError());
-			return false;
+			return nullptr;
 		}
 
 		//Transfer buffer - Temporary buffer used for uploading data.
@@ -210,7 +234,7 @@ namespace Tusk
 		if (transferBuffer == nullptr)
 		{
 			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
-			return false;
+			return nullptr;
 		}
 
 		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices.
@@ -220,7 +244,7 @@ namespace Tusk
 			SDL_Log("Couldn't map transfer buffer: %s", SDL_GetError());
 			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
 			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
-			return false;
+			return nullptr;
 		}
 
 		SDL_memcpy(transferData, vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
@@ -234,7 +258,7 @@ namespace Tusk
 			SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
 			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
 			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
-			return false;
+			return nullptr;
 		}
 
 		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
@@ -259,10 +283,12 @@ namespace Tusk
 		if (!SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
 		{
 			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
-			return false;
+			return nullptr;
 		}
 
 		SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+
+		return vertexBuffer;
 	}
 
 	//https://gpuforbeginners.com/chapter03/
@@ -314,6 +340,24 @@ namespace Tusk
 				.buffer_slot = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
 				.offset = 2 * sizeof(float),
+			},
+			SDL_GPUVertexAttribute{
+				.location = 3,
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+				.offset = 3 * sizeof(float),
+			},
+			SDL_GPUVertexAttribute{
+				.location = 4,
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+				.offset = 4 * sizeof(float),
+			},
+			SDL_GPUVertexAttribute{
+				.location = 5,
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+				.offset = 5 * sizeof(float),
 			},
 		};
 

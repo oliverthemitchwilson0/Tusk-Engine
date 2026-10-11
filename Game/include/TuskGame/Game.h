@@ -17,7 +17,7 @@ namespace TuskGame {
         void Stop(Tusk::Engine& engine) override;
 
     private:
-        //
+        SDL_GPUBuffer* object;
     };
 
 }
