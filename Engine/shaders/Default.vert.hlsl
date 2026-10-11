@@ -1,12 +1,7 @@
 struct Input
 {
-    float x : TEXCOORD0;
-    float y : TEXCOORD1;
-    float z : TEXCOORD2;
-    
-    float r : TEXCOORD3;
-    float g : TEXCOORD4;
-    float b : TEXCOORD5;
+    float3 position : TEXCOORD0;
+    float4 colour : TEXCOORD1;
 };
 
 struct Output
@@ -18,8 +13,8 @@ struct Output
 Output main(Input input)
 {
     Output output;
-    output.position = float4(input.x, input.y, input.z, 1.f);
-    output.colour = float4(input.r, input.g, input.b, 1.f);
+    output.position = float4(input.position.x, input.position.y, input.position.z, 1.f);
+    output.colour = input.colour;
     
     return output;
 }

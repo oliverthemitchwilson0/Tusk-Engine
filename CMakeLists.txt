@@ -142,8 +142,12 @@ target_include_directories(Game PUBLIC Game/include)
 
 target_link_libraries(Engine PRIVATE 
     SDL3::SDL3
+)
+
+target_link_libraries(Engine PUBLIC
     glm::glm
 )
+
 target_link_libraries(Game PUBLIC Engine)
 target_link_libraries(GameApp PRIVATE Game)
 

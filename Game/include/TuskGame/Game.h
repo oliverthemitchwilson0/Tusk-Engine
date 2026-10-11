@@ -18,6 +18,7 @@ namespace TuskGame {
 
     private:
         SDL_GPUBuffer* object;
+        SDL_GPUBuffer* object2;
     };
 
 }

@@ -326,38 +326,14 @@ namespace Tusk
 			SDL_GPUVertexAttribute{
 				.location = 0, //First data point
 				.buffer_slot = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
-				.offset = 0 * sizeof(float),
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+				.offset = 0 * sizeof(vec3),
 			},
 			SDL_GPUVertexAttribute{
 				.location = 1, 
 				.buffer_slot = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
-				.offset = 1 * sizeof(float), //Describes the offset to get to this value
-			},
-			SDL_GPUVertexAttribute{
-				.location = 2,
-				.buffer_slot = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
-				.offset = 2 * sizeof(float),
-			},
-			SDL_GPUVertexAttribute{
-				.location = 3,
-				.buffer_slot = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
-				.offset = 3 * sizeof(float),
-			},
-			SDL_GPUVertexAttribute{
-				.location = 4,
-				.buffer_slot = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
-				.offset = 4 * sizeof(float),
-			},
-			SDL_GPUVertexAttribute{
-				.location = 5,
-				.buffer_slot = 0,
-				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
-				.offset = 5 * sizeof(float),
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+				.offset = 1 * sizeof(vec3),
 			},
 		};
 

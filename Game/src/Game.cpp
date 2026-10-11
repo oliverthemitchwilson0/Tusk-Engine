@@ -1,7 +1,6 @@
 #include <TuskGame/Game.h>
 
 #include <algorithm>
-#include <cmath>
 #include <vector>
 
 namespace TuskGame {
@@ -13,12 +12,20 @@ namespace TuskGame {
         auto& renderer = engine.GetRenderer();
 
         std::vector<Tusk::Vertex> vertices{
-            Tusk::Vertex(1.f, 0.f, 0.f, 1.f, 0.f, 0.f),
-            Tusk::Vertex(0.f, 1.f, 0.f, 0.f, 1.f, 0.f),
-            Tusk::Vertex(-1.f, 0.f, 0.f, 0.f, 0.f, 1.f),
+            Tusk::Vertex(Tusk::vec3(-0.5f, 1.f, 0.f), Tusk::vec4(1.f, 0.f, 0.f, 1.f)),
+            Tusk::Vertex(Tusk::vec3(-1.f, 0.5f, 0.f), Tusk::vec4(0.f, 1.f, 0.f, 1.f)),
+            Tusk::Vertex(Tusk::vec3(0.f, 0.5f, 0.f), Tusk::vec4(0.f, 0.f, 1.f, 1.f)),
         };
 
         object = renderer.CreateVertexBuffer(vertices);
+
+        std::vector<Tusk::Vertex> vertices2{
+            Tusk::Vertex(Tusk::vec3(0.5f, 0.f, 0.f), Tusk::vec4(1.f, 0.f, 1.f, 1.f)),
+            Tusk::Vertex(Tusk::vec3(0.f, -0.5f, 0.f), Tusk::vec4(1.f, 1.f, 0.f, 1.f)),
+            Tusk::Vertex(Tusk::vec3(1.f, -0.5f, 0.f), Tusk::vec4(0.f, 1.f, 1.f, 1.f)),
+        };
+
+        object2 = renderer.CreateVertexBuffer(vertices2);
 
         return true;
     }
@@ -34,6 +41,8 @@ namespace TuskGame {
         renderer.Clear(1, 165.f / 255.f, 0.f);
 
         renderer.Draw(object, 3);
+
+        renderer.Draw(object2, 3);
 
         renderer.Present();
 

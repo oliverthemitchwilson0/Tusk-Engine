@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Tusk/Renderer.h>
+#include <Tusk/Math.h>
 #include <memory>
 
 namespace Tusk 

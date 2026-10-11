@@ -2,18 +2,14 @@
 
 #include <memory>
 #include <span>
+#include <Tusk/Vertex.h>
+
 
 struct SDL_Window;
 struct SDL_GPUBuffer;
 
 namespace Tusk
 {
-
-	struct Vertex
-	{
-		float x, y, z, r, g, b;
-		Vertex(float x, float y, float z, float r, float g, float b) : x(x), y(y), z(z), r(r), g(g), b(b) {}
-	};
 
 	class Renderer
 	{
