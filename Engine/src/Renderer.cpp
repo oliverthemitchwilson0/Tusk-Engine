@@ -180,7 +180,7 @@ namespace Tusk
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline);
 	}
 
-	void Renderer::Draw(SDL_GPUBuffer* vertexBuffer, int vertexCount)
+	void Renderer::Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount)
 	{
 
 		std::array vertexBuffers{
@@ -189,9 +189,20 @@ namespace Tusk
 				.offset = 0,
 			},
 		};
-		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
 
-		SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
+		std::array indexBuffers{
+			SDL_GPUBufferBinding
+			{
+				.buffer = indexBuffer,
+				.offset = 0,
+			},
+		};
+
+		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
+		SDL_BindGPUIndexBuffer(impl->renderPass, indexBuffers.data(), SDL_GPU_INDEXELEMENTSIZE_16BIT);
+
+		//SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
+		SDL_DrawGPUIndexedPrimitives(impl->renderPass, indexCount, 1, 0, 0, 0);
 	}
 
 	void Renderer::Present()
@@ -291,6 +302,93 @@ namespace Tusk
 		return vertexBuffer;
 	}
 
+	SDL_GPUBuffer* Renderer::CreateIndexBuffer(std::span<Uint16> indices)
+	{
+		Uint32 indicesSize = indices.size() * static_cast<Uint32>(sizeof(Uint16));
+
+		SDL_GPUBufferCreateInfo indexBufferCreateInfo{
+			.usage = SDL_GPU_BUFFERUSAGE_INDEX,
+			.size = indicesSize,
+		};
+
+		SDL_GPUBuffer* indexBuffer = SDL_CreateGPUBuffer(impl->device.get(), &indexBufferCreateInfo);
+		if(!indexBuffer)
+		{
+			SDL_Log("Couldn't create index buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			return nullptr;
+		}
+
+		//Transfer buffer - Temporary buffer used for uploading data.
+		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo = SDL_GPUTransferBufferCreateInfo{
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.size = indicesSize,
+		};
+
+		SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(impl->device.get(), &transferBufferCreateInfo);
+		if (transferBuffer == nullptr)
+		{
+			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			return nullptr;
+		}
+
+		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices.
+		Uint16* transferData = static_cast<Uint16*>(SDL_MapGPUTransferBuffer(impl->device.get(), transferBuffer, false));
+		if (transferData == nullptr)
+		{
+			SDL_Log("Couldn't map transfer buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			return nullptr;
+		}
+
+		SDL_memcpy(transferData, indices.data(), indicesSize); //Copy CPU data to the transfer buffer.
+
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), transferBuffer); //Unmap transfer buffer.
+
+		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
+		if (uploadCmdBuf == nullptr)
+		{
+			SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			return nullptr;
+		}
+
+		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
+
+		//Location of Data.
+		SDL_GPUTransferBufferLocation bufferLocation = SDL_GPUTransferBufferLocation{
+			.transfer_buffer = transferBuffer,
+			.offset = 0,
+		};
+
+		//Destination of Data.
+		SDL_GPUBufferRegion bufferRegion = SDL_GPUBufferRegion{
+			.buffer = indexBuffer,
+			.offset = 0,
+			.size = indicesSize,
+		};
+
+		//Record copy opperation into Copy Pass.
+		SDL_UploadToGPUBuffer(copyPass, &bufferLocation, &bufferRegion, false);
+
+		SDL_EndGPUCopyPass(copyPass);
+		if (!SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
+		{
+			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			return nullptr;
+		}
+
+		SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+
+		return indexBuffer;
+	}
+
 	//https://gpuforbeginners.com/chapter03/
 	bool Renderer::CreatePipeline()
 	{
@@ -327,13 +425,13 @@ namespace Tusk
 				.location = 0, //First data point
 				.buffer_slot = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-				.offset = 0 * sizeof(vec3),
+				.offset = 0 * sizeof(Math::vec3),
 			},
 			SDL_GPUVertexAttribute{
 				.location = 1, 
 				.buffer_slot = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-				.offset = 1 * sizeof(vec3),
+				.offset = 1 * sizeof(Math::vec3),
 			},
 		};
 

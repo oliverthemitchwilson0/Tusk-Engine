@@ -27,11 +27,12 @@ namespace Tusk
 
 		//Renderer Commands
 		void Clear(float red, float green, float blue);
-		void Draw(SDL_GPUBuffer* vertexBuffer, int vertexCount);
+		void Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount);
 		void Present();
 		//void DrawRectangle(Color color, float x, float y, float w, float h);
 		//void RenderPresent();
 		SDL_GPUBuffer* CreateVertexBuffer(std::span<Vertex> vertices);
+		SDL_GPUBuffer* CreateIndexBuffer(std::span<uint16_t> indices);
 
 	private:
 		struct Impl;

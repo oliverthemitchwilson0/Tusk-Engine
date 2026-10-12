@@ -6,8 +6,8 @@ namespace Tusk
 {
 	struct Vertex
 	{
-		vec3 position;
-		vec4 colour;
-		Vertex(vec3 position, vec4 colour) : position(position), colour(colour) {};
+		Math::vec3 position;
+		Math::vec4 colour;
+		Vertex(Math::vec3 position, Math::vec4 colour) : position(position), colour(colour) {};
 	};
 }

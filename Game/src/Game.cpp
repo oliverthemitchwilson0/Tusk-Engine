@@ -12,20 +12,19 @@ namespace TuskGame {
         auto& renderer = engine.GetRenderer();
 
         std::vector<Tusk::Vertex> vertices{
-            Tusk::Vertex(Tusk::vec3(-0.5f, 1.f, 0.f), Tusk::vec4(1.f, 0.f, 0.f, 1.f)),
-            Tusk::Vertex(Tusk::vec3(-1.f, 0.5f, 0.f), Tusk::vec4(0.f, 1.f, 0.f, 1.f)),
-            Tusk::Vertex(Tusk::vec3(0.f, 0.5f, 0.f), Tusk::vec4(0.f, 0.f, 1.f, 1.f)),
+            Tusk::Vertex(Tusk::Math::vec3(-0.5f, 0.5f, 0.f), Tusk::Math::vec4(1.f, 0.f, 0.f, 1.f)), //Top Left
+            Tusk::Vertex(Tusk::Math::vec3(-0.5f, -0.5f, 0.f), Tusk::Math::vec4(0.f, 1.f, 0.f, 1.f)), //Bottom Left
+            Tusk::Vertex(Tusk::Math::vec3(0.5f, -0.5f, 0.f), Tusk::Math::vec4(0.f, 0.f, 1.f, 1.f)), //Bottom Right
+            Tusk::Vertex(Tusk::Math::vec3(0.5f, 0.5f, 0.f), Tusk::Math::vec4(0.f, 0.f, 1.f, 1.f)), //Top Right
+        };
+
+        std::vector<uint16_t> indices{
+            0, 1, 2, 0, 2, 3
         };
 
         object = renderer.CreateVertexBuffer(vertices);
 
-        std::vector<Tusk::Vertex> vertices2{
-            Tusk::Vertex(Tusk::vec3(0.5f, 0.f, 0.f), Tusk::vec4(1.f, 0.f, 1.f, 1.f)),
-            Tusk::Vertex(Tusk::vec3(0.f, -0.5f, 0.f), Tusk::vec4(1.f, 1.f, 0.f, 1.f)),
-            Tusk::Vertex(Tusk::vec3(1.f, -0.5f, 0.f), Tusk::vec4(0.f, 1.f, 1.f, 1.f)),
-        };
-
-        object2 = renderer.CreateVertexBuffer(vertices2);
+        objectIndices = renderer.CreateIndexBuffer(indices);
 
         return true;
     }
@@ -40,9 +39,7 @@ namespace TuskGame {
 
         renderer.Clear(1, 165.f / 255.f, 0.f);
 
-        renderer.Draw(object, 3);
-
-        renderer.Draw(object2, 3);
+        renderer.Draw(object, objectIndices, 6);
 
         renderer.Present();
 
