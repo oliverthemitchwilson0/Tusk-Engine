@@ -211,10 +211,13 @@ namespace Tusk
 		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
 		SDL_BindGPUIndexBuffer(impl->renderPass, indexBuffers.data(), SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
+		static float angle = 0;
+		angle += glm::radians(90.f);
+
 		MatrixBuffer buff
 		{
-			.world = glm::identity<Math::mat4>(),
-			.view = glm::lookAt(Math::vec3(0.f, 0.f, 1.f), Math::vec3(0.f, 0.f, 0.f), Math::vec3(0.f, 1.f, 0.f)),
+			.world = glm::translate(glm::identity<Math::mat4>(), glm::vec3(0.f, 0.f, -5.f)) * glm::mat4_cast((glm::angleAxis(glm::radians(angle), glm::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(glm::radians(angle), glm::vec3(-1.f, 0.f, 0.f)))),
+			.view = glm::lookAt(Math::vec3(0.f, 0.f, 2.f), Math::vec3(0.f, 0.f, 0.f), Math::vec3(0.f, 1.f, 0.f)),
 			.projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 50.f),
 		};
 
