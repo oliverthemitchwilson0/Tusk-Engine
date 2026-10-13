@@ -8,8 +8,10 @@
 struct SDL_Window;
 struct SDL_GPUBuffer;
 
+
 namespace Tusk
 {
+	struct MatrixBuffer;
 
 	class Renderer
 	{

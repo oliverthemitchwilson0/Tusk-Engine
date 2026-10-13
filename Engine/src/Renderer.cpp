@@ -9,6 +9,13 @@
 
 namespace Tusk
 {
+	struct MatrixBuffer
+	{
+		Math::mat4 world;
+		Math::mat4 view;
+		Math::mat4 projection;
+	};
+
 	struct Renderer::Impl
 	{
 		struct DeviceDeleter
@@ -87,6 +94,7 @@ namespace Tusk
 				.entrypoint = entrypoint,
 				.format = format,
 				.stage = stage,
+				.num_uniform_buffers = 1,
 			};
 
 			//Create SDL GPU Shader.
@@ -198,8 +206,19 @@ namespace Tusk
 			},
 		};
 
+
+
 		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
 		SDL_BindGPUIndexBuffer(impl->renderPass, indexBuffers.data(), SDL_GPU_INDEXELEMENTSIZE_16BIT);
+
+		MatrixBuffer buff
+		{
+			.world = glm::identity<Math::mat4>(),
+			.view = glm::lookAt(Math::vec3(0.f, 0.f, 1.f), Math::vec3(0.f, 0.f, 0.f), Math::vec3(0.f, 1.f, 0.f)),
+			.projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 50.f),
+		};
+
+		SDL_PushGPUVertexUniformData(impl->commandBuffer, 0, &buff, sizeof(MatrixBuffer));
 
 		//SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
 		SDL_DrawGPUIndexedPrimitives(impl->renderPass, indexCount, 1, 0, 0, 0);

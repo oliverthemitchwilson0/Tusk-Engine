@@ -1,3 +1,10 @@
+cbuffer MatrixBuffer : register(b0, space1)
+{
+    float4x4 world;
+    float4x4 view;
+    float4x4 projection;
+};
+
 struct Input
 {
     float3 position : TEXCOORD0;
@@ -13,7 +20,14 @@ struct Output
 Output main(Input input)
 {
     Output output;
-    output.position = float4(input.position.x, input.position.y, input.position.z, 1.f);
+    
+    float4 position = float4(input.position, 1.f);
+    
+    position = mul(world, position);
+    position = mul(view, position);
+    position = mul(projection, position);
+    
+    output.position = position;
     output.colour = input.colour;
     
     return output;
