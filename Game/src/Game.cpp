@@ -67,7 +67,7 @@ namespace TuskGame {
 
     void DemoGame::FixedUpdate(Tusk::Engine&, float seconds) 
     {
-
+        cubeAngle += glm::radians(90.f * seconds);
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
@@ -75,7 +75,14 @@ namespace TuskGame {
 
         renderer.Clear(1, 165.f / 255.f, 0.f);
 
-        renderer.Draw(object, objectIndices, 36);
+        Tusk::MatrixBuffer cubeMatBuffer
+        {
+            .world = glm::identity<Tusk::Math::mat4>() * glm::mat4_cast(glm::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f))),
+            .view = glm::lookAt(Tusk::Math::vec3(0.f, 0.f, 8.f), Tusk::Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
+            .projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
+        };
+
+        renderer.Draw(object, objectIndices, 36, cubeMatBuffer);
 
         renderer.Present();
 

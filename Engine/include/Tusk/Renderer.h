@@ -11,7 +11,12 @@ struct SDL_GPUBuffer;
 
 namespace Tusk
 {
-	struct MatrixBuffer;
+	struct MatrixBuffer
+	{
+		Math::mat4 world;
+		Math::mat4 view;
+		Math::mat4 projection;
+	};
 
 	class Renderer
 	{
@@ -29,7 +34,7 @@ namespace Tusk
 
 		//Renderer Commands
 		void Clear(float red, float green, float blue);
-		void Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount);
+		void Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount, MatrixBuffer matBuff);
 		void Present();
 		//void DrawRectangle(Color color, float x, float y, float w, float h);
 		//void RenderPresent();

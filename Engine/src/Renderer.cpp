@@ -9,13 +9,6 @@
 
 namespace Tusk
 {
-	struct MatrixBuffer
-	{
-		Math::mat4 world;
-		Math::mat4 view;
-		Math::mat4 projection;
-	};
-
 	struct Renderer::Impl
 	{
 		struct DeviceDeleter
@@ -188,7 +181,7 @@ namespace Tusk
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline);
 	}
 
-	void Renderer::Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount)
+	void Renderer::Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount, MatrixBuffer matBuff)
 	{
 
 		std::array vertexBuffers{
@@ -206,22 +199,10 @@ namespace Tusk
 			},
 		};
 
-
-
 		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
 		SDL_BindGPUIndexBuffer(impl->renderPass, indexBuffers.data(), SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-		static float angle = 0;
-		angle += glm::radians(90.f);
-
-		MatrixBuffer buff
-		{
-			.world = glm::translate(glm::identity<Math::mat4>(), glm::vec3(0.f, 0.f, -5.f)) * glm::mat4_cast((glm::angleAxis(glm::radians(angle), glm::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(glm::radians(angle), glm::vec3(-1.f, 0.f, 0.f)))),
-			.view = glm::lookAt(Math::vec3(0.f, 0.f, 2.f), Math::vec3(0.f, 0.f, 0.f), Math::vec3(0.f, 1.f, 0.f)),
-			.projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 50.f),
-		};
-
-		SDL_PushGPUVertexUniformData(impl->commandBuffer, 0, &buff, sizeof(MatrixBuffer));
+		SDL_PushGPUVertexUniformData(impl->commandBuffer, 0, &matBuff, sizeof(MatrixBuffer));
 
 		//SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
 		SDL_DrawGPUIndexedPrimitives(impl->renderPass, indexCount, 1, 0, 0, 0);
@@ -411,7 +392,6 @@ namespace Tusk
 		return indexBuffer;
 	}
 
-	//https://gpuforbeginners.com/chapter03/
 	bool Renderer::CreatePipeline()
 	{
 		//Load Shaders to CPU

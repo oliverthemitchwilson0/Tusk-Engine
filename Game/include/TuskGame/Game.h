@@ -19,6 +19,8 @@ namespace TuskGame {
     private:
         SDL_GPUBuffer* object;
         SDL_GPUBuffer* objectIndices;
+
+        float cubeAngle = 0.f;
     };
 
 }
