@@ -65,9 +65,9 @@ namespace TuskGame {
         return true;
     }
 
-    void DemoGame::FixedUpdate(Tusk::Engine&, float seconds) 
+    void DemoGame::FixedUpdate(Tusk::Engine&, float deltaTime) 
     {
-        cubeAngle += glm::radians(90.f * seconds);
+        cubeAngle += glm::radians(90.f * deltaTime);
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
