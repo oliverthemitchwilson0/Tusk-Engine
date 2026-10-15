@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ComponentBase.h>
 #include <Tusk/Math.h>
 
 namespace Tusk
@@ -8,19 +7,23 @@ namespace Tusk
 	class TransformComponent : public ComponentBase
 	{
 	public:
-		TransformComponent() :
+		TransformComponent(GameObject* parentIn) : 
+			ComponentBase(parentIn),
 			translation(0.f, 0.f, 0.f),
-			rotation(glm::identity<glm::quat>()),
+			rotation(glm::identity<Math::quat>()),
 			scale(1.f, 1.f, 1.f)
-		{ }
-		TransformComponent(Math::vec3 translationIn, Math::vec3 scaleIn) : 
-			translation(translationIn), 
-			rotation(glm::identity<glm::quat>()),
-			scale(scaleIn)
-		{ }
+		{}
+		~TransformComponent() final = default;
 
-		//void Start() final;
-		//void FixedUpdate(float deltaTime) final;
+		void Start() final {};
+		void FixedUpdate(float deltaTime) final {};
+
+		void SetTranslation(Math::vec3 newTranslation) { translation = newTranslation; }
+		void SetRotation(Math::quat newRotation) { rotation = newRotation; }
+		void SetScale(Math::vec3 newScale) { scale = newScale; }
+		Math::vec3 GetTranslation() { return translation; }
+		Math::quat GetRotation() { return rotation; }
+		Math::vec3 GetScale() { return scale; }
 	private:
 		Math::vec3 translation;
 		Math::quat rotation;

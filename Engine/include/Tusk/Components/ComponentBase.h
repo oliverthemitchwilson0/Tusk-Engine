@@ -1,13 +1,13 @@
 #pragma once
 
-class GameObject;
-
 namespace Tusk
 {
+	class GameObject;
+
 	class ComponentBase
 	{
 	public:
-		explicit ComponentBase(GameObject* creator) : parent(creator) {}
+		ComponentBase(GameObject* parentIn) : parent(parentIn) {}
 		virtual ~ComponentBase() = default;
 	
 		virtual void Start() = 0;

@@ -17,8 +17,10 @@ namespace TuskGame {
         void Stop(Tusk::Engine& engine) override;
 
     private:
-        SDL_GPUBuffer* object;
-        SDL_GPUBuffer* objectIndices;
+        /*SDL_GPUBuffer* object;
+        SDL_GPUBuffer* objectIndices;*/
+
+        Tusk::GameObject object;
 
         float cubeAngle = 0.f;
     };

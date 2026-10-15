@@ -1,7 +1,10 @@
 #pragma once
 #include <vector>
 
-class ComponentBase;
+#include <Tusk/Components/ComponentBase.h>
+
+namespace Tusk
+{
 
 class GameObject
 {
@@ -12,7 +15,8 @@ public:
 	template<class T>
 	T* AddComponent() 
 	{
-		components.push_back(new T());
+		components.push_back(std::make_unique<T>(this));
+		return dynamic_cast<T*>(components.back().get());
 	}
 
 	template<class T>
@@ -21,7 +25,7 @@ public:
 		static_assert(std::is_base_of_v<ComponentBase, T>);
 		for(const auto& component : components)
 		{
-			if (auto* match = dynamic_cast<T*>(component))
+			if (auto* match = dynamic_cast<T*>(component.get()))
 				return match;
 			else
 				return nullptr;
@@ -29,5 +33,6 @@ public:
 	}
 
 private:
-	std::vector<ComponentBase> components;
+	std::vector<std::unique_ptr<ComponentBase>> components;
 };
+}
