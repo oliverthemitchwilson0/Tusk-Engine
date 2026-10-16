@@ -194,7 +194,7 @@ namespace Tusk
 	void Renderer::Draw(MeshID mesh, Math::mat4 transformMat)
 	{
 
-		if (impl->meshBuffers.empty() || impl->meshBuffers.size() > mesh.id)
+		if (mesh.id == -1 || mesh.id >= impl->meshBuffers.size())
 			return;
 
 		auto& meshBuffers = impl->meshBuffers.at(mesh.id);
@@ -412,7 +412,7 @@ namespace Tusk
 		);
 
 		//Return index of data as ID.
-		return MeshID{ .id = impl->meshBuffers.size(), };
+		return MeshID{ .id = impl->meshBuffers.size() - 1, };
 	}
 
 	bool Renderer::CreatePipeline()

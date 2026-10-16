@@ -27,9 +27,8 @@ public:
 		{
 			if (auto* match = dynamic_cast<T*>(component.get()))
 				return match;
-			else
-				return nullptr;
 		}
+		return nullptr;
 	}
 
 private:

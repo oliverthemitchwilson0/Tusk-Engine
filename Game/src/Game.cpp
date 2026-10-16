@@ -64,7 +64,8 @@ namespace TuskGame {
         object = new Tusk::GameObject();
 
         auto* transformComp = object->AddComponent<Tusk::TransformComponent>();
-        transformComp->SetScale(Tusk::Math::vec3(3.f, 2.f, 3.f));
+        transformComp->SetScale(Tusk::Math::vec3(1.f, 2.f, 3.f));
+        transformComp->SetRotation(glm::angleAxis(glm::radians(30.f), glm::vec3(0.f, -1.f, 0.f)));
 
         auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
         meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
