@@ -9,6 +9,13 @@
 
 namespace Tusk
 {
+	struct MeshBufferData
+	{
+		SDL_GPUBuffer* vertexBuffer = nullptr;
+		SDL_GPUBuffer* indexBuffer = nullptr;
+		Uint16 indexCount = 0;
+	};
+
 	struct Renderer::Impl
 	{
 		struct DeviceDeleter
@@ -104,10 +111,12 @@ namespace Tusk
 		
 		std::unique_ptr<SDL_GPUDevice, DeviceDeleter> device;
 		SDL_Window* window = nullptr;
+		SDL_GPUGraphicsPipeline* pipeline = nullptr;
+		SDL_GPUTexture* swapchainTexture = nullptr;
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
-		SDL_GPUTexture* swapchainTexture;
-		SDL_GPUGraphicsPipeline* pipeline = nullptr;
+
+		std::vector<MeshBufferData> meshBuffers;
 
 		~Impl() { Shutdown(); }
 
@@ -218,6 +227,23 @@ namespace Tusk
 		impl->renderPass = nullptr;
 	}
 
+
+	void Renderer::CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices)
+	{
+		//Create Vertex Buffer.
+		//Create Index Buffer.
+
+		//Create Transfer Buffers (2).
+		//Map both transfer buffers.
+
+		//Copy CPU data to transfer buffers.
+
+		//Start copy pass.
+		//Bind transfer buffers to copy pass.
+		//End copy pass.
+
+		//Submit to GPU.
+	}
 
 
 	SDL_GPUBuffer* Renderer::CreateVertexBuffer(std::span<Vertex> vertices)
