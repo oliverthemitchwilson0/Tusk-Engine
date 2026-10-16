@@ -24,6 +24,11 @@ namespace Tusk
 		Math::vec3 GetTranslation() { return translation; }
 		Math::quat GetRotation() { return rotation; }
 		Math::vec3 GetScale() { return scale; }
+
+		Math::mat4 GetTransfromMatrix() 
+		{
+			return glm::translate(glm::identity<Math::mat4>(), translation) * glm::mat4_cast(rotation) * glm::scale(glm::identity<Math::mat4>(), scale);
+		}
 	private:
 		Math::vec3 translation;
 		Math::quat rotation;

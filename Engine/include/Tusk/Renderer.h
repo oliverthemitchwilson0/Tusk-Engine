@@ -4,10 +4,8 @@
 #include <span>
 #include <Tusk/Vertex.h>
 
-
 struct SDL_Window;
 struct SDL_GPUBuffer;
-
 
 namespace Tusk
 {
@@ -19,6 +17,11 @@ namespace Tusk
 	};
 
 	struct MeshBufferData;
+
+	struct MeshID
+	{
+		size_t id = -1;
+	};
 
 	class Renderer
 	{
@@ -36,13 +39,11 @@ namespace Tusk
 
 		//Renderer Commands
 		void Clear(float red, float green, float blue);
-		void Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount, MatrixBuffer matBuff);
+		void Draw(MeshID mesh, Math::mat4 transformMat);
 		void Present();
 		//void DrawRectangle(Color color, float x, float y, float w, float h);
 		//void RenderPresent();
-		void CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices);
-		/*SDL_GPUBuffer* CreateVertexBuffer(std::span<Vertex> vertices);*/
-		/*SDL_GPUBuffer* CreateIndexBuffer(std::span<uint16_t> indices);*/
+		MeshID CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices);
 
 	private:
 		struct Impl;

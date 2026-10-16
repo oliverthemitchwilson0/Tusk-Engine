@@ -61,9 +61,13 @@ namespace TuskGame {
         /*object = renderer.CreateVertexBuffer(vertices);
 
         objectIndices = renderer.CreateIndexBuffer(indices);*/
+        object = new Tusk::GameObject();
 
-        auto* transformComp = object.AddComponent<Tusk::TransformComponent>();
+        auto* transformComp = object->AddComponent<Tusk::TransformComponent>();
         transformComp->SetScale(Tusk::Math::vec3(3.f, 2.f, 3.f));
+
+        auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
+        meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
 
         return true;
     }
@@ -85,7 +89,7 @@ namespace TuskGame {
             .projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
         };
 
-        /*renderer.Draw(object, objectIndices, 36, cubeMatBuffer);*/
+        object->GetComponent<Tusk::MeshComponent>()->Render(renderer);
 
         renderer.Present();
 

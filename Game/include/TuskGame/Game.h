@@ -20,7 +20,7 @@ namespace TuskGame {
         /*SDL_GPUBuffer* object;
         SDL_GPUBuffer* objectIndices;*/
 
-        Tusk::GameObject object;
+        Tusk::GameObject* object;
 
         float cubeAngle = 0.f;
     };

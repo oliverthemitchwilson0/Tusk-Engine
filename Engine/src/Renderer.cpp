@@ -9,11 +9,12 @@
 
 namespace Tusk
 {
+	//Structure containing vertex and index buffer of one mesh.
 	struct MeshBufferData
 	{
 		SDL_GPUBuffer* vertexBuffer = nullptr;
 		SDL_GPUBuffer* indexBuffer = nullptr;
-		Uint16 indexCount = 0;
+		size_t indexCount = 0;
 	};
 
 	struct Renderer::Impl
@@ -190,12 +191,17 @@ namespace Tusk
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline);
 	}
 
-	void Renderer::Draw(SDL_GPUBuffer* vertexBuffer, SDL_GPUBuffer* indexBuffer, int indexCount, MatrixBuffer matBuff)
+	void Renderer::Draw(MeshID mesh, Math::mat4 transformMat)
 	{
+
+		if (impl->meshBuffers.empty() || impl->meshBuffers.size() > mesh.id)
+			return;
+
+		auto& meshBuffers = impl->meshBuffers.at(mesh.id);
 
 		std::array vertexBuffers{
 			SDL_GPUBufferBinding{
-				.buffer = vertexBuffer,
+				.buffer = meshBuffers.vertexBuffer,
 				.offset = 0,
 			},
 		};
@@ -203,9 +209,16 @@ namespace Tusk
 		std::array indexBuffers{
 			SDL_GPUBufferBinding
 			{
-				.buffer = indexBuffer,
+				.buffer = meshBuffers.indexBuffer,
 				.offset = 0,
 			},
+		};
+
+		MatrixBuffer matBuff
+		{
+			.world = transformMat,
+			.view = glm::lookAt(Tusk::Math::vec3(0.f, 0.f, 8.f), Tusk::Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
+			.projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
 		};
 
 		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
@@ -214,7 +227,7 @@ namespace Tusk
 		SDL_PushGPUVertexUniformData(impl->commandBuffer, 0, &matBuff, sizeof(MatrixBuffer));
 
 		//SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
-		SDL_DrawGPUIndexedPrimitives(impl->renderPass, indexCount, 1, 0, 0, 0);
+		SDL_DrawGPUIndexedPrimitives(impl->renderPass, meshBuffers.indexCount, 1, 0, 0, 0);
 	}
 
 	void Renderer::Present()
@@ -240,6 +253,7 @@ namespace Tusk
 		if (!newVertexBuffer)
 		{
 			SDL_Log("Couldn't create vertex buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUBuffer(device, newVertexBuffer);
 			return nullptr;
 		}
 
@@ -278,22 +292,24 @@ namespace Tusk
 		if (transferBuffer == nullptr)
 		{
 			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
+			SDL_ReleaseGPUTransferBuffer(device, transferBuffer);
 			return nullptr;
 		}
 
 		return transferBuffer;
 	}
 
-	void Renderer::CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices)
+	MeshID Renderer::CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices)
 	{
+		//Check if vertices & indices are populated.
 		if (vertices.empty() || indices.empty())
-			return;
+			return MeshID();
 
 		//Create Vertex Buffer.
 		uint32_t verticesSize = vertices.size() * static_cast<uint32_t>(sizeof(Vertex));
 		auto* vertexBuffer = CreateVertexBuffer(impl->device.get(), verticesSize);
 		if (!vertexBuffer)
-			return;
+			return MeshID();
 
 		//Create Index Buffer.
 		uint32_t indicesSize = indices.size() * static_cast<uint32_t>(sizeof(uint16_t));
@@ -301,17 +317,17 @@ namespace Tusk
 		if (!indexBuffer)
 		{
 			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
-			return;
+			return MeshID();
 		}
 
 		//Create Transfer Buffers (2).
 		auto* verTransferBuffer = CreateTransferBuffer(impl->device.get(), verticesSize);
 		auto* indTransferBuffer = CreateTransferBuffer(impl->device.get(), indicesSize);
-		if(!verTransferBuffer)
+		if(!verTransferBuffer || !indTransferBuffer)
 		{
 			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
 			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
-			return;
+			return MeshID();
 		}
 		
 		//Map both transfer buffers.
@@ -325,15 +341,16 @@ namespace Tusk
 			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
 			SDL_ReleaseGPUTransferBuffer(impl->device.get(), verTransferBuffer);
 			SDL_ReleaseGPUTransferBuffer(impl->device.get(), indTransferBuffer);
-			return;
+			return MeshID();
 		}
 
 		//Copy CPU data to transfer buffers.
 		SDL_memcpy(verTransferData, vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
 		SDL_memcpy(indTransferData, indices.data(), indicesSize); //Copy CPU data to the transfer buffer.
 
-		SDL_UnmapGPUTransferBuffer(impl->device.get(), verTransferBuffer); //Unmap transfer buffer.
-		SDL_UnmapGPUTransferBuffer(impl->device.get(), indTransferBuffer); //Unmap transfer buffer.
+		//Unmap transfer buffers.
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), verTransferBuffer);
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), indTransferBuffer);
 
 		//Aquire command buffer
 		SDL_GPUCommandBuffer* uploadCommandBuffer = SDL_AcquireGPUCommandBuffer(impl->device.get());
@@ -345,6 +362,7 @@ namespace Tusk
 			return nullptr;*/
 		}
 
+		//Start of copy pass.
 		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCommandBuffer);
 
 		//Location of Vertex Data.
@@ -359,9 +377,6 @@ namespace Tusk
 			.offset = 0,
 			.size = verticesSize,
 		}; 
-		
-		//Bind transfer buffers to copy pass.
-		//End copy pass.
 
 		//Record copy opperation into Copy Pass.
 		SDL_UploadToGPUBuffer(copyPass, &bufferLocation, &bufferRegion, false);
@@ -371,20 +386,33 @@ namespace Tusk
 		bufferRegion.buffer = indexBuffer;
 		bufferRegion.size = indicesSize;
 
+		SDL_UploadToGPUBuffer(copyPass, &bufferLocation, &bufferRegion, false);
+
+		//End of copy pass.
 		SDL_EndGPUCopyPass(copyPass);
 
+		//Submit command buffer to GPU.
 		if (!SDL_SubmitGPUCommandBuffer(uploadCommandBuffer))
 		{
 			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
-			return;
+			return MeshID();
 		}
 		
+		//Release transfar buffers.
 		SDL_ReleaseGPUTransferBuffer(impl->device.get(), verTransferBuffer);
 		SDL_ReleaseGPUTransferBuffer(impl->device.get(), indTransferBuffer);
 		
-		//return vertexBuffer;
+		//Push buffers into mesh data bin.
+		impl->meshBuffers.push_back(
+			MeshBufferData{
+				.vertexBuffer = vertexBuffer,
+				.indexBuffer = indexBuffer,
+				.indexCount = indices.size(),
+			}
+		);
 
-		//Submit to GPU.
+		//Return index of data as ID.
+		return MeshID{ .id = impl->meshBuffers.size(), };
 	}
 
 	bool Renderer::CreatePipeline()
