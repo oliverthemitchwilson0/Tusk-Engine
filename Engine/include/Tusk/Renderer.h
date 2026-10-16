@@ -41,8 +41,8 @@ namespace Tusk
 		//void DrawRectangle(Color color, float x, float y, float w, float h);
 		//void RenderPresent();
 		void CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices);
-		SDL_GPUBuffer* CreateVertexBuffer(std::span<Vertex> vertices);
-		SDL_GPUBuffer* CreateIndexBuffer(std::span<uint16_t> indices);
+		/*SDL_GPUBuffer* CreateVertexBuffer(std::span<Vertex> vertices);*/
+		/*SDL_GPUBuffer* CreateIndexBuffer(std::span<uint16_t> indices);*/
 
 	private:
 		struct Impl;

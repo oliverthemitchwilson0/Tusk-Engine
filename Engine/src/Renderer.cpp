@@ -227,30 +227,8 @@ namespace Tusk
 		impl->renderPass = nullptr;
 	}
 
-
-	void Renderer::CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices)
+	SDL_GPUBuffer* CreateVertexBuffer(SDL_GPUDevice* device, uint32_t verticesSize)
 	{
-		//Create Vertex Buffer.
-		//Create Index Buffer.
-
-		//Create Transfer Buffers (2).
-		//Map both transfer buffers.
-
-		//Copy CPU data to transfer buffers.
-
-		//Start copy pass.
-		//Bind transfer buffers to copy pass.
-		//End copy pass.
-
-		//Submit to GPU.
-	}
-
-
-	SDL_GPUBuffer* Renderer::CreateVertexBuffer(std::span<Vertex> vertices)
-	{
-		Uint32 verticesSize = vertices.size() * static_cast<Uint32>(sizeof(Vertex));
-
-		//Vertex Buffer
 		//Define the usage of the new buffer
 		SDL_GPUBufferCreateInfo vertexBufferCreateInfo = SDL_GPUBufferCreateInfo{
 			.usage = SDL_GPU_BUFFERUSAGE_VERTEX,
@@ -258,164 +236,155 @@ namespace Tusk
 		};
 
 		//Create buffer with defined ussage.
-		SDL_GPUBuffer* vertexBuffer = SDL_CreateGPUBuffer(impl->device.get(), &vertexBufferCreateInfo);
-		if (vertexBuffer == nullptr)
+		SDL_GPUBuffer* newVertexBuffer = SDL_CreateGPUBuffer(device, &vertexBufferCreateInfo);
+		if (!newVertexBuffer)
 		{
 			SDL_Log("Couldn't create vertex buffer: %s", SDL_GetError());
 			return nullptr;
 		}
 
-		//Transfer buffer - Temporary buffer used for uploading data.
-		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo = SDL_GPUTransferBufferCreateInfo{	
-			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.size = verticesSize,
-		};
-		SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(impl->device.get(), &transferBufferCreateInfo);
-		if (transferBuffer == nullptr)
-		{
-			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
-			return nullptr;
-		}
-
-		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices.
-		Vertex* transferData = static_cast<Vertex*>(SDL_MapGPUTransferBuffer(impl->device.get(), transferBuffer, false));
-		if (transferData == nullptr)
-		{
-			SDL_Log("Couldn't map transfer buffer: %s", SDL_GetError());
-			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
-			return nullptr;
-		}
-
-		SDL_memcpy(transferData, vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
-
-		SDL_UnmapGPUTransferBuffer(impl->device.get(), transferBuffer); //Unmap transfer buffer.
-
-		// 
-		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
-		if (uploadCmdBuf == nullptr)
-		{
-			SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
-			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
-			return nullptr;
-		}
-
-		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
-
-		//Location of Data.
-		SDL_GPUTransferBufferLocation bufferLocation = SDL_GPUTransferBufferLocation{
-			.transfer_buffer = transferBuffer,
-			.offset = 0,
-		};
-
-		//Destination of Data.
-		SDL_GPUBufferRegion bufferRegion = SDL_GPUBufferRegion{
-			.buffer = vertexBuffer,
-			.offset = 0,
-			.size = verticesSize,
-		};
-
-		//Record copy opperation into Copy Pass.
-		SDL_UploadToGPUBuffer(copyPass, &bufferLocation, &bufferRegion, false);
-
-		SDL_EndGPUCopyPass(copyPass);
-		if (!SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
-		{
-			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
-			return nullptr;
-		}
-
-		SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-
-		return vertexBuffer;
+		return newVertexBuffer;
 	}
 
-	SDL_GPUBuffer* Renderer::CreateIndexBuffer(std::span<Uint16> indices)
+	SDL_GPUBuffer* CreateIndexBuffer(SDL_GPUDevice* device, uint32_t indicesSize)
 	{
-		Uint32 indicesSize = indices.size() * static_cast<Uint32>(sizeof(Uint16));
-
+		//Define the usage of the new buffer
 		SDL_GPUBufferCreateInfo indexBufferCreateInfo{
 			.usage = SDL_GPU_BUFFERUSAGE_INDEX,
 			.size = indicesSize,
 		};
 
-		SDL_GPUBuffer* indexBuffer = SDL_CreateGPUBuffer(impl->device.get(), &indexBufferCreateInfo);
-		if(!indexBuffer)
+		//Create buffer with defined ussage.
+		SDL_GPUBuffer* newIndexBuffer = SDL_CreateGPUBuffer(device, &indexBufferCreateInfo);
+		if (!newIndexBuffer)
 		{
 			SDL_Log("Couldn't create index buffer: %s", SDL_GetError());
-			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			SDL_ReleaseGPUBuffer(device, newIndexBuffer);
 			return nullptr;
 		}
 
+		return newIndexBuffer;
+	}
+
+	SDL_GPUTransferBuffer* CreateTransferBuffer(SDL_GPUDevice* device, uint32_t bufferSize)
+	{
 		//Transfer buffer - Temporary buffer used for uploading data.
 		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo = SDL_GPUTransferBufferCreateInfo{
 			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.size = indicesSize,
+			.size = bufferSize,
 		};
 
-		SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(impl->device.get(), &transferBufferCreateInfo);
+		SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(device, &transferBufferCreateInfo);
 		if (transferBuffer == nullptr)
 		{
 			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
-			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
 			return nullptr;
 		}
 
-		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices.
-		Uint16* transferData = static_cast<Uint16*>(SDL_MapGPUTransferBuffer(impl->device.get(), transferBuffer, false));
-		if (transferData == nullptr)
+		return transferBuffer;
+	}
+
+	void Renderer::CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices)
+	{
+		if (vertices.empty() || indices.empty())
+			return;
+
+		//Create Vertex Buffer.
+		uint32_t verticesSize = vertices.size() * static_cast<uint32_t>(sizeof(Vertex));
+		auto* vertexBuffer = CreateVertexBuffer(impl->device.get(), verticesSize);
+		if (!vertexBuffer)
+			return;
+
+		//Create Index Buffer.
+		uint32_t indicesSize = indices.size() * static_cast<uint32_t>(sizeof(uint16_t));
+		auto* indexBuffer = CreateIndexBuffer(impl->device.get(), indicesSize);
+		if (!indexBuffer)
+		{
+			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
+			return;
+		}
+
+		//Create Transfer Buffers (2).
+		auto* verTransferBuffer = CreateTransferBuffer(impl->device.get(), verticesSize);
+		auto* indTransferBuffer = CreateTransferBuffer(impl->device.get(), indicesSize);
+		if(!verTransferBuffer)
+		{
+			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
+			return;
+		}
+		
+		//Map both transfer buffers.
+		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices or indices.
+		Vertex* verTransferData = static_cast<Vertex*>(SDL_MapGPUTransferBuffer(impl->device.get(), verTransferBuffer, false));
+		uint16_t* indTransferData = static_cast<uint16_t*>(SDL_MapGPUTransferBuffer(impl->device.get(), indTransferBuffer, false));
+		if (!verTransferData || !indTransferData)
 		{
 			SDL_Log("Couldn't map transfer buffer: %s", SDL_GetError());
-			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
+			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
 			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
-			return nullptr;
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), verTransferBuffer);
+			SDL_ReleaseGPUTransferBuffer(impl->device.get(), indTransferBuffer);
+			return;
 		}
 
-		SDL_memcpy(transferData, indices.data(), indicesSize); //Copy CPU data to the transfer buffer.
+		//Copy CPU data to transfer buffers.
+		SDL_memcpy(verTransferData, vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
+		SDL_memcpy(indTransferData, indices.data(), indicesSize); //Copy CPU data to the transfer buffer.
 
-		SDL_UnmapGPUTransferBuffer(impl->device.get(), transferBuffer); //Unmap transfer buffer.
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), verTransferBuffer); //Unmap transfer buffer.
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), indTransferBuffer); //Unmap transfer buffer.
 
-		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
-		if (uploadCmdBuf == nullptr)
+		//Aquire command buffer
+		SDL_GPUCommandBuffer* uploadCommandBuffer = SDL_AcquireGPUCommandBuffer(impl->device.get());
+		if(!uploadCommandBuffer)
 		{
-			SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
+			/*SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
 			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
-			return nullptr;
+			SDL_ReleaseGPUBuffer(impl->device.get(), vertexBuffer);
+			return nullptr;*/
 		}
 
-		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
+		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCommandBuffer);
 
-		//Location of Data.
+		//Location of Vertex Data.
 		SDL_GPUTransferBufferLocation bufferLocation = SDL_GPUTransferBufferLocation{
-			.transfer_buffer = transferBuffer,
+			.transfer_buffer = verTransferBuffer,
 			.offset = 0,
 		};
 
-		//Destination of Data.
+		//Destination of Vertex Data.
 		SDL_GPUBufferRegion bufferRegion = SDL_GPUBufferRegion{
-			.buffer = indexBuffer,
+			.buffer = vertexBuffer,
 			.offset = 0,
-			.size = indicesSize,
-		};
+			.size = verticesSize,
+		}; 
+		
+		//Bind transfer buffers to copy pass.
+		//End copy pass.
 
 		//Record copy opperation into Copy Pass.
 		SDL_UploadToGPUBuffer(copyPass, &bufferLocation, &bufferRegion, false);
+		
+		//Remap to location of index buffer and destination of index buffer.
+		bufferLocation.transfer_buffer = indTransferBuffer;
+		bufferRegion.buffer = indexBuffer;
+		bufferRegion.size = indicesSize;
 
 		SDL_EndGPUCopyPass(copyPass);
-		if (!SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
+
+		if (!SDL_SubmitGPUCommandBuffer(uploadCommandBuffer))
 		{
 			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
-			SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-			SDL_ReleaseGPUBuffer(impl->device.get(), indexBuffer);
-			return nullptr;
+			return;
 		}
+		
+		SDL_ReleaseGPUTransferBuffer(impl->device.get(), verTransferBuffer);
+		SDL_ReleaseGPUTransferBuffer(impl->device.get(), indTransferBuffer);
+		
+		//return vertexBuffer;
 
-		SDL_ReleaseGPUTransferBuffer(impl->device.get(), transferBuffer);
-
-		return indexBuffer;
+		//Submit to GPU.
 	}
 
 	bool Renderer::CreatePipeline()
