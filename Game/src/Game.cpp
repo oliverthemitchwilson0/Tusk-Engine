@@ -58,14 +58,10 @@ namespace TuskGame {
             20, 21, 22, 20, 22, 23
         };
 
-        /*object = renderer.CreateVertexBuffer(vertices);
-
-        objectIndices = renderer.CreateIndexBuffer(indices);*/
         object = new Tusk::GameObject();
 
         auto* transformComp = object->AddComponent<Tusk::TransformComponent>();
-        transformComp->SetScale(Tusk::Math::vec3(1.f, 2.f, 3.f));
-        transformComp->SetRotation(glm::angleAxis(glm::radians(30.f), glm::vec3(0.f, -1.f, 0.f)));
+        transformComp->SetScale(Tusk::Math::vec3(1.f, 1.f, 1.f));
 
         auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
         meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
@@ -76,19 +72,18 @@ namespace TuskGame {
     void DemoGame::FixedUpdate(Tusk::Engine&, float deltaTime) 
     {
         cubeAngle += glm::radians(90.f * deltaTime);
+        auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
+        transformComp->SetRotation(glm::angleAxis(cubeAngle, glm::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, glm::vec3(-1.f, 0.f, 0.f)));
+
+        accumulator += deltaTime;
+        float value = glm::sin(3.f * accumulator) * 4.f;
+        transformComp->SetTranslation(Tusk::Math::vec3(0.f, value, 0.f));
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
         auto& renderer = engine.GetRenderer();
 
         renderer.Clear(1, 165.f / 255.f, 0.f);
-
-        Tusk::MatrixBuffer cubeMatBuffer
-        {
-            .world = glm::identity<Tusk::Math::mat4>() * glm::mat4_cast(glm::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f))),
-            .view = glm::lookAt(Tusk::Math::vec3(0.f, 0.f, 8.f), Tusk::Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
-            .projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
-        };
 
         object->GetComponent<Tusk::MeshComponent>()->Render(renderer);
 

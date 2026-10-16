@@ -23,6 +23,7 @@ namespace TuskGame {
         Tusk::GameObject* object;
 
         float cubeAngle = 0.f;
+        float accumulator = 0.f;
     };
 
 }
