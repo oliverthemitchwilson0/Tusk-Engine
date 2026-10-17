@@ -9,19 +9,9 @@ struct SDL_GPUBuffer;
 
 namespace Tusk
 {
-	struct MatrixBuffer
-	{
-		Math::mat4 world;
-		Math::mat4 view;
-		Math::mat4 projection;
-	};
-
 	struct MeshBufferData;
 
-	struct MeshID
-	{
-		size_t id = -1;
-	};
+	struct MeshID {	size_t id = -1; };
 
 	class Renderer
 	{

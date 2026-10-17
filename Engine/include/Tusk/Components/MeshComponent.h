@@ -14,6 +14,9 @@ namespace Tusk
 		void FixedUpdate(float deltaTime) final {};
 		void Render(Renderer& renderer)
 		{
+			if (!drawing)
+				return;
+
 			Math::mat4 world;
 			if (parent)
 			{
@@ -30,7 +33,10 @@ namespace Tusk
 		{
 			mesh = renderer.CreateMeshBuffers(vertices, indices);
 		}
+
+		void SetDrawing(bool draw) { drawing = draw; }
 	private:
 		MeshID mesh;
+		bool drawing = true;
 	};
 }
