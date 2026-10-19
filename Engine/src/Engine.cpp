@@ -1,6 +1,7 @@
 //#include <Tusk/Engine.h>
 
 #include <Tusk/Engine.h>
+#include <Tusk/Logging.h>
 
 #include <SDL3/SDL.h>
 #include <chrono>
@@ -57,7 +58,7 @@ namespace Tusk
 
 		if (!SDL_Init(SDL_INIT_VIDEO)) 
 		{
-			std::fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
+			Logging::Log("SDL Failed to Initlise: %s", SDL_GetError());
 			return false; //Return false if SDL fails to init.
 		}
 		impl->sdlInitialised = true;
@@ -65,7 +66,7 @@ namespace Tusk
 		impl->window.reset(SDL_CreateWindow(title, width, height, 0)); //Create new window.
 		if (!impl->window) 
 		{
-			std::fprintf(stderr, "SDL_CreateWindow: %s\n", SDL_GetError());
+			Logging::Log("SDL Failed to Create Window: %s", SDL_GetError());
 			impl->Shutdown();
 			return false; //Return false if SDL window fails to create.
 		}
@@ -126,7 +127,7 @@ namespace Tusk
 			}
 		}
 		catch (const std::exception& error) {
-			std::fprintf(stderr, "Engine run failed: %s\n", error.what());
+			Logging::Log("Engine run failed: %s", error.what());
 			result = 1;
 		}
 
@@ -137,7 +138,7 @@ namespace Tusk
 			application.Stop(*this);
 		}
 		catch (const std::exception& error) {
-			std::fprintf(stderr, "Application stop failed: %s\n", error.what());
+			Logging::Log("Application stop failed: %s", error.what());
 			result = 1;
 		}
 		return result;

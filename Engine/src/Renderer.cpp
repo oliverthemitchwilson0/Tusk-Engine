@@ -23,6 +23,12 @@ namespace Tusk
 		void operator()(SDL_GPUTransferBuffer* buffer) { SDL_ReleaseGPUTransferBuffer(device, buffer); }
 	};
 
+	struct GPUShaderDeleter
+	{
+		SDL_GPUDevice* device = nullptr;
+		void operator()(SDL_GPUShader* shader) { SDL_ReleaseGPUShader(device, shader); }
+	};
+
 	//Structure containing vertex and index buffer of one mesh.
 	struct MeshBufferData
 	{
@@ -67,7 +73,7 @@ namespace Tusk
 			}
 			else
 			{
-				std::fprintf(stderr, "Couldn't deduce shader stage from file name: %s\n", shaderFilename.c_str());
+				Logging::Log("Couldn't deduce shader stage from file name: %s", shaderFilename.c_str());
 				return nullptr;
 			}
 
@@ -98,7 +104,7 @@ namespace Tusk
 			}
 			else
 			{
-				std::fprintf(stderr, "Couldn't find a supported shader format for backend %s\n", SDL_GetGPUDeviceDriver(this->device.get()));
+				Logging::Log("Couldn't find a supported shader format for backend %s", SDL_GetGPUDeviceDriver(this->device.get()));
 				return nullptr;
 			}
 
@@ -107,7 +113,7 @@ namespace Tusk
 			void* code = SDL_LoadFile(fullPath.string().c_str(), &fileSize);
 			if (code == nullptr)
 			{
-				std::fprintf(stderr, "Couldn't load shader file from disk %s\n", SDL_GetError());
+				Logging::Log("Couldn't load shader file from disk %s", SDL_GetError());
 				return nullptr;
 			}
 
@@ -126,7 +132,7 @@ namespace Tusk
 			SDL_free(code);
 			if (shader == nullptr)
 			{
-				//SDL_Log("Couldn't create shader from file %s: %s", fullPath.c_str(), SDL_GetError());
+				Logging::Log("Couldn't create shader from file %s: %s", fullPath.c_str(), SDL_GetError());
 				return nullptr;
 			}
 	
@@ -166,19 +172,18 @@ namespace Tusk
 		impl->device.reset(SDL_CreateGPUDevice(formatFlags, debugActive, nullptr)); //Try create a GPU device
 		if(!impl->device)
 		{
-			std::fprintf(stderr, "SDL_CreateGPUDevice: %s\n", SDL_GetError());
+			Logging::Log("Failed to create GPU Device: %s", SDL_GetError());
 			impl->Shutdown();
 			return false;
 		}
 
 		if(!SDL_ClaimWindowForGPUDevice(impl->device.get(), window)) //Bind the Window to our GPU Device.
 		{
-			std::fprintf(stderr, "SDL_ClaimWindowForGPUDevice: %s\n", SDL_GetError());
+			Logging::Log("Failed to claim window for GPU Device: %s", SDL_GetError());
 			impl->Shutdown();
 			return false;
 		}
 
-		//Test
 		if(!CreatePipeline())
 		{
 			impl->Shutdown();
@@ -193,16 +198,15 @@ namespace Tusk
 		impl->commandBuffer = SDL_AcquireGPUCommandBuffer(impl->device.get()); //Try aquire the Command Buffer. A new command buffer must be retrieved each frame.
 		if (!impl->commandBuffer)
 		{
-			std::fprintf(stderr, "Couldn't Aqquire Command Buffer: %s\n", SDL_GetError());
+			Logging::Log("Failed to Aqquire Command Buffer during Clear() %s", SDL_GetError());
 			//impl->Shutdown();
 		}
 
 		if (!SDL_WaitAndAcquireGPUSwapchainTexture(impl->commandBuffer, impl->window, &impl->swapchainTexture, nullptr, nullptr)) //Try aquire the Swapchain Texture. A new swapchain texture must be retrieved each frame.
 		{
-			std::fprintf(stderr, "Couldn't acquire swapchain texture: %s\n", SDL_GetError());
+			Logging::Log("Failed to Aqquire Swapchain Texture during Clear() %s", SDL_GetError());
 			//impl->Shutdown();
 		}
-			Logging::Log();
 
 		SDL_GPUColorTargetInfo colorTargetInfo = {
 			.texture = impl->swapchainTexture,
@@ -277,7 +281,7 @@ namespace Tusk
 		SDL_GPUBuffer* newVertexBuffer = SDL_CreateGPUBuffer(device, &vertexBufferCreateInfo);
 		if (!newVertexBuffer)
 		{
-			SDL_Log("Couldn't create vertex buffer: %s", SDL_GetError());
+			Logging::Log("Couldn't create vertex buffer: %s", SDL_GetError());
 			SDL_ReleaseGPUBuffer(device, newVertexBuffer);
 			return nullptr;
 		}
@@ -297,7 +301,7 @@ namespace Tusk
 		SDL_GPUBuffer* newIndexBuffer = SDL_CreateGPUBuffer(device, &indexBufferCreateInfo);
 		if (!newIndexBuffer)
 		{
-			SDL_Log("Couldn't create index buffer: %s", SDL_GetError());
+			Logging::Log("Couldn't create index buffer: %s", SDL_GetError());
 			SDL_ReleaseGPUBuffer(device, newIndexBuffer);
 			return nullptr;
 		}
@@ -316,7 +320,7 @@ namespace Tusk
 		SDL_GPUTransferBuffer* transferBuffer = SDL_CreateGPUTransferBuffer(device, &transferBufferCreateInfo);
 		if (transferBuffer == nullptr)
 		{
-			SDL_Log("Couldn't create transfer buffer: %s", SDL_GetError());
+			Logging::Log("Couldn't create transfer buffer: %s", SDL_GetError());
 			SDL_ReleaseGPUTransferBuffer(device, transferBuffer);
 			return nullptr;
 		}
@@ -332,15 +336,13 @@ namespace Tusk
 
 		//Create Vertex Buffer.
 		uint32_t verticesSize = vertices.size_bytes();
-		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> vertexBuffer{ nullptr, GPUBufferDeleter{.device = impl->device.get(),} };
-		vertexBuffer.reset(CreateVertexBuffer(impl->device.get(), verticesSize));
+		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> vertexBuffer{ CreateVertexBuffer(impl->device.get(), verticesSize), GPUBufferDeleter{.device = impl->device.get(),} };
 		if (!vertexBuffer)
 			return MeshID();
 
 		//Create Index Buffer.
 		auto indicesSize = indices.size_bytes();
-		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> indexBuffer{ nullptr, GPUBufferDeleter{.device = impl->device.get(),} };
-		indexBuffer.reset(CreateIndexBuffer(impl->device.get(), indicesSize));
+		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> indexBuffer{ CreateIndexBuffer(impl->device.get(), indicesSize), GPUBufferDeleter{.device = impl->device.get(),} };
 		if (!indexBuffer)
 			return MeshID();
 
@@ -358,7 +360,7 @@ namespace Tusk
 		uint16_t* indTransferData = static_cast<uint16_t*>(SDL_MapGPUTransferBuffer(impl->device.get(), indTransferBuffer.get(), false));
 		if (!verTransferData || !indTransferData)
 		{
-			SDL_Log("Couldn't map transfer buffer(s): %s", SDL_GetError());
+			Logging::Log("Failed to map transfer buffer(s): %s", SDL_GetError());
 			return MeshID();
 		}
 
@@ -374,7 +376,7 @@ namespace Tusk
 		SDL_GPUCommandBuffer* uploadCommandBuffer = SDL_AcquireGPUCommandBuffer(impl->device.get());
 		if(!uploadCommandBuffer)
 		{
-			SDL_Log("Couldn't acquire GPU command buffer: %s", SDL_GetError());
+			Logging::Log("Failed to Aqquire Command Buffer during CreateMeshBuffers() %s", SDL_GetError());
 			return MeshID();
 		}
 
@@ -410,7 +412,7 @@ namespace Tusk
 		//Submit command buffer to GPU.
 		if (!SDL_SubmitGPUCommandBuffer(uploadCommandBuffer))
 		{
-			SDL_Log("Couldn't submit GPU command buffer: %s", SDL_GetError());
+			Logging::Log("Failed to submit GPU command buffer during CreateMeshBuffers(): %s", SDL_GetError());
 			return MeshID();
 		}
 		
@@ -430,21 +432,21 @@ namespace Tusk
 	bool Renderer::CreatePipeline()
 	{
 		//Load Shaders to CPU
-		SDL_GPUShader* vertexShader = impl->LoadShader("Default.vert");
+		std::unique_ptr<SDL_GPUShader, GPUShaderDeleter> vertexShader{ impl->LoadShader("Default.vert"), GPUShaderDeleter{.device = impl->device.get(), } };
 		if (vertexShader == nullptr)
 		{
-			SDL_Log("Couldn't create vertex shader!");
+			Logging::Log("Couldn't create vertex shader during CreatePipeline().");
 			return false;
 		}
 
-		SDL_GPUShader* fragmentShader = impl->LoadShader("Default.frag");
+		std::unique_ptr<SDL_GPUShader, GPUShaderDeleter> fragmentShader{ impl->LoadShader("Default.frag"), GPUShaderDeleter{.device = impl->device.get(), } };
 		if (fragmentShader == nullptr)
 		{
-			SDL_Log("Couldn't create fragment shader!");
+			Logging::Log("Couldn't create fragment shader during CreatePipeline().");
 			return false;
 		}
 
-		//Define information for the Input Assembler/
+		//Define information for the Input Assembler
 
 		//Description of the vertex buffer layout.
 		std::array vertexBufferDescriptions{
@@ -481,8 +483,8 @@ namespace Tusk
 
 		//Create full pipeline info.
 		SDL_GPUGraphicsPipelineCreateInfo pipelineCreateInfo = SDL_GPUGraphicsPipelineCreateInfo{
-			.vertex_shader = vertexShader,
-			.fragment_shader = fragmentShader,
+			.vertex_shader = vertexShader.get(),
+			.fragment_shader = fragmentShader.get(),
 			.vertex_input_state = SDL_GPUVertexInputState{
 				.vertex_buffer_descriptions = vertexBufferDescriptions.data(),
 				.num_vertex_buffers = vertexBufferDescriptions.size(),
@@ -505,12 +507,9 @@ namespace Tusk
 		impl->pipeline = SDL_CreateGPUGraphicsPipeline(impl->device.get(), &pipelineCreateInfo);
 		if (impl->pipeline == nullptr)
 		{
-			SDL_Log("Couldn't create graphics pipeline! %s", SDL_GetError());
+			Logging::Log("Failed to create graphics pipeline. %s", SDL_GetError());
 			return false;
 		}
-
-		SDL_ReleaseGPUShader(impl->device.get(), vertexShader);
-		SDL_ReleaseGPUShader(impl->device.get(), fragmentShader);
 
 		return true;
 	}

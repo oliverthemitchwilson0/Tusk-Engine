@@ -4,6 +4,6 @@ namespace Tusk
 {
 	namespace Logging
 	{
-		void Log();
+		void Log(const char* format, ...);
 	}
 }
