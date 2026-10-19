@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <array>
 
+#include <Tusk/Logging.h>
+
 //https://gpuforbeginners.com/
 
 namespace Tusk
@@ -200,6 +202,7 @@ namespace Tusk
 			std::fprintf(stderr, "Couldn't acquire swapchain texture: %s\n", SDL_GetError());
 			//impl->Shutdown();
 		}
+			Logging::Log();
 
 		SDL_GPUColorTargetInfo colorTargetInfo = {
 			.texture = impl->swapchainTexture,

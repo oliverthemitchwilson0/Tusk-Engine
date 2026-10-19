@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <span>
+#include <Tusk/Math.h>
 #include <Tusk/Vertex.h>
 
 struct SDL_Window;
