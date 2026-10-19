@@ -17,14 +17,12 @@ namespace Tusk
 			if (!drawing)
 				return;
 
-			Math::mat4 world;
+			Math::mat4 world = glm::identity<Math::mat4>();
 			if (parent)
 			{
 				if (auto* transfromComp = parent->GetComponent<TransformComponent>())
 					world = transfromComp->GetTransfromMatrix();
 			}
-			else
-				world = glm::identity<Math::mat4>();
 
 			renderer.Draw(mesh, world);
 		}

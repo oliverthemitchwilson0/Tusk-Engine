@@ -48,9 +48,15 @@ namespace Tusk
 
 	struct Renderer::Impl
 	{
-		struct DeviceDeleter
+		struct GPUDeviceDeleter
 		{
 			void operator()(SDL_GPUDevice* device) { SDL_DestroyGPUDevice(device); }
+		};
+
+		struct GPUGraphicsPipelineDeleter
+		{
+			SDL_GPUDevice* device = nullptr;
+			void operator()(SDL_GPUGraphicsPipeline* pipeline) { SDL_ReleaseGPUGraphicsPipeline(device, pipeline); }
 		};
 
 		//https://gpuforbeginners.com/chapter03/
@@ -139,9 +145,9 @@ namespace Tusk
 			return shader;
 		}
 		
-		std::unique_ptr<SDL_GPUDevice, DeviceDeleter> device;
 		SDL_Window* window = nullptr;
-		SDL_GPUGraphicsPipeline* pipeline = nullptr;
+		std::unique_ptr<SDL_GPUDevice, GPUDeviceDeleter> device;
+		std::unique_ptr<SDL_GPUGraphicsPipeline, GPUGraphicsPipelineDeleter> pipeline{ nullptr, GPUGraphicsPipelineDeleter{ .device = this->device.get(), } };
 		SDL_GPUTexture* swapchainTexture = nullptr;
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
@@ -152,8 +158,9 @@ namespace Tusk
 
 		void Shutdown()
 		{
-			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
+			pipeline.reset();
 			meshBuffers.clear();
+			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
 			device.reset();
 		}
 	};
@@ -217,7 +224,7 @@ namespace Tusk
 
 		impl->renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr); //Begin Render Pass.
 
-		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline);
+		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline.get());
 	}
 
 	void Renderer::Draw(MeshID mesh, Math::mat4 transformMat)
@@ -504,7 +511,7 @@ namespace Tusk
 		};
 
 		//Submit and create pipeline.
-		impl->pipeline = SDL_CreateGPUGraphicsPipeline(impl->device.get(), &pipelineCreateInfo);
+		impl->pipeline.reset(SDL_CreateGPUGraphicsPipeline(impl->device.get(), &pipelineCreateInfo));
 		if (impl->pipeline == nullptr)
 		{
 			Logging::Log("Failed to create graphics pipeline. %s", SDL_GetError());

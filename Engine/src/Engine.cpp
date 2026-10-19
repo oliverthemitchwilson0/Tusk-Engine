@@ -43,6 +43,10 @@ namespace Tusk
 				if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
 					quit = true;
 				}
+				else if(event.type == SDL_EVENT_KEY_DOWN)
+				{
+					Logging::Log("Key Down: %d", event.key.key);
+				}
 			}
 		}
 	};
