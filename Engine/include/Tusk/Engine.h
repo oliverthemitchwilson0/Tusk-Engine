@@ -2,6 +2,11 @@
 
 #include <Tusk/Renderer.h>
 #include <Tusk/Math.h>
+
+#include <Tusk/GameObject.h>
+#include <Tusk/Components/ComponentBase.h>
+#include <Tusk/Components/TransformComponent.h>
+#include <Tusk/Components/MeshComponent.h>
 #include <memory>
 
 namespace Tusk 

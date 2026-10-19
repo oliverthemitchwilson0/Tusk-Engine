@@ -58,16 +58,35 @@ namespace TuskGame {
             20, 21, 22, 20, 22, 23
         };
 
-        object = renderer.CreateVertexBuffer(vertices);
+        object = new Tusk::GameObject();
 
-        objectIndices = renderer.CreateIndexBuffer(indices);
+        auto* transformComp = object->AddComponent<Tusk::TransformComponent>();
+        transformComp->SetScale(Tusk::Math::vec3(1.f, 1.f, 1.f));
+
+        auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
+        meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
+        meshComp->SetDrawing(false);
 
         return true;
     }
 
-    void DemoGame::FixedUpdate(Tusk::Engine&, float seconds) 
+    void DemoGame::FixedUpdate(Tusk::Engine&, float deltaTime) 
     {
-        cubeAngle += glm::radians(90.f * seconds);
+        cubeAngle += glm::radians(90.f * deltaTime);
+        accumulator += deltaTime;
+
+        if(accumulator >= 3)
+        {
+            auto* meshComp = object->GetComponent<Tusk::MeshComponent>();
+            meshComp->SetDrawing(true);
+        }
+
+        auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
+        transformComp->SetRotation(glm::angleAxis(cubeAngle, glm::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, glm::vec3(-1.f, 0.f, 0.f)));
+
+        float value = glm::sin(3.f * accumulator) * 4.f;
+        transformComp->SetTranslation(Tusk::Math::vec3(0.f, value, 0.f));
+
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
@@ -75,14 +94,7 @@ namespace TuskGame {
 
         renderer.Clear(1, 165.f / 255.f, 0.f);
 
-        Tusk::MatrixBuffer cubeMatBuffer
-        {
-            .world = glm::identity<Tusk::Math::mat4>() * glm::mat4_cast(glm::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f))),
-            .view = glm::lookAt(Tusk::Math::vec3(0.f, 0.f, 8.f), Tusk::Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
-            .projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
-        };
-
-        renderer.Draw(object, objectIndices, 36, cubeMatBuffer);
+        object->GetComponent<Tusk::MeshComponent>()->Render(renderer);
 
         renderer.Present();
 
