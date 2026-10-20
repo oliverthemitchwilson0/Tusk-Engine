@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Tusk/Renderer.h>
+#include <Tusk/Input.h>
 #include <Tusk/Math.h>
 
 #include <Tusk/GameObject.h>
@@ -47,5 +48,6 @@ namespace Tusk
 		std::unique_ptr<Impl> impl;
 
 		Renderer renderer;
+		Input input;
 	};
 }
