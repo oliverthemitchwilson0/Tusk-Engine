@@ -103,7 +103,9 @@ namespace Tusk
 			{
 				impl->PollEvents();
 
-				input.GetKeyDown();
+				input.GetKeyDown(Tusk::Input::A);
+				input.GetKeyDown(Tusk::Input::D);
+				input.GetKeyDown(Tusk::Input::SPACE);
 
 				if (impl->quit) break; //break loop if application has been quit.
 
