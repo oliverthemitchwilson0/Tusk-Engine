@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Tusk::Input
+namespace Tusk
 {
 	enum Keys
 	{
