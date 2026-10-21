@@ -103,6 +103,7 @@ namespace Tusk
 			{
 				impl->PollEvents();
 
+				input.ProcessInput();
 				input.GetKeyDown(Tusk::A);
 				input.GetKeyDown(Tusk::D);
 				input.GetKeyDown(Tusk::SPACE);

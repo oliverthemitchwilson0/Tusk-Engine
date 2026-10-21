@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace Tusk
 {
 	enum Keys
@@ -49,15 +51,17 @@ namespace Tusk
         SPACE = 44,
 	};
 
-	//struct ActionMap {};
-
 	class Input
 	{
 	public:
-		Input() = default;
-		~Input() = default;
+		Input();
+		~Input();
 
+        void ProcessInput();
 		void GetKeyDown(Keys key);
 
+    private:
+        struct Impl;
+        std::unique_ptr<Impl> impl;
 	};
 }
