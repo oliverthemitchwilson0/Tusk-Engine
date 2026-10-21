@@ -10,6 +10,7 @@
 //https://dev.epicgames.com/documentation/unreal-engine/input-overview-in-unreal-engine
 
 //New Note: After talking to Gareth, I'm just focusing on getting the "must have" sytems working. Leaving the above notes so I can come back to it later if I feel necessary.
+
 //https://wiki.libsdl.org/SDL3/BestKeyboardPractices
 
 namespace Tusk
@@ -37,11 +38,25 @@ namespace Tusk
 		std::copy(sdlKeystate, sdlKeystate + SDL_SCANCODE_COUNT, std::begin(currentKeyState));
 	}
 
-	void Input::GetKeyDown(Keys key)
+	bool Input::GetKeyDown(Keys key)
 	{
-		if(impl->currentKeyState[key] && !impl->previousKeyState[key])
+		if(impl->currentKeyState[key])
 		{
-			Logging::Log("Key: %d", key);
+			//Logging::Log("Key: %d", key);
+			return true;
 		}
+
+		return false;
+	}
+
+	bool Tusk::Input::GetKeyPressed(Keys key)
+	{
+		if (impl->currentKeyState[key] && !impl->previousKeyState[key])
+		{
+			//Logging::Log("Key: %d", key);
+			return true;
+		}
+
+		return false;
 	}
 }

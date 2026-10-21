@@ -65,27 +65,41 @@ namespace TuskGame {
 
         auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
         meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
-        meshComp->SetDrawing(false);
+        /*meshComp->SetDrawing(false);*/
 
         return true;
     }
 
-    void DemoGame::FixedUpdate(Tusk::Engine&, float deltaTime) 
+    void DemoGame::FixedUpdate(Tusk::Engine& engine, float deltaTime) 
     {
+        auto& input = engine.GetInput();
+
         cubeAngle += glm::radians(90.f * deltaTime);
         accumulator += deltaTime;
 
-        if(accumulator >= 3)
+        /*if(accumulator >= 3)
         {
             auto* meshComp = object->GetComponent<Tusk::MeshComponent>();
             meshComp->SetDrawing(true);
-        }
+        }*/
 
         auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
         transformComp->SetRotation(glm::angleAxis(cubeAngle, glm::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, glm::vec3(-1.f, 0.f, 0.f)));
 
+        auto position = transformComp->GetTranslation();
+        if(input.GetKeyDown(Tusk::D))
+        {
+            position.x += 10.f * deltaTime;
+        }
+        if (input.GetKeyDown(Tusk::A))
+        {
+            position.x -= 10.f * deltaTime;
+        }
+
+
         float value = glm::sin(3.f * accumulator) * 4.f;
-        transformComp->SetTranslation(Tusk::Math::vec3(0.f, value, 0.f));
+        position.y = value;
+        transformComp->SetTranslation(position);
 
     }
 

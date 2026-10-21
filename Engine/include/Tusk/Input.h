@@ -58,7 +58,8 @@ namespace Tusk
 		~Input();
 
         void ProcessInput();
-		void GetKeyDown(Keys key);
+		bool GetKeyDown(Keys key);
+        bool GetKeyPressed(Keys key);
 
     private:
         struct Impl;

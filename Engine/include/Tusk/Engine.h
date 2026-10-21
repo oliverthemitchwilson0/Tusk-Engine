@@ -42,6 +42,7 @@ namespace Tusk
 		void    Quit() noexcept;
 
 		Renderer& GetRenderer();
+		Input& GetInput();
 
 	private:
 		struct Impl;

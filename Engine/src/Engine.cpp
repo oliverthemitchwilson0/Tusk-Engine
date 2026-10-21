@@ -1,5 +1,3 @@
-//#include <Tusk/Engine.h>
-
 #include <Tusk/Engine.h>
 #include <Tusk/Logging.h>
 
@@ -104,9 +102,10 @@ namespace Tusk
 				impl->PollEvents();
 
 				input.ProcessInput();
-				input.GetKeyDown(Tusk::A);
-				input.GetKeyDown(Tusk::D);
-				input.GetKeyDown(Tusk::SPACE);
+
+				//Input Test
+				if (input.GetKeyPressed(Tusk::ESCAPE))
+					impl->quit = true;
 
 				if (impl->quit) break; //break loop if application has been quit.
 
@@ -154,6 +153,11 @@ namespace Tusk
 	Renderer& Engine::GetRenderer()
 	{
 		return renderer;
+	}
+
+	Input& Engine::GetInput()
+	{
+		return input;
 	}
 }
 
