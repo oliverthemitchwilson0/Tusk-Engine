@@ -69,7 +69,9 @@ namespace TuskGame {
 
         camera = new Tusk::GameObject();
         camera->AddComponent<Tusk::CameraComponent>();
-        camera->AddComponent<Tusk::TransformComponent>();
+        auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
+        
+        transformComp->SetTranslation(Tusk::Math::vec3(0.f, 0.f, 8.f));
 
         return true;
     }
@@ -81,25 +83,41 @@ namespace TuskGame {
         //Cube Test
 
         cubeAngle += Tusk::Math::radians(90.f * deltaTime);
-        accumulator += deltaTime;
+        //accumulator += deltaTime;
 
         auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
         transformComp->SetRotation(Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f)));
 
-        auto position = transformComp->GetTranslation();
+       /* auto position = transformComp->GetTranslation();
 
         float value = Tusk::Math::sin(3.f * accumulator) * 4.f;
         position.y = value;
-        transformComp->SetTranslation(position);
+        transformComp->SetTranslation(position);*/
 
         //Camera Test
 
         auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
-        auto cameraOldPosition = cameraTranasform->GetTranslation();
-        Tusk::Math::vec3 newCameraPosition = cameraOldPosition;
-        newCameraPosition.z += 10 * deltaTime;
-        //cameraTranasform->SetTranslation(newCameraPosition);
-        cameraTranasform->SetTranslation(Tusk::Math::vec3(0.f, 0.f, 8.f));
+        auto newCamTranslation = cameraTranasform->GetTranslation();
+        auto cameraForward = cameraTranasform->GetForward();
+        auto cameraRight = cameraTranasform->GetRight();
+        auto cameraUp = cameraTranasform->GetUp();
+
+        if(input.GetKeyDown(Tusk::W))
+            newCamTranslation += cameraForward * 8.f * deltaTime;
+        else if(input.GetKeyDown(Tusk::S))
+            newCamTranslation -= cameraForward * 8.f * deltaTime;
+
+        if(input.GetKeyDown(Tusk::D))
+            newCamTranslation += cameraRight * 8.f * deltaTime;
+        else if(input.GetKeyDown(Tusk::A))
+            newCamTranslation -= cameraRight * 8.f * deltaTime;
+
+        if (input.GetKeyDown(Tusk::SPACE))
+            newCamTranslation += cameraUp * 8.f * deltaTime;
+        else if (input.GetKeyDown(Tusk::LSHIFT))
+            newCamTranslation -= cameraUp * 8.f * deltaTime;
+
+        cameraTranasform->SetTranslation(newCamTranslation);
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {

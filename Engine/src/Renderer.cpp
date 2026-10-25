@@ -232,13 +232,12 @@ namespace Tusk
 		};
 
 		auto& cameraData = impl->cameraData;
-
 		//TEMP - Probably shouldn't have direct access to the window within the renderer.
 		int winW, winH;
 		SDL_GetWindowSize(impl->window, &winW, &winH);
 
 		CameraBufferType camBuff{
-			.view = Math::lookAt(cameraData.position, cameraData.forward, Math::vec3(0.f, 1.f, 0.f)),
+			.view = Math::lookAt(cameraData.position, cameraData.position + cameraData.forward, Math::vec3(0.f, 1.f, 0.f)),
 			.projection = Math::perspective(Math::radians(cameraData.fovDegrees), (static_cast<float>(winW) / static_cast<float>(winH)), cameraData.nearPlane, cameraData.farPlane),
 		};
 

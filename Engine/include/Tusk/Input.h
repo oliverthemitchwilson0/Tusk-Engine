@@ -49,6 +49,9 @@ namespace Tusk
         BACKSPACE = 42,
         TAB = 43,
         SPACE = 44,
+
+        LCTRL = 224,
+        LSHIFT = 225,
 	};
 
 	class Input

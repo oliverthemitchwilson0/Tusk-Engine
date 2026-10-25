@@ -25,6 +25,7 @@ namespace Tusk
 		Math::quat GetRotation() { return rotation; }
 		Math::vec3 GetScale() { return scale; }
 
+		//Returns a matrix of the transform.
 		Math::mat4 GetTransfromMatrix() 
 		{
 			return Math::translate(translation) * Math::mat4_cast(rotation) * Math::scale(scale);
@@ -32,7 +33,17 @@ namespace Tusk
 		//Returns a normalised forward vector of the transformation.
 		Math::vec3 GetForward()
 		{
-			return Math::normalize(Math::vec3(0.f, 0.f, -1.f) * rotation);
+			return Math::normalize(Math::vec3(0.f, 0.f, 1.f) * rotation);
+		}
+		//Returns a normalised right vector of the transformation.
+		Math::vec3 GetRight()
+		{
+			return Math::normalize(Math::vec3(-1.f, 0.f, 0.f) * rotation);
+		}
+		//Returns a normalised up vector of the transformation.
+		Math::vec3 GetUp()
+		{
+			return Math::normalize(Math::vec3(0.f, 1.f, 0.f) * rotation);
 		}
 	private:
 		Math::vec3 translation;
