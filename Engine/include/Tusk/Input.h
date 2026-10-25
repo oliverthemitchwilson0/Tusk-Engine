@@ -60,6 +60,7 @@ namespace Tusk
         void ProcessInput();
 		bool GetKeyDown(Keys key);
         bool GetKeyPressed(Keys key);
+        void GetMouseDelta(float* deltaX, float* deltaY);
 
     private:
         struct Impl;

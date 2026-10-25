@@ -15,10 +15,20 @@
 
 namespace Tusk
 {
+	struct MouseCoordinates
+	{
+		float x, y;
+	};
+
 	struct Input::Impl
 	{
+		//Keyboard states
 		bool currentKeyState[SDL_SCANCODE_COUNT];
 		bool previousKeyState[SDL_SCANCODE_COUNT];
+
+		//Mouse states
+		MouseCoordinates currentMousePos;
+		MouseCoordinates previousMousePos;
 	};
 
 	Input::Input() : impl(std::make_unique<Impl>()) {}
@@ -27,15 +37,24 @@ namespace Tusk
 
 	void Input::ProcessInput()
 	{
+		//Setup
 		auto& currentKeyState = impl->currentKeyState;
 		auto& previousKeyState = impl->previousKeyState;
 		auto* sdlKeystate = SDL_GetKeyboardState(nullptr);
 
-		//Copy current state into previous state.
+		auto& currentMousePos = impl->currentMousePos;
+		auto& previousMousePos = impl->previousMousePos;
+
+		//Process
+		
+		//Copy current key state into previous state.
 		std::copy(std::begin(currentKeyState), std::end(currentKeyState), std::begin(previousKeyState));
 
-		//Copy SDL keyboard state into current state.
+		//Copy SDL keyboard state into current key state.
 		std::copy(sdlKeystate, sdlKeystate + SDL_SCANCODE_COUNT, std::begin(currentKeyState));
+
+		previousMousePos = currentMousePos;
+		auto mouseState = SDL_GetMouseState(&currentMousePos.x, &currentMousePos.y);
 	}
 
 	bool Input::GetKeyDown(Keys key)
@@ -59,4 +78,12 @@ namespace Tusk
 
 		return false;
 	}
+
+	void Tusk::Input::GetMouseDelta(float* deltaX, float* deltaY)
+	{
+		*deltaX = std::abs(impl->currentMousePos.x - impl->previousMousePos.x);
+		*deltaY = std::abs(impl->currentMousePos.y - impl->previousMousePos.y);
+	}
+
+
 }
