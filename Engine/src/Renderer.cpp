@@ -250,17 +250,10 @@ namespace Tusk
 			},
 		};
 
-		//testing
-		static auto cameraMat = Math::translate(Math::vec3(0.f, 0.f, 8.f));
-		cameraMat = cameraMat * Math::mat4_cast(Math::angleAxis(Math::radians(1.f), Math::vec3(0.f, -1.f, 0.f)));
-		
-		auto cameraPos = Math::vec3(cameraMat[3]);
-		auto cameraForward = -Math::vec3(cameraMat[2]);
-
 		MatrixBufferType matBuff
 		{
 			.world = transformMat,
-			.view = Tusk::Math::lookAt(cameraPos, cameraPos + cameraForward, Tusk::Math::vec3(0.f, 1.f, 0.f)),
+			.view = Tusk::Math::lookAt(Math::vec3(0.f, 0.f, 8.f), Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
 			.projection = Tusk::Math::perspective(Math::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
 		};
 

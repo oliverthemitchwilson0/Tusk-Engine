@@ -67,6 +67,9 @@ namespace TuskGame {
         meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
         /*meshComp->SetDrawing(false);*/
 
+        camera = new Tusk::GameObject();
+        camera->AddComponent<Tusk::CameraComponent>();
+
         return true;
     }
 

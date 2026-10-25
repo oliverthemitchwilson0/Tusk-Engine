@@ -8,6 +8,7 @@
 #include <Tusk/Components/ComponentBase.h>
 #include <Tusk/Components/TransformComponent.h>
 #include <Tusk/Components/MeshComponent.h>
+#include <Tusk/Components/CameraComponent.h>
 #include <memory>
 
 namespace Tusk 

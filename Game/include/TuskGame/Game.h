@@ -21,6 +21,7 @@ namespace TuskGame {
         SDL_GPUBuffer* objectIndices;*/
 
         Tusk::GameObject* object;
+        Tusk::GameObject* camera;
 
         float cubeAngle = 0.f;
         float accumulator = 0.f;
