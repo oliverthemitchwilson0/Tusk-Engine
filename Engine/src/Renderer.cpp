@@ -253,8 +253,8 @@ namespace Tusk
 		MatrixBufferType matBuff
 		{
 			.world = transformMat,
-			.view = glm::lookAt(Tusk::Math::vec3(0.f, 0.f, 8.f), Tusk::Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
-			.projection = glm::perspective(glm::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
+			.view = Tusk::Math::lookAt(Tusk::Math::vec3(0.f, 0.f, 8.f), Tusk::Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
+			.projection = Tusk::Math::perspective(Math::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
 		};
 
 		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());

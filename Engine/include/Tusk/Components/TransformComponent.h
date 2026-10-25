@@ -10,7 +10,7 @@ namespace Tusk
 		TransformComponent(GameObject* parentIn) : 
 			ComponentBase(parentIn),
 			translation(0.f, 0.f, 0.f),
-			rotation(glm::identity<Math::quat>()),
+			rotation(Math::identity<Math::quat>()),
 			scale(1.f, 1.f, 1.f)
 		{}
 		~TransformComponent() final = default;
@@ -27,7 +27,7 @@ namespace Tusk
 
 		Math::mat4 GetTransfromMatrix() 
 		{
-			return glm::translate(glm::identity<Math::mat4>(), translation) * glm::mat4_cast(rotation) * glm::scale(glm::identity<Math::mat4>(), scale);
+			return Math::translate(translation) * Math::mat4_cast(rotation) * Math::scale(scale);
 		}
 	private:
 		Math::vec3 translation;

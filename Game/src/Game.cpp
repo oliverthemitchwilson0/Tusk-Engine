@@ -74,7 +74,7 @@ namespace TuskGame {
     {
         auto& input = engine.GetInput();
 
-        cubeAngle += glm::radians(90.f * deltaTime);
+        cubeAngle += Tusk::Math::radians(90.f * deltaTime);
         accumulator += deltaTime;
 
         /*if(accumulator >= 3)
@@ -84,7 +84,7 @@ namespace TuskGame {
         }*/
 
         auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
-        transformComp->SetRotation(glm::angleAxis(cubeAngle, glm::vec3(0.f, -1.f, 0.f)) * glm::angleAxis(cubeAngle, glm::vec3(-1.f, 0.f, 0.f)));
+        transformComp->SetRotation(Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f)));
 
         auto position = transformComp->GetTranslation();
         if(input.GetKeyDown(Tusk::D))
@@ -97,7 +97,7 @@ namespace TuskGame {
         }
 
 
-        float value = glm::sin(3.f * accumulator) * 4.f;
+        float value = Tusk::Math::sin(3.f * accumulator) * 4.f;
         position.y = value;
         transformComp->SetTranslation(position);
 

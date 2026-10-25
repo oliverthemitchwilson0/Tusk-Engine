@@ -41,6 +41,12 @@ namespace Tusk
 				if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
 					quit = true;
 				}
+				else if(event.type == SDL_EVENT_WINDOW_RESIZED)
+				{
+					int w, h;
+					SDL_GetWindowSize(this->window.get(), &w, &h);
+					Logging::Log("Window Resized %d %d", w, h);
+				}
 			}
 		}
 	};
@@ -61,15 +67,16 @@ namespace Tusk
 		}
 		impl->sdlInitialised = true;
 
-		impl->window.reset(SDL_CreateWindow(title, width, height, 0)); //Create new window.
+		auto windowFlags = SDL_WINDOW_RESIZABLE;
+		impl->window.reset(SDL_CreateWindow(title, width, height, windowFlags)); //Create new window.
 		if (!impl->window) 
 		{
 			Logging::Log("SDL Failed to Create Window: %s", SDL_GetError());
 			impl->Shutdown();
 			return false; //Return false if SDL window fails to create.
 		}
-
-		auto debugActive = true;
+		
+		bool debugActive = true;
 		if(!renderer.Initilise(impl->window.get(), debugActive))
 		{
 			impl->Shutdown();
@@ -106,6 +113,9 @@ namespace Tusk
 				//Input Test
 				if (input.GetKeyPressed(Tusk::ESCAPE))
 					impl->quit = true;
+
+				if(input.GetKeyPressed(Tusk::BACKSPACE))
+					SDL_SetWindowFullscreen(impl->window.get(), true);
 
 				if (impl->quit) break; //break loop if application has been quit.
 

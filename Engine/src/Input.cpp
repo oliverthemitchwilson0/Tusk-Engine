@@ -49,7 +49,7 @@ namespace Tusk
 		return false;
 	}
 
-	bool Tusk::Input::GetKeyPressed(Keys key)
+	bool Input::GetKeyPressed(Keys key)
 	{
 		if (impl->currentKeyState[key] && !impl->previousKeyState[key])
 		{

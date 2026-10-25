@@ -17,7 +17,7 @@ namespace Tusk
 			if (!drawing)
 				return;
 
-			Math::mat4 world = glm::identity<Math::mat4>();
+			Math::mat4 world = Math::identity<Math::mat4>();
 			if (parent)
 			{
 				if (auto* transfromComp = parent->GetComponent<TransformComponent>())
