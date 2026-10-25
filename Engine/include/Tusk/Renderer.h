@@ -11,6 +11,7 @@ struct SDL_GPUBuffer;
 namespace Tusk
 {
 	struct MeshBufferData;
+	struct CameraData;
 
 	struct MeshID {	size_t id = -1; };
 
@@ -26,15 +27,15 @@ namespace Tusk
 		Renderer& operator=(Renderer&&) = delete;
 
 		bool Initilise(SDL_Window* window, bool debugActive = false);
-		//bool IsActive();
 
 		//Renderer Commands
+
 		void Clear(float red, float green, float blue);
 		void Draw(MeshID mesh, Math::mat4 transformMat);
 		void Present();
-		//void DrawRectangle(Color color, float x, float y, float w, float h);
-		//void RenderPresent();
+		
 		MeshID CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices);
+		void SetCameraData(const CameraData& data);
 
 	private:
 		struct Impl;

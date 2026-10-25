@@ -29,9 +29,10 @@ namespace Tusk
 		{
 			return Math::translate(translation) * Math::mat4_cast(rotation) * Math::scale(scale);
 		}
+		//Returns a normalised forward vector of the transformation.
 		Math::vec3 GetForward()
 		{
-			return Math::vec3(0.f, 0.f, -1.f) * rotation;
+			return Math::normalize(Math::vec3(0.f, 0.f, -1.f) * rotation);
 		}
 	private:
 		Math::vec3 translation;

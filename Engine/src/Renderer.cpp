@@ -1,4 +1,5 @@
 #include <Tusk/Renderer.h>
+#include <Tusk/CameraData.h>
 
 #include <SDL3/SDL.h>
 #include <string>
@@ -152,6 +153,8 @@ namespace Tusk
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
 
+		CameraData camData;
+
 		std::vector<MeshBufferData> meshBuffers;
 
 		~Impl() { Shutdown(); }
@@ -253,7 +256,7 @@ namespace Tusk
 		MatrixBufferType matBuff
 		{
 			.world = transformMat,
-			.view = Tusk::Math::lookAt(Math::vec3(0.f, 0.f, 8.f), Math::vec3(0.f, 0.f, 0.f), Tusk::Math::vec3(0.f, 1.f, 0.f)),
+			.view = impl->camData.view,
 			.projection = Tusk::Math::perspective(Math::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
 		};
 
@@ -434,6 +437,11 @@ namespace Tusk
 
 		//Return index of data as ID.
 		return MeshID{ .id = impl->meshBuffers.size() - 1, };
+	}
+
+	void Renderer::SetCameraData(const CameraData& data)
+	{
+		impl->camData = data;
 	}
 
 	bool Renderer::CreatePipeline()

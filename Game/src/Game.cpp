@@ -69,6 +69,7 @@ namespace TuskGame {
 
         camera = new Tusk::GameObject();
         camera->AddComponent<Tusk::CameraComponent>();
+        camera->AddComponent<Tusk::TransformComponent>();
 
         return true;
     }
@@ -80,34 +81,27 @@ namespace TuskGame {
         cubeAngle += Tusk::Math::radians(90.f * deltaTime);
         accumulator += deltaTime;
 
-        /*if(accumulator >= 3)
-        {
-            auto* meshComp = object->GetComponent<Tusk::MeshComponent>();
-            meshComp->SetDrawing(true);
-        }*/
-
         auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
         transformComp->SetRotation(Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f)));
 
         auto position = transformComp->GetTranslation();
-        if(input.GetKeyDown(Tusk::D))
-        {
-            position.x += 10.f * deltaTime;
-        }
-        if (input.GetKeyDown(Tusk::A))
-        {
-            position.x -= 10.f * deltaTime;
-        }
-
 
         float value = Tusk::Math::sin(3.f * accumulator) * 4.f;
         position.y = value;
         transformComp->SetTranslation(position);
 
+        auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
+        auto cameraOldPosition = cameraTranasform->GetTranslation();
+        Tusk::Math::vec3 newCameraPosition = cameraOldPosition;
+        newCameraPosition.z += 10 * deltaTime;
+        cameraTranasform->SetTranslation(newCameraPosition);
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
         auto& renderer = engine.GetRenderer();
+
+        auto cameraData = camera->GetComponent<Tusk::CameraComponent>()->GetCameraData();
+        renderer.SetCameraData(cameraData);
 
         renderer.Clear(1, 165.f / 255.f, 0.f);
 
