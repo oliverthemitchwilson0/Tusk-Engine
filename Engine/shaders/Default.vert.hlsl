@@ -1,8 +1,12 @@
-cbuffer MatrixBuffer : register(b0, space1)
+cbuffer CameraBuffer : register(b0, space1)
 {
-    float4x4 world;
     float4x4 view;
     float4x4 projection;
+}
+
+cbuffer TransformBuffer : register(b1, space1)
+{
+    float4x4 world;
 };
 
 struct Input

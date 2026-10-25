@@ -39,13 +39,19 @@ namespace Tusk
 		size_t indexCount = 0;
 	};
 
-	//Matrix buffer used for shader's uniform buffers.
-	struct MatrixBufferType
+	//Cpu struct definition of the vertex shader's Camera Buffer
+	struct CameraBufferType
 	{
-		Math::mat4 world;
 		Math::mat4 view;
 		Math::mat4 projection;
 	};
+
+	//Cpu struct definition of the vertex shader's Transform Buffer
+	struct TransformBufferType
+	{
+		Math::mat4 world;
+	};
+
 
 	struct Renderer::Impl
 	{
@@ -131,7 +137,7 @@ namespace Tusk
 				.entrypoint = entrypoint,
 				.format = format,
 				.stage = stage,
-				.num_uniform_buffers = 1,
+				.num_uniform_buffers = 2,
 			};
 
 			//Create SDL GPU Shader.
@@ -153,7 +159,7 @@ namespace Tusk
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
 
-		CameraData camData;
+		CameraData cameraData;
 
 		std::vector<MeshBufferData> meshBuffers;
 
@@ -225,6 +231,19 @@ namespace Tusk
 			.store_op = SDL_GPU_STOREOP_STORE,
 		};
 
+		auto& cameraData = impl->cameraData;
+
+		//TEMP - Probably shouldn't have direct access to the window within the renderer.
+		int winW, winH;
+		SDL_GetWindowSize(impl->window, &winW, &winH);
+
+		CameraBufferType camBuff{
+			.view = Math::lookAt(cameraData.position, cameraData.forward, Math::vec3(0.f, 1.f, 0.f)),
+			.projection = Math::perspective(Math::radians(cameraData.fovDegrees), (static_cast<float>(winW) / static_cast<float>(winH)), cameraData.nearPlane, cameraData.farPlane),
+		};
+
+		PushCameraBuffer(camBuff);
+
 		impl->renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr); //Begin Render Pass.
 
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline.get());
@@ -253,17 +272,15 @@ namespace Tusk
 			},
 		};
 
-		MatrixBufferType matBuff
+		TransformBufferType matBuff
 		{
 			.world = transformMat,
-			.view = impl->camData.view,
-			.projection = Tusk::Math::perspective(Math::radians(90.f), (1040.f / 880.f), 0.1f, 100.f),
 		};
 
 		SDL_BindGPUVertexBuffers(impl->renderPass, 0, vertexBuffers.data(), vertexBuffers.size());
 		SDL_BindGPUIndexBuffer(impl->renderPass, indexBuffers.data(), SDL_GPU_INDEXELEMENTSIZE_16BIT);
 
-		SDL_PushGPUVertexUniformData(impl->commandBuffer, 0, &matBuff, sizeof(MatrixBufferType));
+		PushTransformBuffer(matBuff);
 
 		//SDL_DrawGPUPrimitives(impl->renderPass, vertexCount, 1, 0, 0);
 		SDL_DrawGPUIndexedPrimitives(impl->renderPass, meshBuffers.indexCount, 1, 0, 0, 0);
@@ -441,7 +458,7 @@ namespace Tusk
 
 	void Renderer::SetCameraData(const CameraData& data)
 	{
-		impl->camData = data;
+		impl->cameraData = data;
 	}
 
 	bool Renderer::CreatePipeline()
@@ -527,5 +544,21 @@ namespace Tusk
 		}
 
 		return true;
+	}
+
+	void Renderer::PushCameraBuffer(const CameraBufferType& buff)
+	{
+		if (impl->commandBuffer)
+			SDL_PushGPUVertexUniformData(impl->commandBuffer, 0, &buff, sizeof(CameraBufferType));
+		else
+			Logging::Log("Failed to push camera buffer to vertex shader, missing command buffer");
+	}
+
+	void Renderer::PushTransformBuffer(const TransformBufferType& buff)
+	{
+		if (impl->commandBuffer)
+			SDL_PushGPUVertexUniformData(impl->commandBuffer, 1, &buff, sizeof(TransformBufferType));
+		else
+			Logging::Log("Failed to push transform buffer to vertex shader, missing command buffer");
 	}
 }

@@ -13,6 +13,9 @@ namespace Tusk
 	struct MeshBufferData;
 	struct CameraData;
 
+	struct CameraBufferType;
+	struct TransformBufferType;
+
 	struct MeshID {	size_t id = -1; };
 
 	class Renderer
@@ -36,11 +39,14 @@ namespace Tusk
 		
 		MeshID CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices);
 		void SetCameraData(const CameraData& data);
+		//void PushCamera
 
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
 
 		bool CreatePipeline();
+		void PushCameraBuffer(const CameraBufferType& buff);
+		void PushTransformBuffer(const TransformBufferType& buff);
 	};
 }

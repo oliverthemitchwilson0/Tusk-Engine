@@ -4,9 +4,10 @@
 
 namespace Tusk
 {
+	//Struct containing relative data for creating camera view and perspective matrices.
 	struct CameraData
 	{
-		Math::mat4 view;
-		float fov, nearPlane, farPlane;
+		Math::vec3 position, forward;
+		float fovDegrees, nearPlane, farPlane;
 	};
 }

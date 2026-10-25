@@ -16,6 +16,7 @@ namespace Tusk
 		void Start() final {};
 		void FixedUpdate(float deltaTime) final {};
 
+		//Returns a CameraData Struct containing all relative data for supplying to the renderer.
 		CameraData GetCameraData()
 		{
 			Math::vec3 position(0.f, 0.f, 0.f);
@@ -27,15 +28,16 @@ namespace Tusk
 			}
 			
 			return CameraData{
-				.view = Tusk::Math::lookAt(position, position + forward, Math::vec3(0.f, 1.f, 0.f)),
-				.fov = fov,
+				.position = position,
+				.forward = forward,
+				.fovDegrees = fovDegrees,
 				.nearPlane = nearPlane,
 				.farPlane = farPlane,
 			};
 		}
 	private:
-		float fov = 60.f;
+		float fovDegrees = 90.f;
 		float nearPlane = 0.1f;
-		float farPlane = 1000.f;
+		float farPlane = 100.f;
 	};
 }

@@ -78,6 +78,8 @@ namespace TuskGame {
     {
         auto& input = engine.GetInput();
 
+        //Cube Test
+
         cubeAngle += Tusk::Math::radians(90.f * deltaTime);
         accumulator += deltaTime;
 
@@ -90,11 +92,14 @@ namespace TuskGame {
         position.y = value;
         transformComp->SetTranslation(position);
 
+        //Camera Test
+
         auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
         auto cameraOldPosition = cameraTranasform->GetTranslation();
         Tusk::Math::vec3 newCameraPosition = cameraOldPosition;
         newCameraPosition.z += 10 * deltaTime;
-        cameraTranasform->SetTranslation(newCameraPosition);
+        //cameraTranasform->SetTranslation(newCameraPosition);
+        cameraTranasform->SetTranslation(Tusk::Math::vec3(0.f, 0.f, 8.f));
     }
 
     void DemoGame::Render(Tusk::Engine& engine) {
@@ -108,8 +113,6 @@ namespace TuskGame {
         object->GetComponent<Tusk::MeshComponent>()->Render(renderer);
 
         renderer.Present();
-
-        //renderer.DrawRectangle(Color(255, 0, 0), 50, 50, 50, 50);*/
     }
 
     void DemoGame::Stop(Tusk::Engine&) {}
