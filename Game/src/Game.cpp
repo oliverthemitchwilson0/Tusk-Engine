@@ -1,4 +1,5 @@
 #include <TuskGame/Game.h>
+#include <Tusk/Mesh.h>
 
 #include <algorithm>
 #include <vector>
@@ -10,6 +11,9 @@ namespace TuskGame {
     bool DemoGame::Start(Tusk::Engine& engine) 
     {
         auto& renderer = engine.GetRenderer();
+
+        Tusk::Mesh bannaMesh;
+        Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", bannaMesh);
 
         std::vector<Tusk::Vertex> vertices{
             //Front Face
@@ -64,7 +68,7 @@ namespace TuskGame {
         transformComp->SetScale(Tusk::Math::vec3(1.f, 1.f, 1.f));
 
         auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
-        meshComp->LoadMesh(engine.GetRenderer(), vertices, indices);
+        meshComp->LoadMesh(engine.GetRenderer(), bannaMesh.vertices, bannaMesh.indices);
         /*meshComp->SetDrawing(false);*/
 
         camera = new Tusk::GameObject();
