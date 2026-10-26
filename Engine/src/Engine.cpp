@@ -118,7 +118,7 @@ namespace Tusk
 					SDL_SetWindowFullscreen(impl->window.get(), true);
 
 				//Asset Importer test
-				Asset::LoadModel("Tung Tung.obj");
+				//Asset::LoadModel("Tung Tung.obj");
 
 				if (impl->quit) break; //break loop if application has been quit.
 

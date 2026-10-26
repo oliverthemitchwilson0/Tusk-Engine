@@ -5,17 +5,17 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+//https://learnopengl.com/Model-Loading/Model
 namespace Tusk
 {
-	//https://learnopengl.com/Model-Loading/Model
 	void Asset::LoadModel(const char* path)
 	{
 		Assimp::Importer importer; //Assimp importer interface.
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs); //The entire imported model.
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
-			Logging::Log("Failed to load model with path: %s %s", path, importer.GetErrorString());
+			Logging::Log("Failed to load model with path: %s", importer.GetErrorString());
 			return;
 		}
 	}

@@ -25,6 +25,8 @@ FetchContent_MakeAvailable(SDL3)
 
 #GLM
 
+set(GLM_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLM_BUILD_LIBRARY OFF CACHE BOOL "" FORCE)
 set(GLM_BUILD_INSTALL OFF CACHE BOOL "Do not install GLM" FORCE)
 
 FetchContent_Declare(
@@ -178,6 +180,7 @@ if(WIN32)
     add_custom_target(StageRuntime
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:GameApp>
+            $<TARGET_FILE:assimp::assimp> $<TARGET_FILE_DIR:GameApp>
         VERBATIM)
     add_dependencies(GameApp StageRuntime)
 endif()
