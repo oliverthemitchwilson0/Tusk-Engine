@@ -181,6 +181,8 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:GameApp>
             $<TARGET_FILE:assimp::assimp> $<TARGET_FILE_DIR:GameApp>
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/Game/Assets" "$<TARGET_FILE_DIR:GameApp>/Assets"
         VERBATIM)
     add_dependencies(GameApp StageRuntime)
 endif()
