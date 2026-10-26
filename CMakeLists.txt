@@ -25,6 +25,8 @@ FetchContent_MakeAvailable(SDL3)
 
 #GLM
 
+set(GLM_BUILD_INSTALL OFF CACHE BOOL "Do not install GLM" FORCE)
+
 FetchContent_Declare(
     GLM
     GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -33,6 +35,23 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(GLM)
+
+#Assimp
+
+SET(ASSIMP_NO_EXPORT ON CACHE BOOL "Disable Assimp's export functionality." FORCE)
+SET(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF CACHE BOOL "Do not build Assimp with all exporters enabled." FORCE)
+SET(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "Do not build Assimp samples." FORCE)
+SET(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Do not build test suite for Assimp." FORCE)
+SET(ASSIMP_INSTALL OFF CACHE BOOL "Do not install Assimp" FORCE)
+
+FetchContent_Declare(
+    Assimp
+    GIT_REPOSITORY https://github.com/assimp/assimp.git
+    GIT_TAG v6.0.5
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(Assimp)
 
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
@@ -144,6 +163,7 @@ target_include_directories(Game PUBLIC Game/include)
 
 target_link_libraries(Engine PRIVATE 
     SDL3::SDL3
+    assimp::assimp
 )
 
 target_link_libraries(Engine PUBLIC
