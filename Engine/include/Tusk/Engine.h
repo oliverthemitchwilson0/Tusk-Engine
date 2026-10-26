@@ -2,6 +2,7 @@
 
 #include <Tusk/Renderer.h>
 #include <Tusk/Input.h>
+#include <Tusk/Asset.h>
 #include <Tusk/Math.h>
 
 #include <Tusk/GameObject.h>
