@@ -55,6 +55,28 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Assimp)
 
+#SDL_Image
+
+#Disabling obscure formats 
+set(SDLIMAGE_AVIF OFF CACHE BOOL "Disable AVIF" FORCE)
+set(SDLIMAGE_WEBP OFF CACHE BOOL "Disable WebP" FORCE)
+set(SDLIMAGE_TIF OFF CACHE BOOL "Disable TIFF" FORCE)
+set(SDLIMAGE_JXL OFF CACHE BOOL "Disable JPEG XL" FORCE)
+set(SDLIMAGE_HEIF OFF CACHE BOOL "Disable HEIF" FORCE)
+set(SDLIMAGE_GIF OFF CACHE BOOL "Disable GIF" FORCE)
+set(SDLIMAGE_PCX OFF CACHE BOOL "Disable PCX" FORCE)
+
+set(SDLIMAGE_VENDORED OFF CACHE BOOL "" FORCE) #Assimp and SDL_Image both uses a C library called zlib casuing an error, this stops it (might bite me back later)
+
+FetchContent_Declare(
+    SDL3_image
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+    GIT_TAG release-3.4.4
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(SDL3_image)
+
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
 macro(compile_shaders shader_dir_in)
@@ -167,6 +189,7 @@ target_include_directories(Game PUBLIC Game/include)
 target_link_libraries(Engine PRIVATE 
     SDL3::SDL3
     assimp::assimp
+    SDL3_image::SDL3_image
 )
 
 target_link_libraries(Engine PUBLIC
@@ -181,6 +204,7 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:GameApp>
             $<TARGET_FILE:assimp::assimp> $<TARGET_FILE_DIR:GameApp>
+            $<TARGET_FILE:SDL3_image::SDL3_image> $<TARGET_FILE_DIR:GameApp>
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/Game/Assets" "$<TARGET_FILE_DIR:GameApp>/Assets"
         VERBATIM)

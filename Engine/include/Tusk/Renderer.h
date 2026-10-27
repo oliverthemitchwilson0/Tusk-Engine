@@ -1,6 +1,6 @@
 #pragma once
 #include <Tusk/Math.h>
-#include <Tusk/Vertex.h>
+#include <Tusk/Graphics/Vertex.h>
 
 #include <memory>
 #include <span>

@@ -1,5 +1,5 @@
 #pragma once
-#include <Tusk/Vertex.h>
+#include <Tusk/Graphics/Vertex.h>
 
 #include <vector>
 #include <cstdint>

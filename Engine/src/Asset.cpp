@@ -1,12 +1,13 @@
 #include <Tusk/Asset.h>
 #include <Tusk/Logging.h>
-#include <Tusk/Mesh.h>
+#include <Tusk/Graphics/Mesh.h>
 #include <Tusk/Math.h>
 #include <Tusk/Renderer.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <SDL3_image/SDL_image.h>
 
 //https://learnopengl.com/Model-Loading/Model
 namespace Tusk
@@ -79,4 +80,6 @@ namespace Tusk
 			renderer.CreateGPUMeshBuffers(mesh.name, mesh.vertices, mesh.indices);
 		}
 	}
+
+
 }
