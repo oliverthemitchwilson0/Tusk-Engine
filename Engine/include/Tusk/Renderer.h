@@ -17,6 +17,7 @@ namespace Tusk
 	struct CameraBufferType;
 	struct TransformBufferType;
 
+	struct TextureAsset;
 	struct MeshID {	size_t id = -1; };
 
 	class Renderer
@@ -38,7 +39,11 @@ namespace Tusk
 		void Draw(MeshID mesh, Math::mat4 transformMat);
 		void Present();
 		
+		//GPU Resource Creation
+
 		MeshID CreateGPUMeshBuffers(std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices);
+		void CreateGPUTexture(const TextureAsset& asset);
+
 		MeshID GetGPUMesh(std::string name);
 		void SetCameraData(const CameraData& data);
 
@@ -47,6 +52,7 @@ namespace Tusk
 		std::unique_ptr<Impl> impl;
 
 		bool CreatePipeline();
+		void CreateTextureSampler();
 		void PushCameraBuffer(const CameraBufferType& buff);
 		void PushTransformBuffer(const TransformBufferType& buff);
 	};

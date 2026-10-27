@@ -1,5 +1,6 @@
 #include <Tusk/Renderer.h>
-#include <Tusk/CameraData.h>
+#include <Tusk/Graphics/CameraData.h>
+#include <Tusk/TextureAsset.h>
 
 #include <SDL3/SDL.h>
 #include <string>
@@ -9,6 +10,8 @@
 #include <Tusk/Logging.h>
 
 //https://gpuforbeginners.com/
+//https://github.com/TheSpydog/SDL_gpu_examples/blob/main/Examples/TexturedAnimatedQuad.c
+//https://glusoft.com/sdl3-tutorials/display-texture-sdl3_gpu/
 
 namespace Tusk
 {
@@ -159,6 +162,9 @@ namespace Tusk
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
 
+		SDL_GPUSampler* sampler = nullptr;
+		SDL_GPUTexture* testTexture = nullptr;
+
 		CameraData cameraData;
 
 		std::vector<GPUMeshBuffers> meshBuffersBin;
@@ -206,6 +212,8 @@ namespace Tusk
 			impl->Shutdown();
 			return false;
 		}
+
+		CreateTextureSampler();
 
 		return true;
 	}
@@ -457,6 +465,32 @@ namespace Tusk
 		return MeshID{ .id = impl->meshBuffersBin.size() - 1, };
 	}
 
+	void Renderer::CreateGPUTexture(const TextureAsset& asset)
+	{
+		SDL_GPUTextureCreateInfo textureCreateInfo{
+			.type = SDL_GPU_TEXTURETYPE_2D,
+			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+			.width = static_cast<Uint32>(asset.surface->w),
+			.height = static_cast<Uint32>(asset.surface->h),
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+		};
+
+		impl->testTexture = SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo);
+
+		//Create Transfer Buffer for texture.
+		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo{
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.size = static_cast<Uint32>(asset.surface->w * asset.surface->h * 4)
+		};
+
+		SDL_GPUTransferBuffer* textureTransferBuffer = SDL_CreateGPUTransferBuffer(
+			impl->device.get(),
+			&transferBufferCreateInfo
+		);
+	}
+
 	MeshID Renderer::GetGPUMesh(std::string name)
 	{
 		auto found = impl->meshBuffersLookup.find(name);
@@ -559,6 +593,20 @@ namespace Tusk
 		}
 
 		return true;
+	}
+
+	void Renderer::CreateTextureSampler()
+	{
+		SDL_GPUSamplerCreateInfo sampler_info{
+			.min_filter = SDL_GPU_FILTER_NEAREST,
+			.mag_filter = SDL_GPU_FILTER_NEAREST,
+			.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
+			.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+			.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+			.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+		};
+
+		impl->sampler = SDL_CreateGPUSampler(impl->device.get(), &sampler_info);
 	}
 
 	void Renderer::PushCameraBuffer(const CameraBufferType& buff)

@@ -3,6 +3,7 @@
 #include <Tusk/Graphics/Mesh.h>
 #include <Tusk/Math.h>
 #include <Tusk/Renderer.h>
+#include <Tusk/TextureAsset.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -12,13 +13,6 @@
 //https://learnopengl.com/Model-Loading/Model
 namespace Tusk
 {
-	//CPU-side Texture Asset.
-	struct TextureAsset
-	{
-		std::string name;
-		SDL_Surface* surface;
-	};
-
 	std::vector<Mesh> Asset::meshes;
 	std::vector<TextureAsset> Asset::textureAssetBin;
 
@@ -95,6 +89,7 @@ namespace Tusk
 
 		if(!surface)
 		{
+			SDL_DestroySurface(surface);
 			Logging::Log("Failed to load image: %s", path);
 		}
 		
