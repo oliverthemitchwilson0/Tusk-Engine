@@ -41,7 +41,6 @@ namespace Tusk
 		MeshID CreateGPUMeshBuffers(std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices);
 		MeshID GetGPUMesh(std::string name);
 		void SetCameraData(const CameraData& data);
-		//void PushCamera
 
 	private:
 		struct Impl;

@@ -12,7 +12,15 @@
 //https://learnopengl.com/Model-Loading/Model
 namespace Tusk
 {
+	//CPU-side Texture Asset.
+	struct TextureAsset
+	{
+		std::string name;
+		SDL_Surface* surface;
+	};
+
 	std::vector<Mesh> Asset::meshes;
+	std::vector<TextureAsset> Asset::textureAssetBin;
 
 	void Asset::LoadModel(const char* path, std::string name)
 	{
@@ -81,5 +89,23 @@ namespace Tusk
 		}
 	}
 
+	void Asset::LoadImage(const char* path, std::string name)
+	{
+		auto* surface = IMG_Load(path);
 
+		if(!surface)
+		{
+			Logging::Log("Failed to load image: %s", path);
+		}
+		
+		textureAssetBin.push_back(
+			TextureAsset{
+				.name = name,
+				.surface = surface,
+			}
+		);
+
+		auto binSize = textureAssetBin.size();
+		Logging::Log("Texture assets: %d", binSize);
+	}
 }
