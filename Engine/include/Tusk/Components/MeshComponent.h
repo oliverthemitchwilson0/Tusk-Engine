@@ -12,10 +12,15 @@ namespace Tusk
 
 		void Start() final {};
 		void FixedUpdate(float deltaTime) final {};
-		void Render(Renderer& renderer)
+		void Draw(Renderer& renderer)
 		{
 			if (!drawing)
 				return;
+
+			if(mesh.id == -1)
+			{
+				mesh = renderer.GetGPUMesh(meshName);
+			}
 
 			Math::mat4 world = Math::identity<Math::mat4>();
 			if (parent)
@@ -32,13 +37,14 @@ namespace Tusk
 			mesh = renderer.CreateGPUMeshBuffers(name, vertices, indices);
 		}
 
-		void UseMesh(Renderer& renderer, std::string name)
+		void UseMesh(std::string name)
 		{
-			mesh = renderer.GetGPUMesh(name);
+			meshName = name;
 		}
 
 		void SetDrawing(bool draw) { drawing = draw; }
 	private:
+		std::string meshName;
 		MeshID mesh;
 		bool drawing = true;
 	};
