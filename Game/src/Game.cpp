@@ -61,6 +61,7 @@ namespace TuskGame {
         auto cameraForward = cameraTranasform->GetForward();
         auto cameraRight = cameraTranasform->GetRight();
         auto cameraUp = cameraTranasform->GetUp();
+        auto rotation = cameraTranasform->GetRotation();
 
         if(input.GetKeyDown(Tusk::W))
             newCamTranslation += cameraForward * 8.f * deltaTime;
@@ -76,6 +77,11 @@ namespace TuskGame {
             newCamTranslation += cameraUp * 8.f * deltaTime;
         else if (input.GetKeyDown(Tusk::LSHIFT))
             newCamTranslation -= cameraUp * 8.f * deltaTime;
+
+        if (input.GetKeyDown(Tusk::X))
+            cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * deltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
+        else if (input.GetKeyDown(Tusk::Z))
+            cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * deltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
 
         cameraTranasform->SetTranslation(newCamTranslation);
     }
