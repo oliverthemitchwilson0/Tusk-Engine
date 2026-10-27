@@ -64,18 +64,22 @@ namespace TuskGame {
 
         object = new Tusk::GameObject();
 
-        auto* transformComp = object->AddComponent<Tusk::TransformComponent>();
-        transformComp->SetScale(Tusk::Math::vec3(1.f, 1.f, 1.f));
+        auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
+        objectTransformComp->SetTranslation(Tusk::Math::vec3(2.f, 0.f, 3.f));
 
-        auto* meshComp = object->AddComponent<Tusk::MeshComponent>();
-        meshComp->LoadMesh(engine.GetRenderer(), bannaMesh.vertices, bannaMesh.indices);
-        /*meshComp->SetDrawing(false);*/
+        auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
+        objectMeshComp->LoadMesh(engine.GetRenderer(), "Banana", bannaMesh.vertices, bannaMesh.indices);
+
+        object2 = new Tusk::GameObject();
+        auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
+        object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
+
+        auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
+        object2MeshComp->UseMesh(engine.GetRenderer(), "Banana");
 
         camera = new Tusk::GameObject();
         camera->AddComponent<Tusk::CameraComponent>();
         auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
-        
-        transformComp->SetTranslation(Tusk::Math::vec3(0.f, 0.f, 8.f));
 
         return true;
     }
@@ -84,7 +88,7 @@ namespace TuskGame {
     {
         auto& input = engine.GetInput();
 
-        //Cube Test
+        //Banana Test
 
         cubeAngle += Tusk::Math::radians(90.f * deltaTime);
         //accumulator += deltaTime;
@@ -133,6 +137,7 @@ namespace TuskGame {
         renderer.Clear(1, 165.f / 255.f, 0.f);
 
         object->GetComponent<Tusk::MeshComponent>()->Render(renderer);
+        object2->GetComponent<Tusk::MeshComponent>()->Render(renderer);
 
         renderer.Present();
     }

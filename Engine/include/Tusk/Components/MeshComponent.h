@@ -27,9 +27,14 @@ namespace Tusk
 			renderer.Draw(mesh, world);
 		}
 
-		void LoadMesh(Renderer& renderer, std::span<Vertex> vertices, std::span<uint16_t> indices)
+		void LoadMesh(Renderer& renderer, std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices)
 		{
-			mesh = renderer.CreateMeshBuffers(vertices, indices);
+			mesh = renderer.CreateGPUMeshBuffers(name, vertices, indices);
+		}
+
+		void UseMesh(Renderer& renderer, std::string name)
+		{
+			mesh = renderer.GetGPUMesh(name);
 		}
 
 		void SetDrawing(bool draw) { drawing = draw; }

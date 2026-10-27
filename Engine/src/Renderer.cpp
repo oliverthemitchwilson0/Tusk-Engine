@@ -31,7 +31,7 @@ namespace Tusk
 	};
 
 	//Structure containing vertex and index buffer of one mesh.
-	struct MeshBufferData
+	struct GPUMeshBuffers
 	{
 		//SDL_GPUBuffer* vertexBuffer = nullptr;
 		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> vertexBuffer;
@@ -161,14 +161,15 @@ namespace Tusk
 
 		CameraData cameraData;
 
-		std::vector<MeshBufferData> meshBuffers;
+		std::vector<GPUMeshBuffers> meshBuffersBin;
+		std::unordered_map<std::string, size_t> meshBuffersLookup;
 
 		~Impl() { Shutdown(); }
 
 		void Shutdown()
 		{
 			pipeline.reset();
-			meshBuffers.clear();
+			meshBuffersBin.clear();
 			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
 			device.reset();
 		}
@@ -251,10 +252,10 @@ namespace Tusk
 	void Renderer::Draw(MeshID mesh, Math::mat4 transformMat)
 	{
 
-		if (mesh.id == -1 || mesh.id >= impl->meshBuffers.size())
+		if (mesh.id == -1 || mesh.id >= impl->meshBuffersBin.size())
 			return;
 
-		auto& meshBuffers = impl->meshBuffers.at(mesh.id);
+		auto& meshBuffers = impl->meshBuffersBin.at(mesh.id);
 
 		std::array vertexBuffers{
 			SDL_GPUBufferBinding{
@@ -354,7 +355,7 @@ namespace Tusk
 		return transferBuffer;
 	}
 
-	MeshID Renderer::CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices)
+	MeshID Renderer::CreateGPUMeshBuffers(std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices)
 	{
 		//Check if vertices & indices are populated.
 		if (vertices.empty() || indices.empty())
@@ -442,9 +443,10 @@ namespace Tusk
 			return MeshID();
 		}
 		
-		//Push buffers into mesh data bin.
-		impl->meshBuffers.push_back(
-			MeshBufferData{
+		//Push buffers into mesh buffers bin.
+		impl->meshBuffersLookup[name] = impl->meshBuffersBin.size();
+		impl->meshBuffersBin.push_back(
+			GPUMeshBuffers{
 				.vertexBuffer{vertexBuffer.release(), GPUBufferDeleter{.device = impl->device.get(),}} ,
 				.indexBuffer{indexBuffer.release(), GPUBufferDeleter{.device = impl->device.get()}},
 				.indexCount = indices.size(),
@@ -452,7 +454,14 @@ namespace Tusk
 		);
 
 		//Return index of data as ID.
-		return MeshID{ .id = impl->meshBuffers.size() - 1, };
+		return MeshID{ .id = impl->meshBuffersBin.size() - 1, };
+	}
+
+	MeshID Renderer::GetGPUMesh(std::string name)
+	{
+		return MeshID{
+			.id = impl->meshBuffersLookup[name],
+		};
 	}
 
 	void Renderer::SetCameraData(const CameraData& data)

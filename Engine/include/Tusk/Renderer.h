@@ -1,9 +1,10 @@
 #pragma once
+#include <Tusk/Math.h>
+#include <Tusk/Vertex.h>
 
 #include <memory>
 #include <span>
-#include <Tusk/Math.h>
-#include <Tusk/Vertex.h>
+#include <string>
 
 struct SDL_Window;
 struct SDL_GPUBuffer;
@@ -37,7 +38,8 @@ namespace Tusk
 		void Draw(MeshID mesh, Math::mat4 transformMat);
 		void Present();
 		
-		MeshID CreateMeshBuffers(std::span<Vertex> vertices, std::span<uint16_t> indices);
+		MeshID CreateGPUMeshBuffers(std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices);
+		MeshID GetGPUMesh(std::string name);
 		void SetCameraData(const CameraData& data);
 		//void PushCamera
 
