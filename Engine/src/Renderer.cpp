@@ -459,6 +459,13 @@ namespace Tusk
 
 	MeshID Renderer::GetGPUMesh(std::string name)
 	{
+		auto found = impl->meshBuffersLookup.find(name);
+		if(found == impl->meshBuffersLookup.end())
+		{
+			Logging::Log("Failed to find GPU mesh: %s", name.c_str());
+			return MeshID();
+		}
+
 		return MeshID{
 			.id = impl->meshBuffersLookup[name],
 		};

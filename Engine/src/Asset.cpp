@@ -2,6 +2,7 @@
 #include <Tusk/Logging.h>
 #include <Tusk/Mesh.h>
 #include <Tusk/Math.h>
+#include <Tusk/Renderer.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -10,7 +11,9 @@
 //https://learnopengl.com/Model-Loading/Model
 namespace Tusk
 {
-	void Asset::LoadModel(const char* path, Mesh& mesh)
+	std::vector<Mesh> Asset::meshes;
+
+	void Asset::LoadModel(const char* path, std::string name)
 	{
 		//Assimp Importing
 
@@ -25,19 +28,21 @@ namespace Tusk
 
 		//Model Data Conversion
 
-		auto& impVertices = scene->mMeshes[0]->mVertices;
+		auto& impVertices = scene->mMeshes[0]->mVertices; //Imported Vertices.
 		auto vertexCount = scene->mMeshes[0]->mNumVertices;
-		auto& impFaces = scene->mMeshes[0]->mFaces;
+		auto& impFaces = scene->mMeshes[0]->mFaces; //Imported Faces.
 		auto faceCount = scene->mMeshes[0]->mNumFaces;
 
 		std::vector<Math::vec3> vertexPosition;
 		std::vector<uint16_t> indices;
 
+		//Get each vertex position.
 		for(int i = 0; i < vertexCount; i++)
 		{
 			vertexPosition.push_back(Math::vec3(impVertices[i].x, impVertices[i].y, impVertices[i].z));
 		}
 
+		//Get each index that creates a face.
 		for(int i = 0; i < faceCount; i++)
 		{
 			indices.push_back(impFaces[i].mIndices[0]);
@@ -45,8 +50,10 @@ namespace Tusk
 			indices.push_back(impFaces[i].mIndices[2]);
 		}
 
+		//Build Tusk:Vertex vertices.
 		std::vector<Vertex> tuskVertices;
 
+		//Create each vertex.
 		for(int i = 0; i < vertexPosition.size(); i++)
 		{
 			tuskVertices.push_back(Vertex(
@@ -55,9 +62,21 @@ namespace Tusk
 			));
 		}
 
+		//Push the mesh into Asset meshes.
+		meshes.push_back(
+			Mesh{
+				.name = name,
+				.vertices = tuskVertices,
+				.indices = indices,
+			}
+			);
+	}
 
-		mesh.vertices = tuskVertices;
-		mesh.indices = indices;
-
+	void Asset::PushMeshesToRenderer(Renderer& renderer)
+	{
+		for(auto& mesh : meshes)
+		{
+			renderer.CreateGPUMeshBuffers(mesh.name, mesh.vertices, mesh.indices);
+		}
 	}
 }

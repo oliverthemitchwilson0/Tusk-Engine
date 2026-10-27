@@ -1,5 +1,4 @@
 #include <TuskGame/Game.h>
-#include <Tusk/Mesh.h>
 
 #include <algorithm>
 #include <vector>
@@ -12,8 +11,8 @@ namespace TuskGame {
     {
         auto& renderer = engine.GetRenderer();
 
-        Tusk::Mesh bannaMesh;
-        Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", bannaMesh);
+        Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", "Banana");
+        Tusk::Asset::LoadModel("Assets/io_food_pine_big.obj", "Pineapple");
 
         std::vector<Tusk::Vertex> vertices{
             //Front Face
@@ -67,15 +66,15 @@ namespace TuskGame {
         auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
         objectTransformComp->SetTranslation(Tusk::Math::vec3(2.f, 0.f, 3.f));
 
-        auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
-        objectMeshComp->LoadMesh(engine.GetRenderer(), "Banana", bannaMesh.vertices, bannaMesh.indices);
+       /* auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
+        objectMeshComp->UseMesh(engine.GetRenderer(), "Banana");*/
 
         object2 = new Tusk::GameObject();
         auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
         object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
 
-        auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
-        object2MeshComp->UseMesh(engine.GetRenderer(), "Banana");
+        /*auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
+        object2MeshComp->UseMesh(engine.GetRenderer(), "Banana");*/
 
         camera = new Tusk::GameObject();
         camera->AddComponent<Tusk::CameraComponent>();
@@ -86,6 +85,12 @@ namespace TuskGame {
 
     void DemoGame::FixedUpdate(Tusk::Engine& engine, float deltaTime) 
     {
+        auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
+        objectMeshComp->UseMesh(engine.GetRenderer(), "Banana");
+
+        auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
+        object2MeshComp->UseMesh(engine.GetRenderer(), "Pineapple");
+
         auto& input = engine.GetInput();
 
         //Banana Test

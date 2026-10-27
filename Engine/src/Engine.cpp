@@ -103,6 +103,9 @@ namespace Tusk
 				result = 1;
 			}
 
+			//After game Start(), upload any imported meshses to the renderer.
+			Asset::PushMeshesToRenderer(GetRenderer());
+
 			//Core engine loop
 			while (result == 0 && !impl->quit)
 			{

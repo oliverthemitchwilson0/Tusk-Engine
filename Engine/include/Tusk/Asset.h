@@ -1,7 +1,11 @@
 #pragma once
+#include <vector>
+#include <string>
 
 namespace Tusk
 {
+	class Renderer;
+
 	struct Mesh;
 
 	class Asset
@@ -9,7 +13,11 @@ namespace Tusk
 	public:
 		Asset() = default;
 		~Asset() = default;
-	
-		static void LoadModel(const char* path, Mesh& mesh);
+		
+		//Loads single mesh models.
+		static void LoadModel(const char* path, std::string name);
+		static void PushMeshesToRenderer(Renderer& renderer);
+	private:
+		static std::vector<Mesh> meshes;
 	};
 }
