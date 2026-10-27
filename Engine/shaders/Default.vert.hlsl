@@ -12,13 +12,15 @@ cbuffer TransformBuffer : register(b1, space1)
 struct Input
 {
     float3 position : TEXCOORD0;
-    float4 colour : TEXCOORD1;
+    float2 uv : TEXCOORD1;
+    float4 colour : TEXCOORD2;
 };
 
 struct Output
 {
     float4 position : SV_Position;
     float4 colour : COLOR0;
+    float2 uv : TEXCOORD0;
 };
 
 Output main(Input input)
@@ -33,6 +35,7 @@ Output main(Input input)
     
     output.position = position;
     output.colour = input.colour;
+    output.uv = input.uv;
     
     return output;
 }

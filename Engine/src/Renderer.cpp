@@ -133,6 +133,20 @@ namespace Tusk
 				return nullptr;
 			}
 
+			Uint32 uniforBufferCount = 0;
+			if(stage == SDL_GPU_SHADERSTAGE_VERTEX)
+			{
+				uniforBufferCount = 2;
+			}
+
+			Uint32 samplerCount = 0;
+			if (stage == SDL_GPU_SHADERSTAGE_FRAGMENT)
+			{
+				samplerCount = 1;
+			}
+
+
+
 			//Bundle collected shader info
 			SDL_GPUShaderCreateInfo shaderInfo = SDL_GPUShaderCreateInfo{
 				.code_size = fileSize,
@@ -140,7 +154,11 @@ namespace Tusk
 				.entrypoint = entrypoint,
 				.format = format,
 				.stage = stage,
-				.num_uniform_buffers = 2,
+				.num_samplers = samplerCount,
+				.num_storage_textures = 0,
+
+				.num_storage_buffers = 0,
+				.num_uniform_buffers = uniforBufferCount,
 			};
 
 			//Create SDL GPU Shader.
@@ -279,6 +297,10 @@ namespace Tusk
 				.offset = 0,
 			},
 		};
+
+		SDL_GPUTextureSamplerBinding texture_binding{ .texture = impl->testTexture, .sampler = impl->sampler };
+
+		SDL_BindGPUFragmentSamplers(impl->renderPass, 0, &texture_binding, 1);
 
 		TransformBufferType matBuff
 		{
@@ -489,6 +511,43 @@ namespace Tusk
 			impl->device.get(),
 			&transferBufferCreateInfo
 		);
+
+		//Map transfer buffer.
+		Uint8* textureTransferPtr = (Uint8*)SDL_MapGPUTransferBuffer(
+			impl->device.get(),
+			textureTransferBuffer,
+			false
+		);
+
+		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), textureTransferBuffer, false));
+
+		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 4));
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
+
+		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
+		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
+
+		SDL_GPUTextureTransferInfo location {
+			.transfer_buffer = textureTransferBuffer,
+			.offset = 0 /* Zeros out the rest */
+};
+		SDL_GPUTextureRegion region {
+			.texture = impl->testTexture,
+			.w = static_cast<Uint32>(asset.surface->w),
+			.h = static_cast<Uint32>(asset.surface->h),
+			.d = 1
+		};
+		SDL_UploadToGPUTexture(
+			copyPass,
+			&location,
+			&region,
+			false
+		);
+
+		SDL_EndGPUCopyPass(copyPass);
+		if (SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
+			Logging::Log("Texture uploaded.");
+		SDL_ReleaseGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
 	}
 
 	MeshID Renderer::GetGPUMesh(std::string name)
@@ -545,13 +604,19 @@ namespace Tusk
 				.location = 0, //First data point
 				.buffer_slot = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-				.offset = 0 * sizeof(Math::vec3),
+				.offset = 0,
 			},
 			SDL_GPUVertexAttribute{
-				.location = 1, 
+				.location = 1,
+				.buffer_slot = 0,
+				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
+				.offset = sizeof(Math::vec3),
+			},
+			SDL_GPUVertexAttribute{
+				.location = 2, 
 				.buffer_slot = 0,
 				.format = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-				.offset = 1 * sizeof(Math::vec3),
+				.offset = sizeof(Math::vec3) + sizeof(Math::vec2),
 			},
 		};
 

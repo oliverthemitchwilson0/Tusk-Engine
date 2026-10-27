@@ -35,14 +35,17 @@ namespace Tusk
 		auto vertexCount = scene->mMeshes[0]->mNumVertices;
 		auto& impFaces = scene->mMeshes[0]->mFaces; //Imported Faces.
 		auto faceCount = scene->mMeshes[0]->mNumFaces;
+		auto& impUVs = scene->mMeshes[0]->mTextureCoords[0];
 
 		std::vector<Math::vec3> vertexPosition;
 		std::vector<uint16_t> indices;
+		std::vector<Math::vec2> uvs;
 
 		//Get each vertex position.
 		for(int i = 0; i < vertexCount; i++)
 		{
 			vertexPosition.push_back(Math::vec3(impVertices[i].x, impVertices[i].y, impVertices[i].z));
+			uvs.push_back(Math::vec2(impUVs[i].x, impUVs[i].y));
 		}
 
 		//Get each index that creates a face.
@@ -61,6 +64,7 @@ namespace Tusk
 		{
 			tuskVertices.push_back(Vertex(
 				vertexPosition[i],
+				uvs[i],
 				Math::vec4(1.f, 1.f, 0.f, 0.f)
 			));
 		}
@@ -81,6 +85,9 @@ namespace Tusk
 		{
 			renderer.CreateGPUMeshBuffers(mesh.name, mesh.vertices, mesh.indices);
 		}
+
+		//Test
+		renderer.CreateGPUTexture(textureAssetBin[0]);
 	}
 
 	void Asset::LoadImage(const char* path, std::string name)
