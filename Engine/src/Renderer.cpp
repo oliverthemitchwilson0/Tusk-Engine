@@ -33,6 +33,12 @@ namespace Tusk
 		void operator()(SDL_GPUShader* shader) { SDL_ReleaseGPUShader(device, shader); }
 	};
 
+	struct GPUTextureDeleter
+	{
+		SDL_GPUDevice* device = nullptr;
+		void operator()(SDL_GPUTexture* texture) { SDL_ReleaseGPUTexture(device, texture); }
+	};
+
 	//Structure containing vertex and index buffer of one mesh.
 	struct GPUMeshBuffers
 	{
@@ -54,7 +60,6 @@ namespace Tusk
 	{
 		Math::mat4 world;
 	};
-
 
 	struct Renderer::Impl
 	{
@@ -181,19 +186,22 @@ namespace Tusk
 		SDL_GPURenderPass* renderPass = nullptr;
 
 		SDL_GPUSampler* sampler = nullptr;
-		SDL_GPUTexture* testTexture = nullptr;
 
 		CameraData cameraData;
 
 		std::vector<GPUMeshBuffers> meshBuffersBin;
 		std::unordered_map<std::string, size_t> meshBuffersLookup;
 
+		std::vector<std::unique_ptr<SDL_GPUTexture, GPUTextureDeleter>> textureBin;
+		std::unordered_map<std::string, size_t> textureLookup;
+
 		~Impl() { Shutdown(); }
 
 		void Shutdown()
 		{
-			pipeline.reset();
 			meshBuffersBin.clear();
+			textureBin.clear();
+			pipeline.reset();
 			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
 			device.reset();
 		}
@@ -298,7 +306,7 @@ namespace Tusk
 			},
 		};
 
-		SDL_GPUTextureSamplerBinding texture_binding{ .texture = impl->testTexture, .sampler = impl->sampler };
+		SDL_GPUTextureSamplerBinding texture_binding{ .texture = impl->textureBin[0].get(), .sampler = impl->sampler};
 
 		SDL_BindGPUFragmentSamplers(impl->renderPass, 0, &texture_binding, 1);
 
@@ -499,7 +507,8 @@ namespace Tusk
 			.num_levels = 1,
 		};
 
-		impl->testTexture = SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo);
+		impl->textureLookup[asset.name] = impl->textureBin.size();
+		impl->textureBin.push_back({ SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo), GPUTextureDeleter{ .device = impl->device.get() } });
 
 		//Create Transfer Buffer for texture.
 		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo{
@@ -532,11 +541,12 @@ namespace Tusk
 			.offset = 0 /* Zeros out the rest */
 };
 		SDL_GPUTextureRegion region {
-			.texture = impl->testTexture,
+			.texture = impl->textureBin[impl->textureBin.size() - 1].get(),
 			.w = static_cast<Uint32>(asset.surface->w),
 			.h = static_cast<Uint32>(asset.surface->h),
 			.d = 1
 		};
+
 		SDL_UploadToGPUTexture(
 			copyPass,
 			&location,
@@ -545,8 +555,8 @@ namespace Tusk
 		);
 
 		SDL_EndGPUCopyPass(copyPass);
-		if (SDL_SubmitGPUCommandBuffer(uploadCmdBuf))
-			Logging::Log("Texture uploaded.");
+		SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
+			
 		SDL_ReleaseGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
 	}
 

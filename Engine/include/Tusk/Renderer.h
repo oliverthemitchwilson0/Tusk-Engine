@@ -7,7 +7,6 @@
 #include <string>
 
 struct SDL_Window;
-struct SDL_GPUBuffer;
 
 namespace Tusk
 {

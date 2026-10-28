@@ -79,7 +79,7 @@ namespace Tusk
 			);
 	}
 
-	void Asset::PushMeshesToRenderer(Renderer& renderer)
+	void Asset::PushAssetsToRenderer(Renderer& renderer)
 	{
 		for(auto& mesh : meshes)
 		{
@@ -87,7 +87,10 @@ namespace Tusk
 		}
 
 		//Test
-		renderer.CreateGPUTexture(textureAssetBin[0]);
+		for(auto texture : textureAssetBin)
+		{
+			renderer.CreateGPUTexture(textureAssetBin[0]);
+		}
 	}
 
 	void Asset::LoadImage(const char* path, std::string name)
