@@ -1,5 +1,5 @@
-Texture2D Texture : register(t0, space2);
-SamplerState Sampler : register(s0, space2);
+Texture2D tuskTexture : register(t0, space2);
+SamplerState tuskSampler : register(s0, space2);
 
 struct Input
 {
@@ -16,9 +16,9 @@ Output main(Input input)
 {
     Output output;
     
-    float4 textureColour = Texture.Sample(Sampler, input.uv);
+    float4 textureColour = tuskTexture.Sample(tuskSampler, input.uv);
     
-    output.color = textureColour;
+    output.color = textureColour * input.colour;
     
     return output;
 }
