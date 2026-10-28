@@ -65,7 +65,7 @@ namespace Tusk
 			tuskVertices.push_back(Vertex(
 				vertexPosition[i],
 				uvs[i],
-				Math::vec4(1.f, 1.f, 0.f, 0.f)
+				Math::vec4(0.f, 0.f, 0.f, 0.f)
 			));
 		}
 
@@ -97,11 +97,13 @@ namespace Tusk
 	{
 		auto* surface = IMG_Load(path);
 
-		if(!surface)
+		if(!surface->pixels)
 		{
 			SDL_DestroySurface(surface);
 			Logging::Log("Failed to load image: %s", path);
 		}
+
+		Logging::Log("Bytes: %d", SDL_BYTESPERPIXEL(surface->format));
 		
 		textureAssetBin.push_back(
 			TextureAsset{
@@ -110,7 +112,7 @@ namespace Tusk
 			}
 		);
 
-		auto binSize = textureAssetBin.size();
-		Logging::Log("Texture assets: %d", binSize);
+		//auto binSize = textureAssetBin.size();
+		//Logging::Log("Texture assets: %d", binSize);
 	}
 }

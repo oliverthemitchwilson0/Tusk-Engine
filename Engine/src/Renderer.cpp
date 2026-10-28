@@ -530,7 +530,8 @@ namespace Tusk
 
 		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), textureTransferBuffer, false));
 
-		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 4));
+		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 3));
+		
 		SDL_UnmapGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
 
 		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());

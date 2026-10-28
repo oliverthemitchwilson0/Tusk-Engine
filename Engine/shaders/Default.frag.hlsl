@@ -18,7 +18,7 @@ Output main(Input input)
     
     float4 textureColour = tuskTexture.Sample(tuskSampler, input.uv);
     
-    output.color = textureColour * input.colour;
+    output.color = textureColour + input.colour;
     
     return output;
 }
