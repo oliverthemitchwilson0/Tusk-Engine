@@ -185,6 +185,7 @@ namespace Tusk
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
 
+		SDL_GPUTextureFormat depthStencilFormat;
 		SDL_GPUSampler* sampler = nullptr;
 
 		CameraData cameraData;
@@ -192,6 +193,7 @@ namespace Tusk
 		std::vector<GPUMeshBuffers> meshBuffersBin;
 		std::unordered_map<std::string, size_t> meshBuffersLookup;
 
+		std::unique_ptr<SDL_GPUTexture, GPUTextureDeleter> depthTexture{ nullptr, GPUTextureDeleter{ .device = this->device.get() } };
 		std::vector<std::unique_ptr<SDL_GPUTexture, GPUTextureDeleter>> textureBin;
 		std::unordered_map<std::string, size_t> textureLookup;
 
@@ -271,6 +273,13 @@ namespace Tusk
 			.store_op = SDL_GPU_STOREOP_STORE,
 		};
 
+		SDL_GPUDepthStencilTargetInfo depthTargetInfo{
+			.texture = impl->depthTexture.get(),
+			.clear_depth = 1.f,
+			.load_op = SDL_GPU_LOADOP_CLEAR,
+			.store_op = SDL_GPU_STOREOP_DONT_CARE,
+		};
+
 		auto& cameraData = impl->cameraData;
 		//TEMP - Probably shouldn't have direct access to the window within the renderer.
 		int winW, winH;
@@ -283,7 +292,7 @@ namespace Tusk
 
 		PushCameraBuffer(camBuff);
 
-		impl->renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr); //Begin Render Pass.
+		impl->renderPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, &depthTargetInfo); //Begin Render Pass.
 
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline.get());
 	}
@@ -587,32 +596,21 @@ namespace Tusk
 
 	bool Renderer::CreateDepthTexture()
 	{
-		//Check supported depth stencil format of Graphics API/Hardware.
-		SDL_GPUTextureFormat depthStencilFormat;
+		int w, h;
+		SDL_GetWindowSizeInPixels(impl->window, &w, &h);
 
-		if (SDL_GPUTextureSupportsFormat(
-			impl->device.get(),
-			SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
-			SDL_GPU_TEXTURETYPE_2D,
-			SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
-		))
-		{
-			depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT;
-		}
-		else if (SDL_GPUTextureSupportsFormat(
-			impl->device.get(),
-			SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
-			SDL_GPU_TEXTURETYPE_2D,
-			SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
-		))
-		{
-			depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT;
-		}
-		else
-		{
-			SDL_Log("Stencil formats not supported!");
-			return -1;
-		}
+		SDL_GPUTextureCreateInfo depthTextureCreateInfo = {
+			.type = SDL_GPU_TEXTURETYPE_2D,
+			.format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT,
+			.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET,
+			.width = static_cast<Uint32>(w),
+			.height = static_cast<Uint32>(h),
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+		};
+
+		impl->depthTexture.reset(SDL_CreateGPUTexture(impl->device.get(), &depthTextureCreateInfo));
+
 		return true;
 	}
 
@@ -690,11 +688,17 @@ namespace Tusk
 				.cull_mode = SDL_GPU_CULLMODE_BACK,
 				.front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
 			},
+			.depth_stencil_state = SDL_GPUDepthStencilState {
+				.compare_op = SDL_GPU_COMPAREOP_LESS,
+				.enable_depth_test = true,
+				.enable_depth_write = true,
+			},
 			.target_info = SDL_GPUGraphicsPipelineTargetInfo{ //Draw to our swapchain.
 				.color_target_descriptions = colorTargetDescriptions.data(),
 				.num_color_targets = colorTargetDescriptions.size(),
+				.depth_stencil_format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
+				.has_depth_stencil_target = true,
 			},
-			
 		};
 
 		//Submit and create pipeline.
