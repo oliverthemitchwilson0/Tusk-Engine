@@ -45,6 +45,7 @@ namespace Tusk
 
 		MeshID GetGPUMesh(std::string name);
 		void SetCameraData(const CameraData& data);
+		void ResizeDepthTexture();
 
 	private:
 		struct Impl;

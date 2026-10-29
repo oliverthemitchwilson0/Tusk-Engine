@@ -235,16 +235,13 @@ namespace Tusk
 			return false;
 		}
 
-		if(CreateDepthTexture())
-		{
-			Logging::Log("ZOOOWWEEEE");
-		}
-
 		if(!CreatePipeline())
 		{
 			impl->Shutdown();
 			return false;
 		}
+
+		CreateDepthTexture();
 
 		CreateTextureSampler();
 
@@ -592,6 +589,11 @@ namespace Tusk
 	void Renderer::SetCameraData(const CameraData& data)
 	{
 		impl->cameraData = data;
+	}
+
+	void Renderer::ResizeDepthTexture()
+	{
+		CreateDepthTexture();
 	}
 
 	bool Renderer::CreateDepthTexture()

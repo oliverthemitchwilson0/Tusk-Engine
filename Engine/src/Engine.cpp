@@ -23,6 +23,7 @@ namespace Tusk
 		bool sdlInitialised = false;
 		bool quit = false;
 		bool vsyncEnabled = false;
+		bool windowResized = false;
 
 		~Impl() { Shutdown(); }
 
@@ -43,9 +44,7 @@ namespace Tusk
 				}
 				else if(event.type == SDL_EVENT_WINDOW_RESIZED)
 				{
-					int w, h;
-					SDL_GetWindowSize(this->window.get(), &w, &h);
-					Logging::Log("Window Resized %d %d", w, h);
+					windowResized = true;
 				}
 			}
 		}
@@ -132,6 +131,12 @@ namespace Tusk
 					accumulator -= fixedStepTime;
 				}
 				if (impl->quit) break;
+
+				if(impl->windowResized)
+				{
+					impl->windowResized = false;
+					GetRenderer().ResizeDepthTexture();
+				}
 
 				application.Render(*this);
 
