@@ -233,6 +233,11 @@ namespace Tusk
 			return false;
 		}
 
+		if(CreateDepthTexture())
+		{
+			Logging::Log("ZOOOWWEEEE");
+		}
+
 		if(!CreatePipeline())
 		{
 			impl->Shutdown();
@@ -530,7 +535,7 @@ namespace Tusk
 
 		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), textureTransferBuffer, false));
 
-		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 3));
+		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 4));
 		
 		SDL_UnmapGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
 
@@ -539,8 +544,8 @@ namespace Tusk
 
 		SDL_GPUTextureTransferInfo location {
 			.transfer_buffer = textureTransferBuffer,
-			.offset = 0 /* Zeros out the rest */
-};
+			.offset = 0
+		};
 		SDL_GPUTextureRegion region {
 			.texture = impl->textureBin[impl->textureBin.size() - 1].get(),
 			.w = static_cast<Uint32>(asset.surface->w),
@@ -578,6 +583,37 @@ namespace Tusk
 	void Renderer::SetCameraData(const CameraData& data)
 	{
 		impl->cameraData = data;
+	}
+
+	bool Renderer::CreateDepthTexture()
+	{
+		//Check supported depth stencil format of Graphics API/Hardware.
+		SDL_GPUTextureFormat depthStencilFormat;
+
+		if (SDL_GPUTextureSupportsFormat(
+			impl->device.get(),
+			SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
+			SDL_GPU_TEXTURETYPE_2D,
+			SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
+		))
+		{
+			depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT;
+		}
+		else if (SDL_GPUTextureSupportsFormat(
+			impl->device.get(),
+			SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
+			SDL_GPU_TEXTURETYPE_2D,
+			SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET
+		))
+		{
+			depthStencilFormat = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT;
+		}
+		else
+		{
+			SDL_Log("Stencil formats not supported!");
+			return -1;
+		}
+		return true;
 	}
 
 	bool Renderer::CreatePipeline()
@@ -658,6 +694,7 @@ namespace Tusk
 				.color_target_descriptions = colorTargetDescriptions.data(),
 				.num_color_targets = colorTargetDescriptions.size(),
 			},
+			
 		};
 
 		//Submit and create pipeline.

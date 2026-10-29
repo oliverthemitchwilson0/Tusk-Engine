@@ -50,6 +50,7 @@ namespace Tusk
 		struct Impl;
 		std::unique_ptr<Impl> impl;
 
+		bool CreateDepthTexture();
 		bool CreatePipeline();
 		void CreateTextureSampler();
 		void PushCameraBuffer(const CameraBufferType& buff);
