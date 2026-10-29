@@ -204,6 +204,7 @@ namespace Tusk
 		{
 			meshBuffersBin.clear();
 			textureBin.clear();
+			depthTexture.reset();
 			pipeline.reset();
 			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
 			device.reset();
@@ -437,7 +438,7 @@ namespace Tusk
 			return MeshID();
 		
 		//Map both transfer buffers.
-		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices or indices.
+		//Transfer buffer mapping - allowing the cpu to treat the transfer buffer as a sequence of vertices or indices (or any other selected type).
 		Vertex* verTransferData = static_cast<Vertex*>(SDL_MapGPUTransferBuffer(impl->device.get(), verTransferBuffer.get(), false));
 		uint16_t* indTransferData = static_cast<uint16_t*>(SDL_MapGPUTransferBuffer(impl->device.get(), indTransferBuffer.get(), false));
 		if (!verTransferData || !indTransferData)
@@ -514,9 +515,18 @@ namespace Tusk
 
 	void Renderer::CreateGPUTexture(const TextureAsset& asset)
 	{
+		auto pixelFormat = asset.surface->format;
+		auto gpuTextureFormat = SDL_GetGPUTextureFormatFromPixelFormat(asset.surface->format);
+
+		if(gpuTextureFormat == SDL_GPU_TEXTUREFORMAT_INVALID)
+		{
+			Logging::Log("Failed to create GPU texture. Pixel format invalid: %s", SDL_GetPixelFormatName(pixelFormat));
+			return;
+		}
+
 		SDL_GPUTextureCreateInfo textureCreateInfo{
 			.type = SDL_GPU_TEXTURETYPE_2D,
-			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+			.format = gpuTextureFormat,
 			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
 			.width = static_cast<Uint32>(asset.surface->w),
 			.height = static_cast<Uint32>(asset.surface->h),
@@ -528,7 +538,7 @@ namespace Tusk
 		impl->textureBin.push_back({ SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo), GPUTextureDeleter{ .device = impl->device.get() } });
 
 		//Create Transfer Buffer for texture.
-		std::unique_ptr<SDL_GPUTransferBuffer, GPUTransferBufferDeleter> texTransferBuffer{ CreateTransferBuffer(impl->device.get(), asset.surface->w * asset.surface->h * 4), GPUTransferBufferDeleter{.device = impl->device.get() } };
+		std::unique_ptr<SDL_GPUTransferBuffer, GPUTransferBufferDeleter> texTransferBuffer{ CreateTransferBuffer(impl->device.get(), asset.surface->w * asset.surface->h * SDL_BYTESPERPIXEL(asset.surface->format)), GPUTransferBufferDeleter{.device = impl->device.get() } };
 
 		//Map transfer buffer.
 		Uint8* textureTransferPtr = (Uint8*)SDL_MapGPUTransferBuffer(

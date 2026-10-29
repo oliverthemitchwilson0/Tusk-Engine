@@ -103,7 +103,7 @@ namespace Tusk
 			Logging::Log("Failed to load image: %s", path);
 		}
 
-		Logging::Log("Bytes: %d", SDL_BYTESPERPIXEL(surface->format));
+		//Logging::Log("Bytes: %d", SDL_BYTESPERPIXEL(surface->format));
 		
 		textureAssetBin.push_back(
 			TextureAsset{

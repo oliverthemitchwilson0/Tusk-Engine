@@ -13,9 +13,9 @@ namespace TuskGame {
 
         Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", "Banana");
         Tusk::Asset::LoadModel("Assets/io_food_pine_big.obj", "Pineapple");
-        //Tusk::Asset::LoadModel("Assets/d4c.gltf", "D4C");
+        Tusk::Asset::LoadModel("Assets/d4c.gltf", "D4C");
 
-        Tusk::Asset::LoadImage("Assets/fruit_col_mt.png", "fruitTex");
+        Tusk::Asset::LoadImage("Assets/d4c.png", "fruitTex");
 
         object = new Tusk::GameObject();
 
@@ -30,7 +30,7 @@ namespace TuskGame {
         object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
 
         auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
-        object2MeshComp->UseMesh("Pineapple");
+        object2MeshComp->UseMesh("D4C");
 
         camera = new Tusk::GameObject();
         camera->AddComponent<Tusk::CameraComponent>();
