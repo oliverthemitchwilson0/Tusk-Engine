@@ -1,9 +1,9 @@
 #include <Tusk/Asset.h>
 #include <Tusk/Logging.h>
-#include <Tusk/Graphics/Mesh.h>
 #include <Tusk/Math.h>
+#include <Tusk/AssetTypes/MeshAsset.h>
+#include <Tusk/AssetTypes/TextureAsset.h>
 #include <Tusk/Renderer.h>
-#include <Tusk/TextureAsset.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -13,7 +13,7 @@
 //https://learnopengl.com/Model-Loading/Model
 namespace Tusk
 {
-	std::vector<Mesh> Asset::meshes;
+	std::vector<MeshAsset> Asset::meshAssetBin;
 	std::vector<TextureAsset> Asset::textureAssetBin;
 
 	void Asset::LoadModel(const char* path, std::string name)
@@ -70,8 +70,8 @@ namespace Tusk
 		}
 
 		//Push the mesh into Asset meshes.
-		meshes.push_back(
-			Mesh{
+		meshAssetBin.push_back(
+			MeshAsset{
 				.name = name,
 				.vertices = tuskVertices,
 				.indices = indices,
@@ -81,15 +81,15 @@ namespace Tusk
 
 	void Asset::PushAssetsToRenderer(Renderer& renderer)
 	{
-		for(auto& mesh : meshes)
+		for(auto& mesh : meshAssetBin)
 		{
-			renderer.CreateGPUMeshBuffers(mesh.name, mesh.vertices, mesh.indices);
+			renderer.CreateGPUMeshBuffers(mesh);
 		}
 
 		//Test
-		for(auto texture : textureAssetBin)
+		for(auto& texture : textureAssetBin)
 		{
-			renderer.CreateGPUTexture(textureAssetBin[0]);
+			renderer.CreateGPUTexture(texture);
 		}
 	}
 

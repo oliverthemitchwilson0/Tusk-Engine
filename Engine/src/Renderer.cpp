@@ -1,6 +1,7 @@
 #include <Tusk/Renderer.h>
 #include <Tusk/Graphics/CameraData.h>
-#include <Tusk/TextureAsset.h>
+#include <Tusk/AssetTypes/MeshAsset.h>
+#include <Tusk/AssetTypes/TextureAsset.h>
 
 #include <SDL3/SDL.h>
 #include <string>
@@ -294,13 +295,13 @@ namespace Tusk
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline.get());
 	}
 
-	void Renderer::Draw(MeshID mesh, Math::mat4 transformMat)
+	void Renderer::Draw(MeshID mesh, TextureID texture, Math::mat4 transformMat)
 	{
 
 		if (mesh.id == -1 || mesh.id >= impl->meshBuffersBin.size())
 			return;
 
-		auto& meshBuffers = impl->meshBuffersBin.at(mesh.id);
+		auto& meshBuffers = impl->meshBuffersBin.at(mesh.id); //Get required GPU mesh buffers.
 
 		std::array vertexBuffers{
 			SDL_GPUBufferBinding{
@@ -317,9 +318,14 @@ namespace Tusk
 			},
 		};
 
-		SDL_GPUTextureSamplerBinding texture_binding{ .texture = impl->textureBin[0].get(), .sampler = impl->sampler};
+		SDL_GPUTextureSamplerBinding textureBinding{ 
+			.texture = impl->textureBin[0].get(), 
+			.sampler = impl->sampler
+		};
 
-		SDL_BindGPUFragmentSamplers(impl->renderPass, 0, &texture_binding, 1);
+		//if(texture.id != -1)
+			SDL_BindGPUFragmentSamplers(impl->renderPass, 0, &textureBinding, 1);
+
 
 		TransformBufferType matBuff
 		{
@@ -404,20 +410,20 @@ namespace Tusk
 		return transferBuffer;
 	}
 
-	MeshID Renderer::CreateGPUMeshBuffers(std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices)
+	MeshID Renderer::CreateGPUMeshBuffers(const MeshAsset& asset)
 	{
 		//Check if vertices & indices are populated.
-		if (vertices.empty() || indices.empty())
+		if (asset.vertices.empty() || asset.indices.empty())
 			return MeshID();
 
 		//Create Vertex Buffer.
-		uint32_t verticesSize = vertices.size_bytes();
+		uint32_t verticesSize = asset.vertices.size() * sizeof(Vertex);
 		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> vertexBuffer{ CreateVertexBuffer(impl->device.get(), verticesSize), GPUBufferDeleter{.device = impl->device.get(),} };
 		if (!vertexBuffer)
 			return MeshID();
 
 		//Create Index Buffer.
-		auto indicesSize = indices.size_bytes();
+		uint32_t indicesSize = asset.indices.size() * sizeof(uint16_t);
 		std::unique_ptr<SDL_GPUBuffer, GPUBufferDeleter> indexBuffer{ CreateIndexBuffer(impl->device.get(), indicesSize), GPUBufferDeleter{.device = impl->device.get(),} };
 		if (!indexBuffer)
 			return MeshID();
@@ -441,8 +447,8 @@ namespace Tusk
 		}
 
 		//Copy CPU data to transfer buffers.
-		SDL_memcpy(verTransferData, vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
-		SDL_memcpy(indTransferData, indices.data(), indicesSize); //Copy CPU data to the transfer buffer.
+		SDL_memcpy(verTransferData, asset.vertices.data(), verticesSize); //Copy CPU data to the transfer buffer.
+		SDL_memcpy(indTransferData, asset.indices.data(), indicesSize); //Copy CPU data to the transfer buffer.
 
 		//Unmap transfer buffers.
 		SDL_UnmapGPUTransferBuffer(impl->device.get(), verTransferBuffer.get());
@@ -493,12 +499,12 @@ namespace Tusk
 		}
 		
 		//Push buffers into mesh buffers bin.
-		impl->meshBuffersLookup[name] = impl->meshBuffersBin.size();
+		impl->meshBuffersLookup[asset.name] = impl->meshBuffersBin.size();
 		impl->meshBuffersBin.push_back(
 			GPUMeshBuffers{
 				.vertexBuffer{vertexBuffer.release(), GPUBufferDeleter{.device = impl->device.get(),}} ,
 				.indexBuffer{indexBuffer.release(), GPUBufferDeleter{.device = impl->device.get()}},
-				.indexCount = indices.size(),
+				.indexCount = asset.indices.size(),
 			}
 		);
 
@@ -522,34 +528,26 @@ namespace Tusk
 		impl->textureBin.push_back({ SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo), GPUTextureDeleter{ .device = impl->device.get() } });
 
 		//Create Transfer Buffer for texture.
-		SDL_GPUTransferBufferCreateInfo transferBufferCreateInfo{
-			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-			.size = static_cast<Uint32>(asset.surface->w * asset.surface->h * 4)
-		};
-
-		SDL_GPUTransferBuffer* textureTransferBuffer = SDL_CreateGPUTransferBuffer(
-			impl->device.get(),
-			&transferBufferCreateInfo
-		);
+		std::unique_ptr<SDL_GPUTransferBuffer, GPUTransferBufferDeleter> texTransferBuffer{ CreateTransferBuffer(impl->device.get(), asset.surface->w * asset.surface->h * 4), GPUTransferBufferDeleter{.device = impl->device.get() } };
 
 		//Map transfer buffer.
 		Uint8* textureTransferPtr = (Uint8*)SDL_MapGPUTransferBuffer(
 			impl->device.get(),
-			textureTransferBuffer,
+			texTransferBuffer.get(),
 			false
 		);
 
-		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), textureTransferBuffer, false));
+		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), texTransferBuffer.get(), false));
 
 		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 4));
 		
-		SDL_UnmapGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
+		SDL_UnmapGPUTransferBuffer(impl->device.get(), texTransferBuffer.get());
 
 		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
 		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
 
 		SDL_GPUTextureTransferInfo location {
-			.transfer_buffer = textureTransferBuffer,
+			.transfer_buffer = texTransferBuffer.get(),
 			.offset = 0
 		};
 		SDL_GPUTextureRegion region {
@@ -568,11 +566,9 @@ namespace Tusk
 
 		SDL_EndGPUCopyPass(copyPass);
 		SDL_SubmitGPUCommandBuffer(uploadCmdBuf);
-			
-		SDL_ReleaseGPUTransferBuffer(impl->device.get(), textureTransferBuffer);
 	}
 
-	MeshID Renderer::GetGPUMesh(std::string name)
+	MeshID Renderer::GetGPUMesh(const std::string& name)
 	{
 		auto found = impl->meshBuffersLookup.find(name);
 		if(found == impl->meshBuffersLookup.end())
@@ -593,7 +589,7 @@ namespace Tusk
 
 	void Renderer::ResizeDepthTexture()
 	{
-		CreateDepthTexture();
+		CreateDepthTexture(); //Function call resets unique_ptr so this is a fine solution for now.
 	}
 
 	bool Renderer::CreateDepthTexture()

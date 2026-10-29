@@ -7,7 +7,8 @@
 
 namespace Tusk
 {
-	struct Mesh
+	//CPU-side Mesh Asset.
+	struct MeshAsset
 	{
 		std::string name;
 		std::vector<Vertex> vertices;

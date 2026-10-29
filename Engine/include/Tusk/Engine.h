@@ -10,6 +10,8 @@
 #include <Tusk/Components/TransformComponent.h>
 #include <Tusk/Components/MeshComponent.h>
 #include <Tusk/Components/CameraComponent.h>
+#include <Tusk/Components/TextureComponent.h>
+
 #include <memory>
 
 namespace Tusk 

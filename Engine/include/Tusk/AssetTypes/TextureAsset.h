@@ -2,9 +2,9 @@
 
 #include <SDL3/SDL_surface.h>
 
-//CPU-side Texture Asset.
 namespace Tusk
 {
+	//CPU-side Texture Asset.
 	struct TextureAsset
 	{
 		std::string name;

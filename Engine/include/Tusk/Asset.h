@@ -6,7 +6,7 @@ namespace Tusk
 {
 	class Renderer;
 
-	struct Mesh;
+	struct MeshAsset;
 	struct TextureAsset;
 
 	class Asset
@@ -20,7 +20,7 @@ namespace Tusk
 		static void PushAssetsToRenderer(Renderer& renderer);
 		static void LoadImage(const char* path, std::string name);
 	private:
-		static std::vector<Mesh> meshes;
+		static std::vector<MeshAsset> meshAssetBin;
 		static std::vector<TextureAsset> textureAssetBin;
 	};
 }

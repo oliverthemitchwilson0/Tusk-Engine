@@ -29,12 +29,7 @@ namespace Tusk
 					world = transfromComp->GetTransfromMatrix();
 			}
 
-			renderer.Draw(mesh, world);
-		}
-
-		void LoadMesh(Renderer& renderer, std::string name, std::span<Vertex> vertices, std::span<uint16_t> indices)
-		{
-			mesh = renderer.CreateGPUMeshBuffers(name, vertices, indices);
+			renderer.Draw(mesh, { .id = static_cast<size_t>(-1) }, world);
 		}
 
 		void UseMesh(std::string name)
