@@ -515,8 +515,15 @@ namespace Tusk
 
 	void Renderer::CreateGPUTexture(const TextureAsset& asset)
 	{
+		auto* convertedSurface = SDL_ConvertSurface(asset.surface, SDL_PIXELFORMAT_ABGR8888);
+		if(!convertedSurface)
+		{
+			Logging::Log("Failed to Convert Surface.");
+			return;
+		}
+
 		auto pixelFormat = asset.surface->format;
-		auto gpuTextureFormat = SDL_GetGPUTextureFormatFromPixelFormat(asset.surface->format);
+		auto gpuTextureFormat = SDL_GetGPUTextureFormatFromPixelFormat(convertedSurface->format);
 
 		if(gpuTextureFormat == SDL_GPU_TEXTUREFORMAT_INVALID)
 		{
@@ -528,8 +535,8 @@ namespace Tusk
 			.type = SDL_GPU_TEXTURETYPE_2D,
 			.format = gpuTextureFormat,
 			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
-			.width = static_cast<Uint32>(asset.surface->w),
-			.height = static_cast<Uint32>(asset.surface->h),
+			.width = static_cast<Uint32>(convertedSurface->w),
+			.height = static_cast<Uint32>(convertedSurface->h),
 			.layer_count_or_depth = 1,
 			.num_levels = 1,
 		};
@@ -541,17 +548,13 @@ namespace Tusk
 		std::unique_ptr<SDL_GPUTransferBuffer, GPUTransferBufferDeleter> texTransferBuffer{ CreateTransferBuffer(impl->device.get(), asset.surface->w * asset.surface->h * SDL_BYTESPERPIXEL(asset.surface->format)), GPUTransferBufferDeleter{.device = impl->device.get() } };
 
 		//Map transfer buffer.
-		Uint8* textureTransferPtr = (Uint8*)SDL_MapGPUTransferBuffer(
-			impl->device.get(),
-			texTransferBuffer.get(),
-			false
-		);
-
 		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), texTransferBuffer.get(), false));
 
-		SDL_memcpy(textureTransferPtr, asset.surface->pixels, (asset.surface->w * asset.surface->h * 4));
+		SDL_memcpy(textureTransferData, convertedSurface->pixels, (convertedSurface->w * convertedSurface->h * SDL_BYTESPERPIXEL(convertedSurface->format)));
 		
 		SDL_UnmapGPUTransferBuffer(impl->device.get(), texTransferBuffer.get());
+
+		SDL_DestroySurface(convertedSurface);
 
 		SDL_GPUCommandBuffer* uploadCmdBuf = SDL_AcquireGPUCommandBuffer(impl->device.get());
 		SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass(uploadCmdBuf);
