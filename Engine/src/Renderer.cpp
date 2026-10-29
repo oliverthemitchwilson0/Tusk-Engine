@@ -545,7 +545,7 @@ namespace Tusk
 		impl->textureBin.push_back({ SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo), GPUTextureDeleter{ .device = impl->device.get() } });
 
 		//Create Transfer Buffer for texture.
-		std::unique_ptr<SDL_GPUTransferBuffer, GPUTransferBufferDeleter> texTransferBuffer{ CreateTransferBuffer(impl->device.get(), asset.surface->w * asset.surface->h * SDL_BYTESPERPIXEL(asset.surface->format)), GPUTransferBufferDeleter{.device = impl->device.get() } };
+		std::unique_ptr<SDL_GPUTransferBuffer, GPUTransferBufferDeleter> texTransferBuffer{ CreateTransferBuffer(impl->device.get(), asset.surface->w * asset.surface->h * SDL_BYTESPERPIXEL(convertedSurface->format)), GPUTransferBufferDeleter{.device = impl->device.get() } };
 
 		//Map transfer buffer.
 		Uint8* textureTransferData = static_cast<Uint8*>(SDL_MapGPUTransferBuffer(impl->device.get(), texTransferBuffer.get(), false));

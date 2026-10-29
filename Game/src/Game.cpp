@@ -28,6 +28,7 @@ namespace TuskGame {
         object2 = new Tusk::GameObject();
         auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
         object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
+        object2TransformComp->SetRotation(Tusk::Math::angleAxis(Tusk::Math::radians(90.f), Tusk::Math::vec3(-1.f, 0.f, 0.f)));
 
         auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
         object2MeshComp->UseMesh("D4C");
