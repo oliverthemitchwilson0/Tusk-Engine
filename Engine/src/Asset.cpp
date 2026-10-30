@@ -95,24 +95,41 @@ namespace Tusk
 
 	void Asset::LoadImage(const char* path, std::string name)
 	{
-		auto* surface = IMG_Load(path);
+		SDL_PixelFormat desiredFormat = SDL_PIXELFORMAT_ABGR8888;
+		SDL_Surface* sourceSurface = IMG_Load(path);
+		SDL_Surface* finalSurface = nullptr;
 
-		if(!surface->pixels)
+		if(!sourceSurface->pixels)
 		{
-			SDL_DestroySurface(surface);
+			SDL_DestroySurface(sourceSurface);
 			Logging::Log("Failed to load image: %s", path);
+			return;
 		}
 
-		//Logging::Log("Bytes: %d", SDL_BYTESPERPIXEL(surface->format));
+		if(sourceSurface->format != desiredFormat)
+		{
+			finalSurface = SDL_ConvertSurface(sourceSurface, desiredFormat);
+			if(!finalSurface)
+			{
+				Logging::Log("Failed to convert image pixel format to desired format: %s", path);
+				SDL_DestroySurface(sourceSurface);
+				SDL_DestroySurface(finalSurface);
+				return;
+			}
+			SDL_DestroySurface(sourceSurface);
+		}
+		else
+		{
+			finalSurface = sourceSurface;
+		}
+
 		
+
 		textureAssetBin.push_back(
 			TextureAsset{
 				.name = name,
-				.surface = surface,
+				.surface = finalSurface,
 			}
 		);
-
-		//auto binSize = textureAssetBin.size();
-		//Logging::Log("Texture assets: %d", binSize);
 	}
 }
