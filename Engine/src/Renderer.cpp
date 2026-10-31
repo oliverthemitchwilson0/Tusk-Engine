@@ -296,7 +296,7 @@ namespace Tusk
 		SDL_BindGPUGraphicsPipeline(impl->renderPass, impl->pipeline.get());
 	}
 
-	void Renderer::Draw(MeshID mesh, TextureID texture, Math::mat4 transformMat)
+	void Renderer::Draw(MeshID mesh, std::string textureName, Math::mat4 transformMat)
 	{
 
 		if (mesh.id == -1 || mesh.id >= impl->meshBuffersBin.size())
@@ -319,13 +319,23 @@ namespace Tusk
 			},
 		};
 
+		//Find texture.
+		auto foundTexture = impl->textureLookup.find(textureName);
+		SDL_GPUTexture* texture = nullptr;
+
+		if (foundTexture != impl->textureLookup.end())
+			texture = impl->textureBin[impl->textureLookup[textureName]].get();
+		else
+			texture = impl->textureBin[0].get();
+
 		SDL_GPUTextureSamplerBinding textureBinding{ 
-			.texture = impl->textureBin[0].get(), 
+			.texture = texture,
 			.sampler = impl->sampler
 		};
 
 		//if(texture.id != -1)
-			SDL_BindGPUFragmentSamplers(impl->renderPass, 0, &textureBinding, 1);
+
+		SDL_BindGPUFragmentSamplers(impl->renderPass, 0, &textureBinding, 1);
 
 
 		TransformBufferType matBuff

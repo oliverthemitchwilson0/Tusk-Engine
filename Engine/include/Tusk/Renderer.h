@@ -38,7 +38,7 @@ namespace Tusk
 		//Renderer Commands
 
 		void Clear(float red, float green, float blue);
-		void Draw(MeshID mesh, TextureID texture, Math::mat4 transformMat);
+		void Draw(MeshID mesh, std::string texture, Math::mat4 transformMat);
 		void Present();
 		
 		//GPU Resource Creation

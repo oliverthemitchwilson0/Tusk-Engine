@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Tusk/Components/TextureComponent.h>
+
 namespace Tusk
 {
 	class MeshComponent : public ComponentBase
@@ -23,13 +25,17 @@ namespace Tusk
 			}
 
 			Math::mat4 world = Math::identity<Math::mat4>();
+			std::string textureName;
 			if (parent)
 			{
 				if (auto* transfromComp = parent->GetComponent<TransformComponent>())
 					world = transfromComp->GetTransfromMatrix();
+
+				if (auto* textureComp = parent->GetComponent<TextureComponent>())
+					textureName = textureComp->GetTexture();
 			}
 
-			renderer.Draw(mesh, { .id = static_cast<size_t>(-1) }, world);
+			renderer.Draw(mesh, textureName, world);
 		}
 
 		void UseMesh(std::string name)

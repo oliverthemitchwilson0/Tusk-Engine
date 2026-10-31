@@ -12,6 +12,12 @@ namespace Tusk
 			ComponentBase(parentIn)
 		{}
 		~TextureComponent() final = default;
+
+		void Start() final {};
+		void FixedUpdate(float deltaTime) final {};
+
+		void SetTexture(std::string name) { texName = name; }
+		std::string GetTexture() { return texName; }
 	private:
 		std::string texName;
 	};
