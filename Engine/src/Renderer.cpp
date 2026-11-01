@@ -4,6 +4,9 @@
 #include <Tusk/AssetTypes/TextureAsset.h>
 
 #include <SDL3/SDL.h>
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlgpu3.h>
 #include <string>
 #include <filesystem>
 #include <array>
@@ -244,6 +247,8 @@ namespace Tusk
 			impl->Shutdown();
 			return false;
 		}
+
+		SetupImGuiImpl();
 
 		if(!CreatePipeline())
 		{
@@ -614,6 +619,21 @@ namespace Tusk
 	void Renderer::ResizeDepthTexture()
 	{
 		CreateDepthTexture(); //Function call resets unique_ptr so this is a fine solution for now.
+	}
+
+	void Renderer::SetupImGuiImpl()
+	{
+
+		//ImGui_ImplSDL3_InitForSDLGPU(impl->window);
+		//ImGui_ImplSDLGPU3_InitInfo init_info{
+		//	.Device = impl->device.get(),
+		//	.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(impl->device.get(), impl->window),
+		//	.MSAASamples = SDL_GPU_SAMPLECOUNT_1,                      // Only used in multi-viewports mode.
+		//	.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR,  // Only used in multi-viewports mode.
+		//	.PresentMode = SDL_GPU_PRESENTMODE_VSYNC,
+
+		//};
+		//ImGui_ImplSDLGPU3_Init(&init_info);
 	}
 
 	void Renderer::CreateDefaultGPUTexture()

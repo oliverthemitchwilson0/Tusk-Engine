@@ -43,7 +43,7 @@ namespace Tusk
 		
 		//GPU Resource Creation
 
-		MeshID CreateGPUMeshBuffers(const MeshAsset& asset);
+		MeshID CreateGPUMeshBuffers(const MeshAsset& asset); //COULD put mesh and texture lookup tables in the asset manager, unsure though.
 		void CreateGPUTexture(const TextureAsset& asset);
 
 		MeshID GetGPUMesh(const std::string& name);
@@ -54,6 +54,7 @@ namespace Tusk
 		struct Impl;
 		std::unique_ptr<Impl> impl;
 
+		void SetupImGuiImpl();
 		//Creates a default texture for error catching in the renderer.
 		void CreateDefaultGPUTexture();
 		//Creates the Depth Texture for depth testing.
