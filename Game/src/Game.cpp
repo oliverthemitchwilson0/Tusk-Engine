@@ -23,11 +23,11 @@ namespace TuskGame {
         auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
         objectTransformComp->SetTranslation(Tusk::Math::vec3(2.f, 0.f, 3.f));
 
-       auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
-       objectMeshComp->UseMesh("Banana");
+        auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
+        objectMeshComp->UseMesh("Banana");
 
-       auto* objectTextureComp = object->AddComponent<Tusk::TextureComponent>();
-       objectTextureComp->SetTexture("fruitTex");
+        auto* objectTextureComp = object->AddComponent<Tusk::TextureComponent>();
+        objectTextureComp->SetTexture("fruitTex");
 
         object2 = new Tusk::GameObject();
         auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
