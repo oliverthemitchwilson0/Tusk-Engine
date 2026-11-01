@@ -40,6 +40,12 @@ namespace Tusk
 		void operator()(SDL_GPUTexture* texture) { SDL_ReleaseGPUTexture(device, texture); }
 	};
 
+	struct GPUSamplerDeleter
+	{
+		SDL_GPUDevice* device = nullptr;
+		void operator()(SDL_GPUSampler* sampler) { SDL_ReleaseGPUSampler(device, sampler); }
+	};
+
 	//Structure containing vertex and index buffer of one mesh.
 	struct GPUMeshBuffers
 	{
@@ -186,14 +192,15 @@ namespace Tusk
 		SDL_GPUCommandBuffer* commandBuffer = nullptr;
 		SDL_GPURenderPass* renderPass = nullptr;
 
-		SDL_GPUTextureFormat depthStencilFormat;
-		SDL_GPUSampler* sampler = nullptr;
+
+		//Renderer Resources.
 
 		CameraData cameraData;
 
 		std::vector<GPUMeshBuffers> meshBuffersBin;
 		std::unordered_map<std::string, size_t> meshBuffersLookup;
 
+		std::unique_ptr<SDL_GPUSampler, GPUSamplerDeleter> sampler{ nullptr, GPUSamplerDeleter{.device = this->device.get() } };
 		std::unique_ptr<SDL_GPUTexture, GPUTextureDeleter> depthTexture{ nullptr, GPUTextureDeleter{ .device = this->device.get() } };
 		std::vector<std::unique_ptr<SDL_GPUTexture, GPUTextureDeleter>> textureBin;
 		std::unordered_map<std::string, size_t> textureLookup;
@@ -205,6 +212,7 @@ namespace Tusk
 			meshBuffersBin.clear();
 			textureBin.clear();
 			depthTexture.reset();
+			sampler.reset();
 			pipeline.reset();
 			SDL_ReleaseWindowFromGPUDevice(device.get(), window);
 			device.reset();
@@ -246,6 +254,8 @@ namespace Tusk
 		CreateDepthTexture();
 
 		CreateTextureSampler();
+
+		CreateDefaultGPUTexture();
 
 		return true;
 	}
@@ -328,9 +338,9 @@ namespace Tusk
 		else
 			texture = impl->textureBin[0].get();
 
-		SDL_GPUTextureSamplerBinding textureBinding{ 
+		SDL_GPUTextureSamplerBinding textureBinding{
 			.texture = texture,
-			.sampler = impl->sampler
+			.sampler = impl->sampler.get(),
 		};
 
 		//if(texture.id != -1)
@@ -525,7 +535,6 @@ namespace Tusk
 
 	void Renderer::CreateGPUTexture(const TextureAsset& asset)
 	{
-
 		auto pixelFormat = asset.surface->format;
 		auto gpuTextureFormat = SDL_GetGPUTextureFormatFromPixelFormat(asset.surface->format);
 
@@ -605,6 +614,22 @@ namespace Tusk
 	void Renderer::ResizeDepthTexture()
 	{
 		CreateDepthTexture(); //Function call resets unique_ptr so this is a fine solution for now.
+	}
+
+	void Renderer::CreateDefaultGPUTexture()
+	{
+		SDL_GPUTextureCreateInfo textureCreateInfo{
+			.type = SDL_GPU_TEXTURETYPE_2D,
+			.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+			.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER,
+			.width = 1,
+			.height = 1,
+			.layer_count_or_depth = 1,
+			.num_levels = 1,
+		};
+
+		//impl->textureLookup[asset.name] = impl->textureBin.size();
+		impl->textureBin.push_back({ SDL_CreateGPUTexture(impl->device.get(), &textureCreateInfo), GPUTextureDeleter{.device = impl->device.get() } });
 	}
 
 	bool Renderer::CreateDepthTexture()
@@ -736,7 +761,7 @@ namespace Tusk
 			.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
 		};
 
-		impl->sampler = SDL_CreateGPUSampler(impl->device.get(), &sampler_info);
+		impl->sampler.reset(SDL_CreateGPUSampler(impl->device.get(), &sampler_info));
 	}
 
 	void Renderer::PushCameraBuffer(const CameraBufferType& buff)

@@ -54,8 +54,13 @@ namespace Tusk
 		struct Impl;
 		std::unique_ptr<Impl> impl;
 
+		//Creates a default texture for error catching in the renderer.
+		void CreateDefaultGPUTexture();
+		//Creates the Depth Texture for depth testing.
 		bool CreateDepthTexture();
+		//Creates the pipeline.
 		bool CreatePipeline();
+		//Creates the texture sampler.
 		void CreateTextureSampler();
 		void PushCameraBuffer(const CameraBufferType& buff);
 		void PushTransformBuffer(const TransformBufferType& buff);

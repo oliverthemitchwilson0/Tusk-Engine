@@ -17,9 +17,6 @@ namespace TuskGame {
         void Stop(Tusk::Engine& engine) override;
 
     private:
-        /*SDL_GPUBuffer* object;
-        SDL_GPUBuffer* objectIndices;*/
-
         Tusk::GameObject* object;
         Tusk::GameObject* object2;
         Tusk::GameObject* camera;
