@@ -17,8 +17,8 @@ namespace Tusk
 		
 		//Loads single mesh models.
 		static void LoadModel(const char* path, std::string name);
-		static void PushAssetsToRenderer(Renderer& renderer);
 		static void LoadImage(const char* path, std::string name);
+		static void PushAssetsToRenderer(Renderer& renderer);
 	private:
 		static std::vector<MeshAsset> meshAssetBin;
 		static std::vector<TextureAsset> textureAssetBin;

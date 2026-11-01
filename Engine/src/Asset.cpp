@@ -73,63 +73,59 @@ namespace Tusk
 		meshAssetBin.push_back(
 			MeshAsset{
 				.name = name,
-				.vertices = tuskVertices,
-				.indices = indices,
+				.vertices = std::move(tuskVertices),
+				.indices = std::move(indices),
 			}
 			);
-	}
-
-	void Asset::PushAssetsToRenderer(Renderer& renderer)
-	{
-		for(auto& mesh : meshAssetBin)
-		{
-			renderer.CreateGPUMeshBuffers(mesh);
-		}
-
-		//Test
-		for(auto& texture : textureAssetBin)
-		{
-			renderer.CreateGPUTexture(texture);
-		}
 	}
 
 	void Asset::LoadImage(const char* path, std::string name)
 	{
 		SDL_PixelFormat desiredFormat = SDL_PIXELFORMAT_ABGR8888;
-		SDL_Surface* sourceSurface = IMG_Load(path);
-		SDL_Surface* finalSurface = nullptr;
+		std::unique_ptr<SDL_Surface, SurfaceDeleter> sourceSurface{ IMG_Load(path) };
+		std::unique_ptr<SDL_Surface, SurfaceDeleter> finalSurface;
 
+		//Image load check.
 		if(!sourceSurface->pixels)
 		{
-			SDL_DestroySurface(sourceSurface);
 			Logging::Log("Failed to load image: %s", path);
 			return;
 		}
 
+		//Pixel format conversion.
 		if(sourceSurface->format != desiredFormat)
 		{
-			finalSurface = SDL_ConvertSurface(sourceSurface, desiredFormat);
+			finalSurface.reset(SDL_ConvertSurface(sourceSurface.get(), desiredFormat));
 			if(!finalSurface)
 			{
 				Logging::Log("Failed to convert image pixel format to desired format: %s", path);
-				SDL_DestroySurface(sourceSurface);
-				SDL_DestroySurface(finalSurface);
 				return;
 			}
-			SDL_DestroySurface(sourceSurface);
 		}
 		else
 		{
-			finalSurface = sourceSurface;
+			finalSurface.reset(sourceSurface.release());
 		}
 
-		
-
+		//Add to texture bin.
 		textureAssetBin.push_back(
 			TextureAsset{
 				.name = name,
-				.surface = finalSurface,
+				.surface{finalSurface.release()},
 			}
 		);
+	}
+
+	void Asset::PushAssetsToRenderer(Renderer& renderer)
+	{
+		for (auto& mesh : meshAssetBin)
+		{
+			renderer.CreateGPUMeshBuffers(mesh);
+		}
+
+		for (auto& texture : textureAssetBin)
+		{
+			renderer.CreateGPUTexture(texture);
+		}
 	}
 }
