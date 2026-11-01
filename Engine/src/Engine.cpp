@@ -42,6 +42,9 @@ namespace Tusk
 		void PollEvents() {
 			SDL_Event event;
 			while (SDL_PollEvent(&event)) {
+
+				ImGui_ImplSDL3_ProcessEvent(&event); //pass event data to ImGui impl.
+
 				if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
 					quit = true;
 				}
@@ -77,6 +80,26 @@ namespace Tusk
 			impl->Shutdown();
 			return false; //Return false if SDL window fails to create.
 		}
+
+		//ImGui init.
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+		// Setup Dear ImGui style
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+		//style.FontSizeBase = 16.0f;           // Default to 13.0f when unspecified, which allows crisp legacy font for non-4K screens.
+		style.FrameRounding = 3.0f;
+		style.GrabRounding = 3.0f;
+
+		// Setup scaling
+		auto mainScale = SDL_GetWindowDisplayScale(impl->window.get());
+		style.ScaleAllSizes(mainScale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+		style.FontScaleDpi = mainScale;        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
 		
 		bool debugActive = true;
 		if(!renderer.Initilise(impl->window.get(), debugActive))
@@ -140,6 +163,14 @@ namespace Tusk
 					impl->windowResized = false;
 					GetRenderer().ResizeDepthTexture();
 				}
+
+				ImGui_ImplSDLGPU3_NewFrame();
+				ImGui_ImplSDL3_NewFrame();
+				ImGui::NewFrame();
+
+				ImGui::ShowDemoWindow();
+
+				ImGui::Render();
 
 				application.Render(*this);
 

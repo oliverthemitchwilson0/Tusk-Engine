@@ -371,10 +371,27 @@ namespace Tusk
 	{
 		SDL_EndGPURenderPass(impl->renderPass); //End Render Pass.
 
+		impl->renderPass = nullptr;
+
+		//Draw UI Test
+		auto* imDrawData = ImGui::GetDrawData();
+		ImGui_ImplSDLGPU3_PrepareDrawData(imDrawData, impl->commandBuffer);
+
+		SDL_GPUColorTargetInfo colorTargetInfo = {
+			.texture = impl->swapchainTexture,
+			.load_op = SDL_GPU_LOADOP_LOAD,
+			.store_op = SDL_GPU_STOREOP_STORE,
+		};
+
+		SDL_GPURenderPass* imPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr);
+
+		ImGui_ImplSDLGPU3_RenderDrawData(imDrawData, impl->commandBuffer, imPass);
+
+		SDL_EndGPURenderPass(imPass);
+
 		SDL_SubmitGPUCommandBuffer(impl->commandBuffer); //Submit to GPU.
 		impl->commandBuffer = nullptr;
 		impl->swapchainTexture = nullptr;
-		impl->renderPass = nullptr;
 	}
 
 	SDL_GPUBuffer* CreateVertexBuffer(SDL_GPUDevice* device, uint32_t verticesSize)
@@ -623,17 +640,16 @@ namespace Tusk
 
 	void Renderer::SetupImGuiImpl()
 	{
+		ImGui_ImplSDL3_InitForSDLGPU(impl->window);
+		ImGui_ImplSDLGPU3_InitInfo init_info{
+			.Device = impl->device.get(),
+			.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(impl->device.get(), impl->window),
+			.MSAASamples = SDL_GPU_SAMPLECOUNT_1,                      // Only used in multi-viewports mode.
+			.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR,  // Only used in multi-viewports mode.
+			.PresentMode = SDL_GPU_PRESENTMODE_VSYNC,
 
-		//ImGui_ImplSDL3_InitForSDLGPU(impl->window);
-		//ImGui_ImplSDLGPU3_InitInfo init_info{
-		//	.Device = impl->device.get(),
-		//	.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(impl->device.get(), impl->window),
-		//	.MSAASamples = SDL_GPU_SAMPLECOUNT_1,                      // Only used in multi-viewports mode.
-		//	.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR,  // Only used in multi-viewports mode.
-		//	.PresentMode = SDL_GPU_PRESENTMODE_VSYNC,
-
-		//};
-		//ImGui_ImplSDLGPU3_Init(&init_info);
+		};
+		ImGui_ImplSDLGPU3_Init(&init_info);
 	}
 
 	void Renderer::CreateDefaultGPUTexture()
