@@ -12,6 +12,9 @@
 #include <Tusk/Components/CameraComponent.h>
 #include <Tusk/Components/TextureComponent.h>
 
+//Test
+#include <Tusk/Scene.h>
+
 #include <memory>
 
 namespace Tusk 
@@ -54,5 +57,8 @@ namespace Tusk
 
 		Renderer renderer;
 		Input input;
+
+		//Test
+		Scene* scene;
 	};
 }

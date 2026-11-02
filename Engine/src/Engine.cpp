@@ -50,7 +50,7 @@ namespace Tusk
 		}
 	};
 
-	Engine::Engine() : impl(std::make_unique<Impl>()) {}
+	Engine::Engine() : impl(std::make_unique<Impl>()), scene(new Scene) {}
 	Engine::~Engine() = default;
 
 	//This is mostly SDL boilerplate. Don't worry about it too much.
@@ -102,6 +102,8 @@ namespace Tusk
 				result = 1;
 			}
 
+			scene->Start();
+
 			//After game Start(), upload any imported meshses to the renderer.
 			Asset::PushAssetsToRenderer(GetRenderer());
 
@@ -128,6 +130,7 @@ namespace Tusk
 				accumulator += elapsed;
 				while (accumulator >= fixedStepTime && !impl->quit) {
 					application.FixedUpdate(*this, static_cast<float>(fixedStepTime)); //Call FixedUpdate once the time waiting has accumulated to the fixedStepTime.
+					scene->FixedUpdate();
 					accumulator -= fixedStepTime;
 				}
 				if (impl->quit) break;
