@@ -208,7 +208,6 @@ add_library(Engine STATIC
     Engine/src/Renderer.cpp
     Engine/src/Input.cpp
     Engine/src/Asset.cpp
-    Engine/src/SceneManager.cpp
     Engine/src/Logging.cpp
 )
 add_library(Game STATIC Game/src/Game.cpp)
