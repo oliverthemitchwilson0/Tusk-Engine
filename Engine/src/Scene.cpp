@@ -1,6 +1,6 @@
 #include <Tusk/Scene.h>
-#include <Tusk/Input.h>
-#include <Tusk/Renderer.h>
+#include <Tusk/Input.h> //Maybe Scene shouldn't have direct knowledge of the 
+#include <Tusk/Renderer.h> 
 #include <Tusk/Logging.h>
 
 namespace Tusk
