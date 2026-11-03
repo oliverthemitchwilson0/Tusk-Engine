@@ -1,18 +1,20 @@
 #pragma once
-#include <Tusk/Logging.h>
 
 namespace Tusk 
 {
+	class Input;
+	class Renderer;
+
 	class Scene
 	{
 	public:
 		Scene() = default;
 		virtual ~Scene() = default;
 
-		virtual bool Start() { Logging::Log("Scene Started."); return true; };
-		virtual void FixedUpdate() { Logging::Log("Scene Updated. (Fixed)"); };
-		virtual void Render() { Logging::Log("Scene Rendered."); };
-		virtual void Stop() { Logging::Log("Scene Stopped."); };
+		virtual bool Start();
+		virtual void FixedUpdate(Input& input, float deltaFixedTime);
+		virtual void Render(Renderer& renderer);
+		virtual void Stop();
 	private:
 		//
 	};

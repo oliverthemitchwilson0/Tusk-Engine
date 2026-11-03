@@ -20,6 +20,8 @@
 namespace Tusk 
 {
 	class Engine;
+	class Input;
+	class Renderer;
 
 	//Application is for the end developer to build with Tusk.
 	//Lifetime managed by engine.
@@ -27,8 +29,8 @@ namespace Tusk
 	public:
 		virtual ~Application() = default;
 		virtual bool Start(Engine& engine) = 0;
-		virtual void FixedUpdate(Engine& engine, float dt) = 0;
-		virtual void Render(Engine& engine) = 0;
+		virtual void FixedUpdate(Input& input, float dt) = 0;
+		virtual void Render(Renderer& renderer) = 0;
 		virtual void Stop(Engine& engine) = 0;
 	};
 
@@ -55,8 +57,8 @@ namespace Tusk
 		struct Impl;
 		std::unique_ptr<Impl> impl;
 
-		Renderer renderer;
-		Input input;
+		Renderer mRenderer;
+		Input mInput;
 
 		//Test
 		Scene* scene;

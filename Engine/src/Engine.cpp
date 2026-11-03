@@ -76,7 +76,7 @@ namespace Tusk
 		}
 		
 		bool debugActive = true;
-		if(!renderer.Initilise(impl->window.get(), debugActive))
+		if(!mRenderer.Initilise(impl->window.get(), debugActive))
 		{
 			impl->Shutdown();
 			return false;
@@ -104,7 +104,7 @@ namespace Tusk
 
 			scene->Start();
 
-			//After game Start(), upload any imported meshses to the renderer.
+			//After game Start(), upload any imported meshses and textures to the renderer.
 			Asset::PushAssetsToRenderer(GetRenderer());
 
 			//Core engine loop
@@ -112,13 +112,13 @@ namespace Tusk
 			{
 				impl->PollEvents();
 
-				input.ProcessInput();
+				mInput.ProcessInput();
 
 				//Input Test
-				if (input.GetKeyPressed(Tusk::ESCAPE))
+				if (mInput.GetKeyPressed(Tusk::ESCAPE))
 					impl->quit = true;
 
-				if(input.GetKeyPressed(Tusk::BACKSPACE))
+				if(mInput.GetKeyPressed(Tusk::BACKSPACE))
 					SDL_SetWindowFullscreen(impl->window.get(), true);
 
 				if (impl->quit) break; //break loop if application has been quit.
@@ -129,8 +129,8 @@ namespace Tusk
 
 				accumulator += elapsed;
 				while (accumulator >= fixedStepTime && !impl->quit) {
-					application.FixedUpdate(*this, static_cast<float>(fixedStepTime)); //Call FixedUpdate once the time waiting has accumulated to the fixedStepTime.
-					scene->FixedUpdate();
+					application.FixedUpdate(GetInput(), static_cast<float>(fixedStepTime)); //Call FixedUpdate once the time waiting has accumulated to the fixedStepTime.
+					scene->FixedUpdate(GetInput(), static_cast<float>(fixedStepTime));
 					accumulator -= fixedStepTime;
 				}
 				if (impl->quit) break;
@@ -141,7 +141,8 @@ namespace Tusk
 					GetRenderer().ResizeDepthTexture();
 				}
 
-				application.Render(*this);
+				application.Render(GetRenderer());
+				scene->Render(GetRenderer());
 
 				//bool result = SDL_RenderPresent(impl_->renderer.get());
 				//renderer.RenderPresent();
@@ -173,12 +174,12 @@ namespace Tusk
 
 	Renderer& Engine::GetRenderer()
 	{
-		return renderer;
+		return mRenderer;
 	}
 
 	Input& Engine::GetInput()
 	{
-		return input;
+		return mInput;
 	}
 }
 

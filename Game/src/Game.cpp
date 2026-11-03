@@ -47,10 +47,8 @@ namespace TuskGame {
         return true;
     }
 
-    void DemoGame::FixedUpdate(Tusk::Engine& engine, float deltaTime) 
+    void DemoGame::FixedUpdate(Tusk::Input& input, float deltaTime) 
     {
-        auto& input = engine.GetInput();
-
         //Banana Test
 
         cubeAngle += Tusk::Math::radians(90.f * deltaTime);
@@ -97,9 +95,8 @@ namespace TuskGame {
         cameraTranasform->SetTranslation(newCamTranslation);
     }
 
-    void DemoGame::Render(Tusk::Engine& engine) {
-        auto& renderer = engine.GetRenderer();
-
+    void DemoGame::Render(Tusk::Renderer& renderer) 
+    {
         auto cameraData = camera->GetComponent<Tusk::CameraComponent>()->GetCameraData();
         renderer.SetCameraData(cameraData);
 
