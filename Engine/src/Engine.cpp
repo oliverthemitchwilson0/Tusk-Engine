@@ -50,7 +50,7 @@ namespace Tusk
 		}
 	};
 
-	Engine::Engine() : impl(std::make_unique<Impl>()), scene(new Scene) {}
+	Engine::Engine() : impl(std::make_unique<Impl>()) {}
 	Engine::~Engine() = default;
 
 	//This is mostly SDL boilerplate. Don't worry about it too much.

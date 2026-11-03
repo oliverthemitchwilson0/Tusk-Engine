@@ -211,7 +211,10 @@ add_library(Engine STATIC
     Engine/src/Scene.cpp
     Engine/src/Logging.cpp
 )
-add_library(Game STATIC Game/src/Game.cpp)
+add_library(Game STATIC 
+    Game/src/Game.cpp
+    Game/src/MainDemoScene.cpp
+)
 
 add_executable(GameApp GameApp/src/GameApp.cpp)
 

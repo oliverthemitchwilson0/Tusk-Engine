@@ -53,6 +53,12 @@ namespace Tusk
 		Renderer& GetRenderer();
 		Input& GetInput();
 
+		template<class T>
+		void SetScene()
+		{
+			scene = new T;
+		}
+
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;

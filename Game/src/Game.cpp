@@ -1,4 +1,5 @@
 #include <TuskGame/Game.h>
+#include <TuskGame/MainDemoScene.h>
 
 #include <algorithm>
 #include <vector>
@@ -9,6 +10,7 @@ namespace TuskGame {
 
     bool DemoGame::Start(Tusk::Engine& engine) 
     {
+        engine.SetScene<MainDemoScene>();
         auto& renderer = engine.GetRenderer();
 
         Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", "Banana");
