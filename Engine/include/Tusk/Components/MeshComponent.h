@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Tusk/Components/TextureComponent.h>
+#include <Tusk/Renderer.h> //Probably shouldn't have full renderer access.
 
 namespace Tusk
 {

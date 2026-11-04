@@ -87,7 +87,6 @@ namespace Tusk
 	 
 	int Engine::Run(Application& application)
 	{
-		/*if (!renderer.IsActive()) return 1;*/
 		impl->quit = false;
 		using Clock = std::chrono::steady_clock;
 		auto previousTime = Clock::now();

@@ -16,10 +16,9 @@ namespace TuskGame
 		void Render(Tusk::Renderer& renderer) final;
 		void Stop() final;
 	private:
-		//
-		Tusk::GameObject* object;
-		Tusk::GameObject* object2;
-		Tusk::GameObject* camera;
+		Tusk::GameObject* object = nullptr;
+		Tusk::GameObject* object2 = nullptr;
+		Tusk::GameObject* camera = nullptr;
 
 		float cubeAngle = 0.f;
 	};

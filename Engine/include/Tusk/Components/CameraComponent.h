@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Tusk/Components/TransformComponent.h>
 #include <Tusk/Graphics/CameraData.h>
 
 namespace Tusk

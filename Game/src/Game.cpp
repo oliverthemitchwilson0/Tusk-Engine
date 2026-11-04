@@ -12,101 +12,17 @@ namespace TuskGame {
     {
         engine.SetScene<MainDemoScene>();
 
-        /*Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", "Banana");
-        Tusk::Asset::LoadModel("Assets/io_food_pine_big.obj", "Pineapple");
-        Tusk::Asset::LoadModel("Assets/d4c.gltf", "D4C");
-
-        Tusk::Asset::LoadImage("Assets/fruit_col_mt.png", "fruitTex");
-        Tusk::Asset::LoadImage("Assets/d4c.png", "D4CTex");
-
-        object = new Tusk::GameObject();
-
-        auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
-        objectTransformComp->SetTranslation(Tusk::Math::vec3(2.f, 0.f, 3.f));
-
-        auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
-        objectMeshComp->UseMesh("Banana");
-
-        auto* objectTextureComp = object->AddComponent<Tusk::TextureComponent>();
-        objectTextureComp->SetTexture("fruitTex");
-
-        object2 = new Tusk::GameObject();
-        auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
-        object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
-        object2TransformComp->SetRotation(Tusk::Math::angleAxis(Tusk::Math::radians(90.f), Tusk::Math::vec3(-1.f, 0.f, 0.f)));
-
-        auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
-        object2MeshComp->UseMesh("D4C");
-
-        auto* object2TextureComp = object2->AddComponent<Tusk::TextureComponent>();
-        object2TextureComp->SetTexture("D4CTex");
-
-        camera = new Tusk::GameObject();
-        camera->AddComponent<Tusk::CameraComponent>();
-        auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
-
-        return true;*/
+        return true;
     }
 
     void DemoGame::FixedUpdate(Tusk::Input& input, float deltaTime) 
     {
-        //Banana Test
 
-       // cubeAngle += Tusk::Math::radians(90.f * deltaTime);
-       // //accumulator += deltaTime;
-
-       // auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
-       // transformComp->SetRotation(Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f)));
-
-       ///* auto position = transformComp->GetTranslation();
-
-       // float value = Tusk::Math::sin(3.f * accumulator) * 4.f;
-       // position.y = value;
-       // transformComp->SetTranslation(position);*/
-
-       // //Camera Test
-
-       // auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
-       // auto newCamTranslation = cameraTranasform->GetTranslation();
-       // auto cameraForward = cameraTranasform->GetForward();
-       // auto cameraRight = cameraTranasform->GetRight();
-       // auto cameraUp = cameraTranasform->GetUp();
-       // auto rotation = cameraTranasform->GetRotation();
-
-       // if(input.GetKeyDown(Tusk::W))
-       //     newCamTranslation += cameraForward * 8.f * deltaTime;
-       // else if(input.GetKeyDown(Tusk::S))
-       //     newCamTranslation -= cameraForward * 8.f * deltaTime;
-
-       // if(input.GetKeyDown(Tusk::D))
-       //     newCamTranslation += cameraRight * 8.f * deltaTime;
-       // else if(input.GetKeyDown(Tusk::A))
-       //     newCamTranslation -= cameraRight * 8.f * deltaTime;
-
-       // if (input.GetKeyDown(Tusk::SPACE))
-       //     newCamTranslation += cameraUp * 8.f * deltaTime;
-       // else if (input.GetKeyDown(Tusk::LSHIFT))
-       //     newCamTranslation -= cameraUp * 8.f * deltaTime;
-
-       // if (input.GetKeyDown(Tusk::X))
-       //     cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * deltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
-       // else if (input.GetKeyDown(Tusk::Z))
-       //     cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * deltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
-
-       // cameraTranasform->SetTranslation(newCamTranslation);
     }
 
     void DemoGame::Render(Tusk::Renderer& renderer) 
     {
-        /*auto cameraData = camera->GetComponent<Tusk::CameraComponent>()->GetCameraData();
-        renderer.SetCameraData(cameraData);
 
-        renderer.Clear(1, 165.f / 255.f, 0.f);
-
-        object->GetComponent<Tusk::MeshComponent>()->Draw(renderer);
-        object2->GetComponent<Tusk::MeshComponent>()->Draw(renderer);
-
-        renderer.Present();*/
     }
 
     void DemoGame::Stop(Tusk::Engine&) {}
