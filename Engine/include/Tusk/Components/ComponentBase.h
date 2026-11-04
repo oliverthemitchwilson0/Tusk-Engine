@@ -3,6 +3,7 @@
 namespace Tusk
 {
 	class GameObject;
+	class Renderer;
 
 	class ComponentBase
 	{
@@ -12,6 +13,7 @@ namespace Tusk
 	
 		virtual void Start() = 0;
 		virtual void FixedUpdate(float deltaTime) = 0;
+		virtual void Draw(Renderer& renderer) = 0;
 	protected:
 		GameObject* parent;
 	};

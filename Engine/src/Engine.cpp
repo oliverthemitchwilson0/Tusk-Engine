@@ -101,10 +101,8 @@ namespace Tusk
 				result = 1;
 			}
 
-			//scene->Start();
-
 			//After game Start(), upload any imported meshses and textures to the renderer.
-			Asset::PushAssetsToRenderer(GetRenderer());
+			Asset::PushAssetsToRenderer(GetRenderer()); // This will have to change since scenes can load anytime.
 
 			//Core engine loop
 			while (result == 0 && !impl->quit)
@@ -140,8 +138,9 @@ namespace Tusk
 					GetRenderer().ResizeDepthTexture();
 				}
 
-				application.Render(GetRenderer());
+				mRenderer.Clear();
 				mSceneManager.Render(GetRenderer());
+				mRenderer.Present();
 
 				//bool result = SDL_RenderPresent(impl_->renderer.get());
 				//renderer.RenderPresent();

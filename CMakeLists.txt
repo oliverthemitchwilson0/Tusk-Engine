@@ -182,7 +182,7 @@ macro(compile_shaders shader_dir_in)
 endmacro()
 
 #imgui - https://www.youtube.com/watch?v=JpZv9LtxEeo
-add_library(imgui)
+add_library(imgui STATIC)
 
 target_include_directories(imgui PUBLIC
     ${imgui_SOURCE_DIR}

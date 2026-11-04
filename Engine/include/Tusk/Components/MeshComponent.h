@@ -15,7 +15,7 @@ namespace Tusk
 
 		void Start() final {};
 		void FixedUpdate(float deltaTime) final {};
-		void Draw(Renderer& renderer)
+		void Draw(Renderer& renderer) final
 		{
 			if (!drawing)
 				return;

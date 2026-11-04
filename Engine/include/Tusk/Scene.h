@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Tusk/GameObject.h>
+
 namespace Tusk 
 {
 	class Input;
@@ -13,11 +15,13 @@ namespace Tusk
 
 		virtual bool Start();
 		virtual void FixedUpdate(Input& input, float deltaFixedTime);
-		virtual void Render(Renderer& renderer);
+		void Render(Renderer& renderer);
 		virtual void Stop();
 
 		void SetStarted() { sceneStarted = true; };
 		bool HasStarted() { return sceneStarted; };
+	protected:
+		std::vector<std::unique_ptr<GameObject>> objects;
 	private:
 		bool sceneStarted = false;
 	};

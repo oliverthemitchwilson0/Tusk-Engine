@@ -15,6 +15,7 @@ namespace Tusk
 
 		void Start() final {};
 		void FixedUpdate(float deltaTime) final {};
+		void Draw(Renderer& renderer) final {};
 
 		void SetTexture(std::string name) { texName = name; }
 		std::string GetTexture() { return texName; }

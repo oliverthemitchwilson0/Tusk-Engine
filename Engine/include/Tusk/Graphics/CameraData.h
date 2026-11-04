@@ -8,6 +8,6 @@ namespace Tusk
 	struct CameraData
 	{
 		Math::vec3 position, forward;
-		float fovDegrees, nearPlane, farPlane;
+		float fovDegrees = 60.f, nearPlane = 0.1f, farPlane = 100.f;
 	};
 }

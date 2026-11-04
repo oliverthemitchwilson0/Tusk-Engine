@@ -16,6 +16,7 @@ namespace Tusk
 
 		void Start() final {};
 		void FixedUpdate(float deltaTime) final {};
+		void Draw(Renderer& renderer) final {};
 
 		//Returns a CameraData Struct containing all relative data for supplying to the renderer.
 		CameraData GetCameraData()
@@ -36,9 +37,13 @@ namespace Tusk
 				.farPlane = farPlane,
 			};
 		}
+
+		void SetActive(bool activeIn) { active = activeIn; };
+		bool IsActive() { return active; };
 	private:
 		float fovDegrees = 90.f;
 		float nearPlane = 0.1f;
 		float farPlane = 100.f;
+		bool active = false;
 	};
 }

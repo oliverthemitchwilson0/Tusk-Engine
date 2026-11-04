@@ -31,6 +31,14 @@ namespace Tusk
 			return nullptr;
 		}
 
+		void Draw(Renderer& renderer)
+		{
+			for(auto& component : components)
+			{
+				component->Draw(renderer);
+			}
+		}
+
 	private:
 		std::vector<std::unique_ptr<ComponentBase>> components;
 	};

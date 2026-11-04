@@ -1,6 +1,5 @@
 #pragma once
 #include <Tusk/Scene.h>
-
 #include <Tusk/GameObject.h>
 
 namespace TuskGame
@@ -13,7 +12,6 @@ namespace TuskGame
 
 		bool Start() final;
 		void FixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
-		void Render(Tusk::Renderer& renderer) final;
 		void Stop() final;
 	private:
 		Tusk::GameObject* object = nullptr;

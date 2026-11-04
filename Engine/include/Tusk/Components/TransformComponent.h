@@ -17,6 +17,7 @@ namespace Tusk
 
 		void Start() final {};
 		void FixedUpdate(float deltaTime) final {};
+		void Draw(Renderer& renderer) final {};
 
 		void SetTranslation(Math::vec3 newTranslation) { translation = newTranslation; }
 		void SetRotation(Math::quat newRotation) { rotation = newRotation; }

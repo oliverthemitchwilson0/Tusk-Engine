@@ -24,7 +24,8 @@ namespace TuskGame
         Tusk::Asset::LoadImage("Assets/fruit_col_mt.png", "fruitTex");
         Tusk::Asset::LoadImage("Assets/d4c.png", "D4CTex");
 
-        object = new Tusk::GameObject();
+        objects.push_back(std::make_unique<Tusk::GameObject>());
+        object = objects.at(objects.size() - 1).get();
 
         auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
         objectTransformComp->SetTranslation(Tusk::Math::vec3(2.f, 0.f, 3.f));
@@ -35,7 +36,8 @@ namespace TuskGame
         auto* objectTextureComp = object->AddComponent<Tusk::TextureComponent>();
         objectTextureComp->SetTexture("fruitTex");
 
-        object2 = new Tusk::GameObject();
+        objects.push_back(std::make_unique<Tusk::GameObject>());
+        object2 = objects.at(objects.size() - 1).get();
         auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
         object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
         object2TransformComp->SetRotation(Tusk::Math::angleAxis(Tusk::Math::radians(90.f), Tusk::Math::vec3(-1.f, 0.f, 0.f)));
@@ -46,8 +48,10 @@ namespace TuskGame
         auto* object2TextureComp = object2->AddComponent<Tusk::TextureComponent>();
         object2TextureComp->SetTexture("D4CTex");
 
-        camera = new Tusk::GameObject();
-        camera->AddComponent<Tusk::CameraComponent>();
+        objects.push_back(std::make_unique<Tusk::GameObject>());
+        camera = objects.at(objects.size() - 1).get();
+        auto* camComponent = camera->AddComponent<Tusk::CameraComponent>();
+        camComponent->SetActive(true);
         auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
 
         return true;
@@ -99,19 +103,6 @@ namespace TuskGame
             cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
 
         cameraTranasform->SetTranslation(newCamTranslation);
-	}
-
-	void MainDemoScene::Render(Tusk::Renderer& renderer)
-	{
-        auto cameraData = camera->GetComponent<Tusk::CameraComponent>()->GetCameraData();
-        renderer.SetCameraData(cameraData);
-
-        renderer.Clear();
-
-        object->GetComponent<Tusk::MeshComponent>()->Draw(renderer);
-        object2->GetComponent<Tusk::MeshComponent>()->Draw(renderer);
-
-        renderer.Present();
 	}
 
 	void MainDemoScene::Stop()
