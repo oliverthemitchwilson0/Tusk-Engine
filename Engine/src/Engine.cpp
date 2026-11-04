@@ -95,13 +95,13 @@ namespace Tusk
 
 		try 
 		{
-			if (!application.Start(*this)) 
+			if (!application.Start(mSceneManager)) 
 			{
 				std::fputs("Application start failed\n", stderr);
 				result = 1;
 			}
 
-			scene->Start();
+			//scene->Start();
 
 			//After game Start(), upload any imported meshses and textures to the renderer.
 			Asset::PushAssetsToRenderer(GetRenderer());
@@ -129,7 +129,7 @@ namespace Tusk
 				accumulator += elapsed;
 				while (accumulator >= fixedStepTime && !impl->quit) {
 					application.FixedUpdate(GetInput(), static_cast<float>(fixedStepTime)); //Call FixedUpdate once the time waiting has accumulated to the fixedStepTime.
-					scene->FixedUpdate(GetInput(), static_cast<float>(fixedStepTime));
+					mSceneManager.FixedUpdate(GetInput(), static_cast<float>(fixedStepTime));
 					accumulator -= fixedStepTime;
 				}
 				if (impl->quit) break;
@@ -141,7 +141,7 @@ namespace Tusk
 				}
 
 				application.Render(GetRenderer());
-				scene->Render(GetRenderer());
+				mSceneManager.Render(GetRenderer());
 
 				//bool result = SDL_RenderPresent(impl_->renderer.get());
 				//renderer.RenderPresent();
@@ -160,7 +160,7 @@ namespace Tusk
 
 		// Stop also runs after a failed Start so partial application setup can unwind.
 		try {
-			application.Stop(*this);
+			application.Stop(mSceneManager);
 		}
 		catch (const std::exception& error) {
 			Logging::Log("Application stop failed: %s", error.what());

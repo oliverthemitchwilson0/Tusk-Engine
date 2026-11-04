@@ -37,7 +37,8 @@ namespace Tusk
 
 		//Renderer Commands
 
-		void Clear(float red, float green, float blue);
+		void SetClearColour(float red, float green, float blue);
+		void Clear();
 		void Draw(MeshID mesh, std::string texture, Math::mat4 transformMat);
 		void Present();
 		
@@ -53,6 +54,7 @@ namespace Tusk
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
+		Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
 
 		//Creates a default texture for error catching in the renderer.
 		void CreateDefaultGPUTexture();

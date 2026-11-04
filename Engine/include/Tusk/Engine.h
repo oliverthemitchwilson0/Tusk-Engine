@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Tusk/Renderer.h>
 #include <Tusk/Input.h>
+#include <Tusk/Renderer.h>
 #include <Tusk/Asset.h>
+#include <Tusk/SceneManager.h>
 #include <Tusk/Math.h>
 
 #include <Tusk/GameObject.h>
@@ -12,14 +13,11 @@
 #include <Tusk/Components/CameraComponent.h>
 #include <Tusk/Components/TextureComponent.h>
 
-//Test
-#include <Tusk/Scene.h>
-
 #include <memory>
 
 namespace Tusk 
 {
-	class Engine;
+	class SceneManager;
 	class Input;
 	class Renderer;
 
@@ -28,10 +26,10 @@ namespace Tusk
 	class Application {
 	public:
 		virtual ~Application() = default;
-		virtual bool Start(Engine& engine) = 0;
+		virtual bool Start(SceneManager& sceneManager) = 0;
 		virtual void FixedUpdate(Input& input, float dt) = 0;
 		virtual void Render(Renderer& renderer) = 0;
-		virtual void Stop(Engine& engine) = 0;
+		virtual void Stop(SceneManager& sceneManager) = 0;
 	};
 
 	class Engine final
@@ -53,20 +51,12 @@ namespace Tusk
 		Renderer& GetRenderer();
 		Input& GetInput();
 
-		template<class T>
-		void SetScene()
-		{
-			scene = new T;
-		}
-
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
 
 		Renderer mRenderer;
 		Input mInput;
-
-		//Test
-		Scene* scene;
+		SceneManager mSceneManager;
 	};
 }

@@ -260,7 +260,12 @@ namespace Tusk
 		return true;
 	}
 
-	void Renderer::Clear(float red, float green, float blue)
+	void Renderer::SetClearColour(float red, float green, float blue)
+	{
+		clearColour = Math::vec3(red, green, blue);
+	}
+
+	void Renderer::Clear()
 	{
 		impl->commandBuffer = SDL_AcquireGPUCommandBuffer(impl->device.get()); //Try aquire the Command Buffer. A new command buffer must be retrieved each frame.
 		if (!impl->commandBuffer)
@@ -277,7 +282,7 @@ namespace Tusk
 
 		SDL_GPUColorTargetInfo colorTargetInfo = {
 			.texture = impl->swapchainTexture,
-			.clear_color = { red, green, blue, 1.0f },
+			.clear_color = { clearColour.r, clearColour.g, clearColour.b, 1.0f },
 			.load_op = SDL_GPU_LOADOP_CLEAR,
 			.store_op = SDL_GPU_STOREOP_STORE,
 		};

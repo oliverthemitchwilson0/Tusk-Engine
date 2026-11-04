@@ -1,6 +1,9 @@
 #pragma once
-
 #include <Tusk/Engine.h>
+
+#include <TuskGame/MainDemoScene.h>
+
+#include <memory>
 
 namespace TuskGame 
 {
@@ -9,13 +12,13 @@ namespace TuskGame
     public:
         DemoGame() noexcept;
 
-        bool Start(Tusk::Engine& engine) override;
+        bool Start(Tusk::SceneManager& sceneManager) override;
         void FixedUpdate(Tusk::Input& engine, float seconds) override;
         void Render(Tusk::Renderer& engine) override;
-        void Stop(Tusk::Engine& engine) override;
+        void Stop(Tusk::SceneManager& sceneManager) override;
 
     private:
-        //
+        std::unique_ptr<MainDemoScene> mainDemoScene;
     };
 
 }

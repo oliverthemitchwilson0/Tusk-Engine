@@ -15,7 +15,10 @@ namespace Tusk
 		virtual void FixedUpdate(Input& input, float deltaFixedTime);
 		virtual void Render(Renderer& renderer);
 		virtual void Stop();
+
+		void SetStarted() { sceneStarted = true; };
+		bool HasStarted() { return sceneStarted; };
 	private:
-		//
+		bool sceneStarted = false;
 	};
 }

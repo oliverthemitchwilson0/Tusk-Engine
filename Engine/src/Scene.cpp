@@ -7,18 +7,18 @@ namespace Tusk
 {
 	bool Scene::Start()
 	{
-		Logging::Log("Scene Started");
+		//Logging::Log("Scene Started");
 		return true;
 	}
 
 	void Scene::FixedUpdate(Input& input, float deltaFixedTime)
 	{
-		Logging::Log("Scene Updating");
+		//Logging::Log("Scene Updating");
 	}
 
 	void Scene::Render(Renderer& renderer)
 	{
-		Logging::Log("Scene Renderering");
+		//Logging::Log("Scene Renderering");
 	}
 
 	void Scene::Stop()

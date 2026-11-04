@@ -8,9 +8,11 @@ namespace TuskGame {
 
     DemoGame::DemoGame() noexcept {};
 
-    bool DemoGame::Start(Tusk::Engine& engine) 
+    bool DemoGame::Start(Tusk::SceneManager& sceneManager) 
     {
-        engine.SetScene<MainDemoScene>();
+        mainDemoScene = std::make_unique<MainDemoScene>();
+
+        sceneManager.SetScene(mainDemoScene.get());
 
         return true;
     }
@@ -25,6 +27,6 @@ namespace TuskGame {
 
     }
 
-    void DemoGame::Stop(Tusk::Engine&) {}
+    void DemoGame::Stop(Tusk::SceneManager& sceneManager) {}
 
 }

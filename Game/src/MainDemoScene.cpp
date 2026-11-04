@@ -106,7 +106,7 @@ namespace TuskGame
         auto cameraData = camera->GetComponent<Tusk::CameraComponent>()->GetCameraData();
         renderer.SetCameraData(cameraData);
 
-        renderer.Clear(1, 165.f / 255.f, 0.f);
+        renderer.Clear();
 
         object->GetComponent<Tusk::MeshComponent>()->Draw(renderer);
         object2->GetComponent<Tusk::MeshComponent>()->Draw(renderer);
