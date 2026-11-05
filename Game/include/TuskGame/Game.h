@@ -1,9 +1,9 @@
 #pragma once
 #include <Tusk/Engine.h>
 
-#include <TuskGame/MainDemoScene.h>
+//#include <TuskGame/MainDemoScene.h>
 
-#include <memory>
+//#include <memory>
 
 namespace TuskGame 
 {
@@ -18,7 +18,7 @@ namespace TuskGame
         void Stop(Tusk::SceneManager& sceneManager) override;
 
     private:
-        std::unique_ptr<MainDemoScene> mainDemoScene;
+        //std::unique_ptr<MainDemoScene> mainDemoScene;
     };
 
 }

@@ -118,6 +118,12 @@ namespace Tusk
 				if(mInput.GetKeyPressed(Tusk::BACKSPACE))
 					SDL_SetWindowFullscreen(impl->window.get(), true);
 
+				if (mInput.GetKeyPressed(Tusk::G))
+					mSceneManager.SetScene("Second");
+				else if (mInput.GetKeyPressed(Tusk::H))
+					mSceneManager.SetScene("Main");
+				
+
 				if (impl->quit) break; //break loop if application has been quit.
 
 				const auto now = Clock::now();

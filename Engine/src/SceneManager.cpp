@@ -6,10 +6,20 @@
 
 namespace Tusk
 {
-	void SceneManager::SetScene(Scene* scene)
+	void SceneManager::SetScene(std::string sceneName)
 	{
-		currentScene = scene;
+		//Find scene within scene bin.
+		auto found = sceneLookup.find(sceneName);
+		if(found == sceneLookup.end())
+		{
+			Logging::Log("Failed to find scene with name: %s", sceneName.c_str());
+			return;
+		}
 
+		//Set current scene ptr to desired scene.
+		currentScene = sceneBin[sceneLookup[sceneName]].get();
+
+		//Check if this is scene's first time running.
 		if(!currentScene->HasStarted())
 		{
 			bool sceneStartResult = currentScene->Start();
