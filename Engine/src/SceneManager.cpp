@@ -31,6 +31,34 @@ namespace Tusk
 		}
 	}
 
+	void SceneManager::SetScene(size_t value)
+	{
+		if(value >= sceneBin.size())
+		{
+			Logging::Log("Scene value out of bounds: %d", value);
+			return;
+		}
+
+		//Set current scene ptr to desired scene.
+		currentScene = sceneBin[value].get();
+
+		//Check if this is scene's first time running.
+		if (!currentScene->HasStarted())
+		{
+			bool sceneStartResult = currentScene->Start();
+
+			if (!sceneStartResult)
+				Logging::Log("Scene failed to start.");
+			else
+				currentScene->SetStarted();
+		}
+	}
+
+	size_t SceneManager::GetSceneCount()
+	{
+		return sceneBin.size();
+	}
+
 	void SceneManager::FixedUpdate(Input& input, float fixedDeltaTime)
 	{
 		currentScene->FixedUpdate(input, fixedDeltaTime);

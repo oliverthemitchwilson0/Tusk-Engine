@@ -208,6 +208,9 @@ namespace Tusk
 		std::vector<std::unique_ptr<SDL_GPUTexture, GPUTextureDeleter>> textureBin;
 		std::unordered_map<std::string, size_t> textureLookup;
 
+		//Info
+		std::string gpuDeviceDriverName;
+
 		~Impl() { Shutdown(); }
 
 		void Shutdown()
@@ -254,6 +257,8 @@ namespace Tusk
 			impl->Shutdown();
 			return false;
 		}
+
+		impl->gpuDeviceDriverName = SDL_GetGPUDeviceDriver(impl->device.get());
 
 		if(!SDL_ClaimWindowForGPUDevice(impl->device.get(), window)) //Bind the Window to our GPU Device.
 		{
@@ -824,5 +829,10 @@ namespace Tusk
 			SDL_PushGPUVertexUniformData(impl->commandBuffer, 1, &buff, sizeof(TransformBufferType));
 		else
 			Logging::Log("Failed to push transform buffer to vertex shader, missing command buffer");
+	}
+
+	const std::string& Renderer::GetDeviceDriverName()
+	{
+		return impl->gpuDeviceDriverName;
 	}
 }

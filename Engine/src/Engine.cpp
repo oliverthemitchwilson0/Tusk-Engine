@@ -26,6 +26,7 @@ namespace Tusk
 		bool sdlInitialised = false;
 		bool quit = false;
 		bool vsyncEnabled = false;
+		bool debugMenu = false;
 		bool windowResized = false;
 
 		~Impl() { Shutdown(); }
@@ -68,8 +69,8 @@ namespace Tusk
 		// Setup Dear ImGui style
 		ImGuiStyle& style = ImGui::GetStyle();
 		ImGui::StyleColorsDark();
-		style.FrameRounding = 3.0f;
-		style.GrabRounding = 3.0f;
+		/*style.FrameRounding = 3.0f;
+		style.GrabRounding = 3.0f;*/
 
 		// Setup scaling
 		auto mainScale = SDL_GetWindowDisplayScale(window);
@@ -151,11 +152,8 @@ namespace Tusk
 				if(mInput.GetKeyPressed(Tusk::BACKSPACE))
 					SDL_SetWindowFullscreen(impl->window.get(), true);
 
-				if (mInput.GetKeyPressed(Tusk::G))
-					mSceneManager.SetScene("Second");
-				else if (mInput.GetKeyPressed(Tusk::H))
-					mSceneManager.SetScene("Main");
-				
+				if (mInput.GetKeyPressed(Tusk::F3))
+					impl->debugMenu = !impl->debugMenu;
 
 				if (impl->quit) break; //break loop if application has been quit.
 
@@ -176,18 +174,10 @@ namespace Tusk
 					impl->windowResized = false;
 					GetRenderer().ResizeDepthTexture();
 				}
-
-				//ImGui Test - This should get tidied away somewhere.
-				ImGui_ImplSDLGPU3_NewFrame();
-				ImGui_ImplSDL3_NewFrame();
-				ImGui::NewFrame();
-
-				ImGui::ShowDemoWindow();
-
-				ImGui::Render();
-
+				
 				mRenderer.Clear();
 				mSceneManager.Render(GetRenderer());
+				ProcessDebugUI();
 				mRenderer.Present();
 
 				//bool result = SDL_RenderPresent(impl_->renderer.get());
@@ -226,6 +216,38 @@ namespace Tusk
 	Input& Engine::GetInput()
 	{
 		return mInput;
+	}
+
+	void Engine::ProcessDebugUI()
+	{
+		ImGui_ImplSDLGPU3_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
+		ImGui::NewFrame();
+
+		if(impl->debugMenu)
+		{
+			ImGui::Begin("Tusk Debug Menu");
+
+			ImGui::Text("Framerate: %.1f", ImGui::GetIO().Framerate);
+			ImGui::Text("GPU Driver: %s", mRenderer.GetDeviceDriverName().c_str());
+
+			if (ImGui::CollapsingHeader("Scenes"))
+			{
+				auto sceneCount = mSceneManager.GetSceneCount();
+
+				for (int i = 0; i < sceneCount; i++)
+				{
+					std::string buttonName = std::string("Scene ") + std::to_string(i);
+					if (ImGui::Button(buttonName.c_str()))
+					{
+						mSceneManager.SetScene(i);
+					}
+				}
+			}
+			ImGui::End();
+		}
+
+		ImGui::Render();
 	}
 }
 

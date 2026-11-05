@@ -21,6 +21,7 @@ namespace Tusk
 		~SceneManager() = default;
 
 		void SetScene(std::string sceneName);
+		void SetScene(size_t value);
 
 		template<class T>
 		void AddScene(std::string sceneName)
@@ -31,6 +32,8 @@ namespace Tusk
 			if (firstScene)
 				SetScene(sceneName);
 		}
+
+		size_t GetSceneCount();
 
 		void FixedUpdate(Input& input, float fixedDeltaTime);
 		void Render(Renderer& renderer);

@@ -51,6 +51,9 @@ namespace Tusk
 		void SetCameraData(const CameraData& data);
 		void ResizeDepthTexture();
 
+		//Info
+		const std::string& GetDeviceDriverName();
+
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;

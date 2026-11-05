@@ -58,5 +58,7 @@ namespace Tusk
 		Renderer mRenderer;
 		Input mInput;
 		SceneManager mSceneManager;
+
+		void ProcessDebugUI();
 	};
 }
