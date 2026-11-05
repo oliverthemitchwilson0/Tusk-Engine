@@ -4,6 +4,9 @@
 #include <Tusk/AssetTypes/TextureAsset.h>
 
 #include <SDL3/SDL.h>
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlgpu3.h>
 #include <string>
 #include <filesystem>
 #include <array>
@@ -225,6 +228,20 @@ namespace Tusk
 	{
 	}
 
+	bool ImGuiInitGPUImpl(SDL_Window* window, SDL_GPUDevice* device)
+	{
+		ImGui_ImplSDL3_InitForSDLGPU(window);
+		ImGui_ImplSDLGPU3_InitInfo init_info{
+			.Device = device,
+			.ColorTargetFormat = SDL_GetGPUSwapchainTextureFormat(device, window),
+			.MSAASamples = SDL_GPU_SAMPLECOUNT_1,                      // Only used in multi-viewports mode.
+			.SwapchainComposition = SDL_GPU_SWAPCHAINCOMPOSITION_SDR,  // Only used in multi-viewports mode.
+			.PresentMode = SDL_GPU_PRESENTMODE_VSYNC,
+
+		};
+		return ImGui_ImplSDLGPU3_Init(&init_info);
+	}
+
 	bool Renderer::Initilise(SDL_Window* window, bool debugActive)
 	{
 		impl->window = window; //This may be temp until I find a better solution.
@@ -241,6 +258,13 @@ namespace Tusk
 		if(!SDL_ClaimWindowForGPUDevice(impl->device.get(), window)) //Bind the Window to our GPU Device.
 		{
 			Logging::Log("Failed to claim window for GPU Device: %s", SDL_GetError());
+			impl->Shutdown();
+			return false;
+		}
+
+		if(!ImGuiInitGPUImpl(impl->window, impl->device.get()))
+		{
+			Logging::Log("Failed to initilise ImGui GPU backend.");
 			impl->Shutdown();
 			return false;
 		}
@@ -371,10 +395,27 @@ namespace Tusk
 	{
 		SDL_EndGPURenderPass(impl->renderPass); //End Render Pass.
 
+		impl->renderPass = nullptr;
+
+		//Draw UI Test
+		auto* imDrawData = ImGui::GetDrawData();
+		ImGui_ImplSDLGPU3_PrepareDrawData(imDrawData, impl->commandBuffer);
+
+		SDL_GPUColorTargetInfo colorTargetInfo = {
+			.texture = impl->swapchainTexture,
+			.load_op = SDL_GPU_LOADOP_LOAD,
+			.store_op = SDL_GPU_STOREOP_STORE,
+		};
+
+		SDL_GPURenderPass* imPass = SDL_BeginGPURenderPass(impl->commandBuffer, &colorTargetInfo, 1, nullptr);
+
+		ImGui_ImplSDLGPU3_RenderDrawData(imDrawData, impl->commandBuffer, imPass);
+
+		SDL_EndGPURenderPass(imPass);
+
 		SDL_SubmitGPUCommandBuffer(impl->commandBuffer); //Submit to GPU.
 		impl->commandBuffer = nullptr;
 		impl->swapchainTexture = nullptr;
-		impl->renderPass = nullptr;
 	}
 
 	SDL_GPUBuffer* CreateVertexBuffer(SDL_GPUDevice* device, uint32_t verticesSize)

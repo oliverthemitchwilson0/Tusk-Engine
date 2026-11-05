@@ -24,7 +24,7 @@ namespace TuskGame
         Tusk::Asset::LoadImage("Assets/fruit_col_mt.png", "fruitTex");
         Tusk::Asset::LoadImage("Assets/d4c.png", "D4CTex");
 
-        objects.push_back(std::make_unique<Tusk::GameObject>());
+        objects.push_back(std::make_unique<Tusk::GameObject>()); //Maybe this should be wrapped? Shouldn't expect the user to write the out everytime they need a new object.
         object = objects.at(objects.size() - 1).get();
 
         auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
@@ -61,19 +61,13 @@ namespace TuskGame
 	{
         //Banana Test
 
-        cubeAngle += Tusk::Math::radians(90.f * fixedDeltaTime);
-        //accumulator += deltaTime;
+        bananaAngle += Tusk::Math::radians(90.f * fixedDeltaTime);
 
         auto* transformComp = object->GetComponent<Tusk::TransformComponent>();
-        transformComp->SetRotation(Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * Tusk::Math::angleAxis(cubeAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f)));
+        transformComp->SetRotation(Tusk::Math::angleAxis(bananaAngle, Tusk::Math::vec3(0.f, -1.f, 0.f)) * Tusk::Math::angleAxis(bananaAngle, Tusk::Math::vec3(-1.f, 0.f, 0.f)));
 
-        /* auto position = transformComp->GetTranslation();
 
-         float value = Tusk::Math::sin(3.f * accumulator) * 4.f;
-         position.y = value;
-         transformComp->SetTranslation(position);*/
-
-         //Camera Test
+        //Camera Test
 
         auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
         auto newCamTranslation = cameraTranasform->GetTranslation();

@@ -18,6 +18,6 @@ namespace TuskGame
 		Tusk::GameObject* object2 = nullptr;
 		Tusk::GameObject* camera = nullptr;
 
-		float cubeAngle = 0.f;
+		float bananaAngle = 0.f;
 	};
 }

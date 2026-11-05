@@ -2,6 +2,9 @@
 #include <Tusk/Logging.h>
 
 #include <SDL3/SDL.h>
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlgpu3.h>
 #include <chrono>
 
 namespace Tusk
@@ -39,6 +42,7 @@ namespace Tusk
 		void PollEvents() {
 			SDL_Event event;
 			while (SDL_PollEvent(&event)) {
+				ImGui_ImplSDL3_ProcessEvent(&event); //pass event data to ImGui impl.
 				if (event.type == SDL_EVENT_QUIT || event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
 					quit = true;
 				}
@@ -52,6 +56,28 @@ namespace Tusk
 
 	Engine::Engine() : impl(std::make_unique<Impl>()) {}
 	Engine::~Engine() = default;
+
+	bool ImGuiInitilise(SDL_Window* window)
+	{
+		//ImGui init.
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+		// Setup Dear ImGui style
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImGui::StyleColorsDark();
+		style.FrameRounding = 3.0f;
+		style.GrabRounding = 3.0f;
+
+		// Setup scaling
+		auto mainScale = SDL_GetWindowDisplayScale(window);
+		style.ScaleAllSizes(mainScale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+		style.FontScaleDpi = mainScale;        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
+	
+		return true;
+	}
 
 	//This is mostly SDL boilerplate. Don't worry about it too much.
 	bool Engine::Initialise(const char* title, int width, int height) 
@@ -73,6 +99,13 @@ namespace Tusk
 			Logging::Log("SDL Failed to Create Window: %s", SDL_GetError());
 			impl->Shutdown();
 			return false; //Return false if SDL window fails to create.
+		}
+
+		if(!ImGuiInitilise(impl->window.get()))
+		{
+			Logging::Log("ImGui Failed to initilise");
+			impl->Shutdown();
+			return false;
 		}
 		
 		bool debugActive = true;
@@ -143,6 +176,15 @@ namespace Tusk
 					impl->windowResized = false;
 					GetRenderer().ResizeDepthTexture();
 				}
+
+				//ImGui Test - This should get tidied away somewhere.
+				ImGui_ImplSDLGPU3_NewFrame();
+				ImGui_ImplSDL3_NewFrame();
+				ImGui::NewFrame();
+
+				ImGui::ShowDemoWindow();
+
+				ImGui::Render();
 
 				mRenderer.Clear();
 				mSceneManager.Render(GetRenderer());
