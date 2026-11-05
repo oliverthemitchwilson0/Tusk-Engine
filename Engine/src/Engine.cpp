@@ -4,7 +4,6 @@
 #include <SDL3/SDL.h>
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
-#include <imgui_impl_sdlgpu3.h>
 #include <chrono>
 
 namespace Tusk
@@ -178,13 +177,25 @@ namespace Tusk
 				}
 
 				//ImGui Test - This should get tidied away somewhere.
-				ImGui_ImplSDLGPU3_NewFrame();
 				ImGui_ImplSDL3_NewFrame();
 				ImGui::NewFrame();
 
 				ImGui::ShowDemoWindow();
 
 				ImGui::Render();
+
+				//Renderering
+				//Clear
+					//Aquire Command Buffer
+					//Copy pass: ImGuiData
+					//Begin first render pass: Scene
+				//Draw commands
+				//End first render pass.
+				//Begin second render pass: UI
+				//Draw commands
+				//End second render pass.
+				//Submit to GPU.
+
 
 				mRenderer.Clear();
 				mSceneManager.Render(GetRenderer());
