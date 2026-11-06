@@ -16,19 +16,9 @@ namespace Tusk
 			return;
 		}
 
-		//Set current scene ptr to desired scene.
-		currentScene = sceneBin[sceneLookup[sceneName]].get();
-
-		//Check if this is scene's first time running.
-		if(!currentScene->HasStarted())
-		{
-			bool sceneStartResult = currentScene->Start();
-
-			if(!sceneStartResult)
-				Logging::Log("Scene failed to start.");
-			else
-				currentScene->SetStarted();
-		}
+		//Set queue scene ptr to desired scene for processing later.
+		//queuedScene = sceneBin[found->second].get();
+		SetScene(found->second);
 	}
 
 	void SceneManager::SetScene(size_t value)
@@ -39,11 +29,20 @@ namespace Tusk
 			return;
 		}
 
-		//Set current scene ptr to desired scene.
-		currentScene = sceneBin[value].get();
+		//Set queue scene ptr to desired scene for processing later.
+		queuedScene = sceneBin[value].get();
+	}
+
+	void SceneManager::Process()
+	{
+		if(queuedScene)
+		{
+			currentScene = queuedScene;
+			queuedScene = nullptr;
+		}
 
 		//Check if this is scene's first time running.
-		if (!currentScene->HasStarted())
+		if (currentScene && !currentScene->HasStarted())
 		{
 			bool sceneStartResult = currentScene->Start();
 
@@ -61,11 +60,13 @@ namespace Tusk
 
 	void SceneManager::FixedUpdate(Input& input, float fixedDeltaTime)
 	{
-		currentScene->FixedUpdate(input, fixedDeltaTime);
+		if(currentScene)
+			currentScene->FixedUpdate(input, fixedDeltaTime);
 	}
 
 	void SceneManager::Render(Renderer& renderer)
 	{
-		currentScene->Render(renderer);
+		if(currentScene)
+			currentScene->Render(renderer);
 	}
 }

@@ -23,6 +23,8 @@ namespace Tusk
 		void SetScene(std::string sceneName);
 		void SetScene(size_t value);
 
+		void Process();
+
 		template<class T>
 		void AddScene(std::string sceneName)
 		{
@@ -40,6 +42,7 @@ namespace Tusk
 		//void Stop();
 	private:
 		Scene* currentScene = nullptr;
+		Scene* queuedScene = nullptr;
 		std::vector<std::unique_ptr<Scene>> sceneBin;
 		std::unordered_map<std::string, size_t> sceneLookup;
 	};

@@ -133,6 +133,7 @@ namespace Tusk
 			renderer.CreateGPUTexture(texture);
 		}
 
+		//Clearing assets CPU side to stop
 		meshAssetBin.clear();
 		textureAssetBin.clear();
 

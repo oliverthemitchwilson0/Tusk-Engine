@@ -140,6 +140,8 @@ namespace Tusk
 			{
 				impl->PollEvents();
 
+				mSceneManager.Process();
+
 				mInput.ProcessInput();
 
 				//Input Test
@@ -182,9 +184,6 @@ namespace Tusk
 				mSceneManager.Render(GetRenderer());
 				ProcessDebugUI();
 				mRenderer.Present();
-
-				//bool result = SDL_RenderPresent(impl_->renderer.get());
-				//renderer.RenderPresent();
 
 				//If we're not using vsync, we need to manually delay to avoid a busy loop that maxes CPU usage.
 				if (!impl->vsyncEnabled)
