@@ -15,6 +15,7 @@ namespace Tusk
 {
 	std::vector<MeshAsset> Asset::meshAssetBin;
 	std::vector<TextureAsset> Asset::textureAssetBin;
+	bool Asset::dirty = false;
 
 	void Asset::LoadModel(const char* path, std::string name)
 	{
@@ -77,6 +78,8 @@ namespace Tusk
 				.indices = std::move(indices),
 			}
 			);
+
+		dirty = true;
 	}
 
 	void Asset::LoadImage(const char* path, std::string name)
@@ -114,6 +117,8 @@ namespace Tusk
 				.surface{finalSurface.release()},
 			}
 		);
+
+		dirty = true;
 	}
 
 	void Asset::PushAssetsToRenderer(Renderer& renderer)
@@ -127,5 +132,15 @@ namespace Tusk
 		{
 			renderer.CreateGPUTexture(texture);
 		}
+
+		meshAssetBin.clear();
+		textureAssetBin.clear();
+
+		dirty = false;
+	}
+
+	bool Asset::AssetsFreshlyLoaded()
+	{
+		return dirty;
 	}
 }

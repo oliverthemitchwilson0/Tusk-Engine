@@ -12,11 +12,15 @@ namespace TuskGame
 {
     bool SecondDemoScene::Start()
     {
+        SetSceneColour(Tusk::Math::vec3(3.f / 255.f, 252.f / 255.f, 157.f / 255.f));
+
+        Tusk::Asset::LoadModel("Assets/io_food_pine_big.obj", "Pineapple");
+
         objects.push_back(std::make_unique<Tusk::GameObject>()); //Maybe this should be wrapped? Shouldn't expect the user to write the out everytime they need a new object.
         auto* object = objects.at(objects.size() - 1).get();
 
         auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
-        objectTransformComp->SetTranslation(Tusk::Math::vec3(0.f, 0.f, 4.f));
+        objectTransformComp->SetTranslation(Tusk::Math::vec3(0.f, 0.f, 8.f));
 
         auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
         objectMeshComp->UseMesh("Pineapple");

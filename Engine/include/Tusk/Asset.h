@@ -19,8 +19,10 @@ namespace Tusk
 		static void LoadModel(const char* path, std::string name);
 		static void LoadImage(const char* path, std::string name);
 		static void PushAssetsToRenderer(Renderer& renderer);
+		static bool AssetsFreshlyLoaded();
 	private:
 		static std::vector<MeshAsset> meshAssetBin;
 		static std::vector<TextureAsset> textureAssetBin;
+		static bool dirty;
 	};
 }

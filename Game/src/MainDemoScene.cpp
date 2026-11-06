@@ -18,7 +18,6 @@ namespace TuskGame
 		Tusk::Logging::Log("Main Demo Scene Start");
 
         Tusk::Asset::LoadModel("Assets/io_food_banana_big.obj", "Banana");
-        Tusk::Asset::LoadModel("Assets/io_food_pine_big.obj", "Pineapple");
         Tusk::Asset::LoadModel("Assets/d4c.gltf", "D4C");
 
         Tusk::Asset::LoadImage("Assets/fruit_col_mt.png", "fruitTex");

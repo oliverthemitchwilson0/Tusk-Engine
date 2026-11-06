@@ -34,8 +34,12 @@ namespace Tusk
             }
         }
 
+        //Logging::Log("Camera Pos: %f, %f, %f", activeCameraData.position.x, activeCameraData.position.y, activeCameraData.position.z);
+        //Logging::Log("Camera Dir: %f, %f, %f", activeCameraData.forward.x, activeCameraData.forward.y, activeCameraData.forward.z);
+
         //Set the camera data in renderer.
         renderer.SetCameraData(activeCameraData);
+        renderer.SetClearColour(GetSceneColour());
 
         //Draw all objects (Only with meshes)
         for (auto& object : objects)
@@ -48,4 +52,14 @@ namespace Tusk
 	{
 		
 	}
+
+    Math::vec3 Scene::GetSceneColour()
+    {
+        return clearColour;
+    }
+
+    void Scene::SetSceneColour(Math::vec3 colour)
+    {
+        clearColour = colour;
+    }
 }

@@ -135,9 +135,6 @@ namespace Tusk
 				result = 1;
 			}
 
-			//After game Start(), upload any imported meshses and textures to the renderer.
-			Asset::PushAssetsToRenderer(GetRenderer()); // This will have to change since scenes can load anytime.
-
 			//Core engine loop
 			while (result == 0 && !impl->quit)
 			{
@@ -149,7 +146,7 @@ namespace Tusk
 				if (mInput.GetKeyPressed(Tusk::ESCAPE))
 					impl->quit = true;
 
-				if(mInput.GetKeyPressed(Tusk::BACKSPACE))
+				if(mInput.GetKeyPressed(Tusk::F11))
 					SDL_SetWindowFullscreen(impl->window.get(), true);
 
 				if (mInput.GetKeyPressed(Tusk::F3))
@@ -160,6 +157,12 @@ namespace Tusk
 				const auto now = Clock::now();
 				const double elapsed = std::chrono::duration<double>(now - previousTime).count();
 				previousTime = now;
+
+				if (Asset::AssetsFreshlyLoaded())
+				{
+					Logging::Log("Pushing new assets to renderer.");
+					Asset::PushAssetsToRenderer(GetRenderer());
+				}
 
 				accumulator += elapsed;
 				while (accumulator >= fixedStepTime && !impl->quit) {

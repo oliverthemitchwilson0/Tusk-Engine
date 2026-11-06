@@ -37,7 +37,7 @@ namespace Tusk
 
 		//Renderer Commands
 
-		void SetClearColour(float red, float green, float blue);
+		void SetClearColour(Math::vec3  colour);
 		void Clear();
 		void Draw(MeshID mesh, std::string texture, Math::mat4 transformMat);
 		void Present();

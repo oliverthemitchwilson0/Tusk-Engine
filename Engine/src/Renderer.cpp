@@ -289,9 +289,9 @@ namespace Tusk
 		return true;
 	}
 
-	void Renderer::SetClearColour(float red, float green, float blue)
+	void Renderer::SetClearColour(Math::vec3  colour)
 	{
-		clearColour = Math::vec3(red, green, blue);
+		clearColour = Math::vec3(colour.r, colour.g, colour.b);
 	}
 
 	void Renderer::Clear()
