@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Tusk/Components/TextureComponent.h>
-#include <Tusk/Renderer.h> //Probably shouldn't have full renderer access.
+#include <Tusk/Renderer.h> //Probably shouldn't have full renderer access. Note: https://www.youtube.com/watch?v=hZ0TGCUcY2g - This has a good solution to interfacing with engine systenms @ 9:24 
 
 namespace Tusk
 {
