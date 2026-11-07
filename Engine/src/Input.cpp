@@ -1,5 +1,6 @@
 #include <Tusk/Input.h>
 #include <Tusk/Logging.h>
+#include <Tusk/Math.h>
 
 #include <SDL3/SDL.h>
 
@@ -15,11 +16,6 @@
 
 namespace Tusk
 {
-	struct MouseCoordinates
-	{
-		float x, y;
-	};
-
 	struct Input::Impl
 	{
 		//Keyboard states
@@ -27,15 +23,17 @@ namespace Tusk
 		bool previousKeyState[SDL_SCANCODE_COUNT];
 
 		//Mouse states
-		MouseCoordinates currentMousePos;
-		MouseCoordinates previousMousePos;
+		Math::vec2 currentMousePos;
+		Math::vec2 previousMousePos;
+
+		bool currentMouseBtnState[3];
 	};
 
 	Input::Input() : impl(std::make_unique<Impl>()) {}
 
 	Input::~Input() {}
 
-	void Input::ProcessInput()
+	void Input::Process()
 	{
 		//Setup
 		auto& currentKeyState = impl->currentKeyState;
@@ -55,6 +53,12 @@ namespace Tusk
 
 		previousMousePos = currentMousePos;
 		auto mouseState = SDL_GetMouseState(&currentMousePos.x, &currentMousePos.y);
+	}
+
+	void Input::PushMouseEvent(const MouseEvent& event)
+	{
+		//Logging::Log("Pushed.");
+		impl->currentMouseBtnState[event.button - 1] = event.down;
 	}
 
 	bool Input::GetKeyDown(Keys key)
@@ -77,6 +81,11 @@ namespace Tusk
 		}
 
 		return false;
+	}
+
+	bool Input::GetMouseBtnDown(MouseButton btn)
+	{
+		return impl->currentMouseBtnState[btn];
 	}
 
 	void Tusk::Input::GetMouseDelta(float* deltaX, float* deltaY)

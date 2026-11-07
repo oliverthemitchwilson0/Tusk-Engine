@@ -40,7 +40,7 @@ namespace Tusk
 		}
 
 		//Listens to SDL events.
-		void PollEvents() {
+		void PollEvents(Input& mInput) {
 			SDL_Event event;
 			while (SDL_PollEvent(&event)) {
 				ImGui_ImplSDL3_ProcessEvent(&event); //pass event data to ImGui impl.
@@ -50,6 +50,22 @@ namespace Tusk
 				else if(event.type == SDL_EVENT_WINDOW_RESIZED)
 				{
 					windowResized = true;
+				}
+				else if(event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+				{
+					mInput.PushMouseEvent(MouseEvent{
+						.button = event.button.button,
+						.down = event.button.down,
+						}
+					);
+				}
+				else if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
+				{
+					mInput.PushMouseEvent(MouseEvent{
+						.button = event.button.button,
+						.down = event.button.down,
+						}
+					);
 				}
 			}
 		}
@@ -138,11 +154,11 @@ namespace Tusk
 			//Core engine loop
 			while (result == 0 && !impl->quit)
 			{
-				impl->PollEvents();
+				impl->PollEvents(mInput);
 
 				mSceneManager.Process();
 
-				mInput.ProcessInput();
+				mInput.Process();
 
 				//Input Test
 				if (mInput.GetKeyPressed(Tusk::ESCAPE))

@@ -90,10 +90,12 @@ namespace TuskGame
         else if (input.GetKeyDown(Tusk::LSHIFT))
             newCamTranslation -= cameraUp * 8.f * fixedDeltaTime;
 
-        if (input.GetKeyDown(Tusk::X))
-            cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
-        else if (input.GetKeyDown(Tusk::Z))
+        if (input.GetMouseBtnDown(Tusk::LEFT))
             cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
+        else if (input.GetMouseBtnDown(Tusk::RIGHT))
+            cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
+
+
 
         cameraTranasform->SetTranslation(newCamTranslation);
 	}

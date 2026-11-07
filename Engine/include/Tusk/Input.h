@@ -67,15 +67,30 @@ namespace Tusk
         LSHIFT = 225,
 	};
 
+    enum MouseButton
+    {
+        LEFT = 0,
+        MIDDLE = 1,
+        RIGHT = 2,
+    };
+
+    struct MouseEvent
+    {
+        uint8_t button;
+        bool down = false;
+    };
+
 	class Input
 	{
 	public:
 		Input();
 		~Input();
 
-        void ProcessInput();
+        void Process();
+        void PushMouseEvent(const MouseEvent& event);
 		bool GetKeyDown(Keys key);
         bool GetKeyPressed(Keys key);
+        bool GetMouseBtnDown(MouseButton btn);
         void GetMouseDelta(float* deltaX, float* deltaY);
 
     private:

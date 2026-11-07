@@ -20,9 +20,11 @@ namespace Tusk
 		SceneManager() = default;
 		~SceneManager() = default;
 
+		//Set's the desired scene to be queued for switching.
 		void SetScene(std::string sceneName);
 		void SetScene(size_t value);
 
+		//Processes the scene switching for any queued scene
 		void Process();
 
 		template<class T>
