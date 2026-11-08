@@ -11,6 +11,8 @@
 #include <Tusk/Input.h>
 #include <Tusk/Renderer.h>
 
+#include <box3d/box3d.h>
+
 namespace TuskGame
 {
 	bool MainDemoScene::Start()
@@ -57,41 +59,38 @@ namespace TuskGame
 
         //Physics test
 
-        //b3WorldDef worldDef = b3DefaultWorldDef();
-        //worldDef.gravity = b3Vec3{ 0.0f, -10.0f, 0.0f };
-        ////worldID = b3CreateWorld(&worldDef);
+       b3BodyDef groundBodyDef = b3DefaultBodyDef();
+       groundBodyDef.position = b3Vec3{ 0.0f, 0.0f, 0.0f };
+       b3BodyId groundId = b3CreateBody(physics.GetWorldID(), &groundBodyDef);
 
-        //b3BodyDef groundBodyDef = b3DefaultBodyDef();
-        //groundBodyDef.position = b3Vec3{ 0.0f, -10.0f, 0.0f };
-        //b3BodyId groundId = b3CreateBody(worldID, &groundBodyDef);
+       b3BoxHull groundBox = b3MakeBoxHull(50.0f, 0.0f, 50.0f);
 
-        //b3BoxHull groundBox = b3MakeBoxHull(50.0f, 1.0f, 50.0f);
-
-        //b3ShapeDef groundShapeDef = b3DefaultShapeDef();
-        //b3CreateHullShape(groundId, &groundShapeDef, &groundBox.base);
+       b3ShapeDef groundShapeDef = b3DefaultShapeDef();
+       b3CreateHullShape(groundId, &groundShapeDef, &groundBox.base);
 
 
+       b3BodyDef bodyDef = b3DefaultBodyDef();
+       bodyDef.type = b3_dynamicBody;
+       bodyDef.position = b3Vec3{ -2.0f, 10.0f, 3.0f };
+       bodyID = b3CreateBody(physics.GetWorldID(), &bodyDef);
 
-        //b3BodyDef bodyDef = b3DefaultBodyDef();
-        //bodyDef.type = b3_dynamicBody;
-        //bodyDef.position = b3Vec3{ -2.0f, 10.0f, 3.0f };
-        //bodyID = b3CreateBody(worldID, &bodyDef);
+       //b3DestroyWorld(worldId);
 
-        ////b3DestroyWorld(worldId);
+       b3BoxHull dynamicBox = b3MakeCubeHull(0.5f);
 
-        //b3BoxHull dynamicBox = b3MakeCubeHull(1.0f);
+       b3ShapeDef shapeDef = b3DefaultShapeDef();
+       shapeDef.density = 1.0f;
+       shapeDef.baseMaterial.friction = 0.3f;
 
-        //b3ShapeDef shapeDef = b3DefaultShapeDef();
-        //shapeDef.density = 1.0f;
-        //shapeDef.baseMaterial.friction = 0.3f;
-
-        //b3CreateHullShape(bodyID, &shapeDef, &dynamicBox.base);
+       b3CreateHullShape(bodyID, &shapeDef, &dynamicBox.base);
 
         return true;
 	}
 
 	void MainDemoScene::FixedUpdate(Tusk::Input& input, float fixedDeltaTime)
 	{
+        Scene::FixedUpdate(input, fixedDeltaTime);
+
         //Banana Test
 
         bananaAngle += Tusk::Math::radians(90.f * fixedDeltaTime);
@@ -135,9 +134,7 @@ namespace TuskGame
         }
 
         //Test
-        /*auto d4cTransform = object2->GetComponent<Tusk::TransformComponent>();
-
-        b3World_Step(worldID, fixedDeltaTime, 4);
+        auto d4cTransform = object2->GetComponent<Tusk::TransformComponent>();
 
         b3Vec3 position = b3Body_GetPosition(bodyID);
 
@@ -147,7 +144,7 @@ namespace TuskGame
 
         printf("%4.2f %4.2f %4.2f %4.2f %4.2f %4.2f %4.2f\n",
             position.x, position.y, position.z,
-            rotation.v.x, rotation.v.y, rotation.v.z, rotation.s);*/
+            rotation.v.x, rotation.v.y, rotation.v.z, rotation.s);
 	}
 
 	void MainDemoScene::Stop()

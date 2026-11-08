@@ -2,6 +2,7 @@
 
 #include <Tusk/GameObject.h>
 #include <Tusk/Math.h>
+#include <Tusk/Physics.h>
 
 #include <vector>
 #include <memory>
@@ -18,7 +19,7 @@ namespace Tusk
 		virtual ~Scene();
 
 		virtual bool Start();
-		virtual void FixedUpdate(Input& input, float deltaFixedTime);
+		virtual void FixedUpdate(Input& input, float fixedDeltaTime);
 		void Render(Renderer& renderer);
 		virtual void Stop();
 
@@ -27,9 +28,11 @@ namespace Tusk
 		Math::vec3 GetSceneColour();
 	protected:
 		void SetSceneColour(const Math::vec3& colour);
+
 		std::vector<std::unique_ptr<GameObject>> objects;
+		Physics physics;
 	private:
-		struct Impl;
-		std::unique_ptr<Impl> impl;
+		bool sceneStarted = false;
+		Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
 	};
 }

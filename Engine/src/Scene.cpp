@@ -9,15 +9,7 @@
 
 namespace Tusk
 {
-    struct Scene::Impl
-    {
-        bool sceneStarted = false;
-        Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
-
-        b3WorldId physWorldID;
-    };
-
-    Scene::Scene() : impl(std::make_unique<Impl>()) {}
+    Scene::Scene() {}
     Scene::~Scene() {}
 
 	bool Scene::Start()
@@ -26,9 +18,9 @@ namespace Tusk
 		return true;
 	}
 
-	void Scene::FixedUpdate(Input& input, float deltaFixedTime)
+	void Scene::FixedUpdate(Input& input, float fixedDeltaTime)
 	{
-		//Logging::Log("Scene Updating");
+        physics.FixedUpdate(fixedDeltaTime);
 	}
 
 	void Scene::Render(Renderer& renderer)
@@ -68,21 +60,21 @@ namespace Tusk
 
     void Scene::SetStarted()
     {
-        impl->sceneStarted = true;
+        sceneStarted = true;
     }
 
     bool Scene::HasStarted() const
     {
-        return impl->sceneStarted;
+        return sceneStarted;
     }
 
     Math::vec3 Scene::GetSceneColour()
     {
-        return impl->clearColour;
+        return clearColour;
     }
 
     void Scene::SetSceneColour(const Math::vec3& colour)
     {
-        impl->clearColour = colour;
+        clearColour = colour;
     }
 }

@@ -20,11 +20,18 @@ namespace Tusk
 
 	Physics::~Physics()
 	{
-		b3DestroyWorld(impl->PhysWorldID);
+		if(b3World_IsValid(impl->PhysWorldID))
+			b3DestroyWorld(impl->PhysWorldID);
 	}
 
-	void Physics::FixedUpdate(const float fixedDeltaTime)
+	void Physics::FixedUpdate(float fixedDeltaTime)
 	{
-		b3World_Step(impl->PhysWorldID, fixedDeltaTime, 4);
+		if(b3World_IsValid(impl->PhysWorldID))
+			b3World_Step(impl->PhysWorldID, fixedDeltaTime, 4);
+	}
+
+	const b3WorldId& Physics::GetWorldID()
+	{
+		return impl->PhysWorldID;
 	}
 }
