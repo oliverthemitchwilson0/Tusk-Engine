@@ -87,6 +87,16 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imgui)
 
+#Box3D
+
+include(FetchContent)
+FetchContent_Declare(box3d
+  GIT_REPOSITORY https://github.com/erincatto/box3d.git
+  GIT_TAG v0.1.0
+)
+
+FetchContent_MakeAvailable(box3d)
+
 #Shader Conversion Macro
 #https://github.com/TechnicJelle/GPUForBeginners/blob/ab63d5d11df06466a67ec46a5e8cd51723629203/CMakeLists.txt#L35-L68
 macro(compile_shaders shader_dir_in)
@@ -228,6 +238,7 @@ target_link_libraries(Engine PRIVATE
     SDL3::SDL3
     assimp::assimp
     SDL3_image::SDL3_image
+    box3d::box3d
     imgui
 )
 
@@ -244,6 +255,7 @@ if(WIN32)
             $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:GameApp>
             $<TARGET_FILE:assimp::assimp> $<TARGET_FILE_DIR:GameApp>
             $<TARGET_FILE:SDL3_image::SDL3_image> $<TARGET_FILE_DIR:GameApp>
+            $<TARGET_FILE:box3d::box3d> $<TARGET_FILE_DIR:GameApp>
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_SOURCE_DIR}/Game/Assets" "$<TARGET_FILE_DIR:GameApp>/Assets"
         VERBATIM)
