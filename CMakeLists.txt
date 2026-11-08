@@ -238,12 +238,12 @@ target_link_libraries(Engine PRIVATE
     SDL3::SDL3
     assimp::assimp
     SDL3_image::SDL3_image
-    box3d::box3d
     imgui
 )
 
 target_link_libraries(Engine PUBLIC
     glm::glm
+    box3d::box3d
 )
 
 target_link_libraries(Game PUBLIC Engine)

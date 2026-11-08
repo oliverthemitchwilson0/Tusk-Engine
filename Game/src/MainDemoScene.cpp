@@ -11,6 +11,9 @@
 #include <Tusk/Input.h>
 #include <Tusk/Renderer.h>
 
+#include <box3d/box3d.h>
+#include <thread>
+
 namespace TuskGame
 {
 	bool MainDemoScene::Start()
@@ -53,6 +56,39 @@ namespace TuskGame
         camComponent->SetActive(true);
         auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
 
+        //Physics test
+
+        b3WorldDef worldDef = b3DefaultWorldDef();
+        worldDef.gravity = b3Vec3{ 0.0f, -10.0f, 0.0f };
+        worldDef.workerCount = std::thread::hardware_concurrency() - 1;
+        worldID = b3CreateWorld(&worldDef);
+
+        b3BodyDef groundBodyDef = b3DefaultBodyDef();
+        groundBodyDef.position = b3Vec3{ 0.0f, -10.0f, 0.0f };
+        b3BodyId groundId = b3CreateBody(worldID, &groundBodyDef);
+
+        b3BoxHull groundBox = b3MakeBoxHull(50.0f, 1.0f, 50.0f);
+
+        b3ShapeDef groundShapeDef = b3DefaultShapeDef();
+        b3CreateHullShape(groundId, &groundShapeDef, &groundBox.base);
+
+
+
+        b3BodyDef bodyDef = b3DefaultBodyDef();
+        bodyDef.type = b3_dynamicBody;
+        bodyDef.position = b3Vec3{ -2.0f, 10.0f, 3.0f };
+        bodyID = b3CreateBody(worldID, &bodyDef);
+
+        //b3DestroyWorld(worldId);
+
+        b3BoxHull dynamicBox = b3MakeCubeHull(1.0f);
+
+        b3ShapeDef shapeDef = b3DefaultShapeDef();
+        shapeDef.density = 1.0f;
+        shapeDef.baseMaterial.friction = 0.3f;
+
+        b3CreateHullShape(bodyID, &shapeDef, &dynamicBox.base);
+
         return true;
 	}
 
@@ -67,37 +103,53 @@ namespace TuskGame
 
 
         //Camera Test
+        {
+            auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
+            auto newCamTranslation = cameraTranasform->GetTranslation();
+            auto cameraForward = cameraTranasform->GetForward();
+            auto cameraRight = cameraTranasform->GetRight();
+            auto cameraUp = cameraTranasform->GetUp();
+            auto rotation = cameraTranasform->GetRotation();
 
-        auto* cameraTranasform = camera->GetComponent<Tusk::TransformComponent>();
-        auto newCamTranslation = cameraTranasform->GetTranslation();
-        auto cameraForward = cameraTranasform->GetForward();
-        auto cameraRight = cameraTranasform->GetRight();
-        auto cameraUp = cameraTranasform->GetUp();
-        auto rotation = cameraTranasform->GetRotation();
+            if (input.GetKeyDown(Tusk::W))
+                newCamTranslation += cameraForward * 8.f * fixedDeltaTime;
+            else if (input.GetKeyDown(Tusk::S))
+                newCamTranslation -= cameraForward * 8.f * fixedDeltaTime;
 
-        if (input.GetKeyDown(Tusk::W))
-            newCamTranslation += cameraForward * 8.f * fixedDeltaTime;
-        else if (input.GetKeyDown(Tusk::S))
-            newCamTranslation -= cameraForward * 8.f * fixedDeltaTime;
+            if (input.GetKeyDown(Tusk::D))
+                newCamTranslation += cameraRight * 8.f * fixedDeltaTime;
+            else if (input.GetKeyDown(Tusk::A))
+                newCamTranslation -= cameraRight * 8.f * fixedDeltaTime;
 
-        if (input.GetKeyDown(Tusk::D))
-            newCamTranslation += cameraRight * 8.f * fixedDeltaTime;
-        else if (input.GetKeyDown(Tusk::A))
-            newCamTranslation -= cameraRight * 8.f * fixedDeltaTime;
+            if (input.GetKeyDown(Tusk::SPACE))
+                newCamTranslation += cameraUp * 8.f * fixedDeltaTime;
+            else if (input.GetKeyDown(Tusk::LSHIFT))
+                newCamTranslation -= cameraUp * 8.f * fixedDeltaTime;
 
-        if (input.GetKeyDown(Tusk::SPACE))
-            newCamTranslation += cameraUp * 8.f * fixedDeltaTime;
-        else if (input.GetKeyDown(Tusk::LSHIFT))
-            newCamTranslation -= cameraUp * 8.f * fixedDeltaTime;
-
-        if (input.GetMouseBtnDown(Tusk::LEFT))
-            cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
-        else if (input.GetMouseBtnDown(Tusk::RIGHT))
-            cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
+            if (input.GetMouseBtnDown(Tusk::LEFT))
+                cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
+            else if (input.GetMouseBtnDown(Tusk::RIGHT))
+                cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
 
 
 
-        cameraTranasform->SetTranslation(newCamTranslation);
+            cameraTranasform->SetTranslation(newCamTranslation);
+        }
+
+        //Test
+        auto d4cTransform = object2->GetComponent<Tusk::TransformComponent>();
+
+        b3World_Step(worldID, fixedDeltaTime, 4);
+
+        b3Vec3 position = b3Body_GetPosition(bodyID);
+
+        d4cTransform->SetTranslation(Tusk::Math::vec3(position.x, position.y, position.z));
+
+        b3Quat rotation = b3Body_GetRotation(bodyID);
+
+        printf("%4.2f %4.2f %4.2f %4.2f %4.2f %4.2f %4.2f\n",
+            position.x, position.y, position.z,
+            rotation.v.x, rotation.v.y, rotation.v.z, rotation.s);
 	}
 
 	void MainDemoScene::Stop()

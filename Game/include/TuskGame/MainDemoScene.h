@@ -2,6 +2,8 @@
 #include <Tusk/Scene.h>
 #include <Tusk/GameObject.h>
 
+#include <box3d/box3d.h>
+
 namespace TuskGame
 {
 	class MainDemoScene : public Tusk::Scene
@@ -19,5 +21,9 @@ namespace TuskGame
 		Tusk::GameObject* camera = nullptr;
 
 		float bananaAngle = 0.f;
+
+		//test
+		b3WorldId worldID;
+		b3BodyId bodyID;
 	};
 }
