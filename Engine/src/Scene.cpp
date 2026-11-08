@@ -1,12 +1,25 @@
 #include <Tusk/Scene.h>
-#include <Tusk/Input.h> //Maybe Scene shouldn't have direct knowledge of the 
+#include <Tusk/Input.h> //Maybe Scene shouldn't have direct knowledge of the input and rendering system.
 #include <Tusk/Renderer.h> 
 #include <Tusk/Logging.h>
 #include <Tusk/Graphics/CameraData.h>
 #include <Tusk/Components/CameraComponent.h>
 
+#include <box3d/box3d.h>
+
 namespace Tusk
 {
+    struct Scene::Impl
+    {
+        bool sceneStarted = false;
+        Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
+
+        b3WorldId physWorldID;
+    };
+
+    Scene::Scene() : impl(std::make_unique<Impl>()) {}
+    Scene::~Scene() {}
+
 	bool Scene::Start()
 	{
 		//Logging::Log("Scene Started");
@@ -53,13 +66,23 @@ namespace Tusk
 		
 	}
 
-    Math::vec3 Scene::GetSceneColour()
+    void Scene::SetStarted()
     {
-        return clearColour;
+        impl->sceneStarted = true;
     }
 
-    void Scene::SetSceneColour(Math::vec3 colour)
+    bool Scene::HasStarted() const
     {
-        clearColour = colour;
+        return impl->sceneStarted;
+    }
+
+    Math::vec3 Scene::GetSceneColour()
+    {
+        return impl->clearColour;
+    }
+
+    void Scene::SetSceneColour(const Math::vec3& colour)
+    {
+        impl->clearColour = colour;
     }
 }

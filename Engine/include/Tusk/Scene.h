@@ -3,6 +3,9 @@
 #include <Tusk/GameObject.h>
 #include <Tusk/Math.h>
 
+#include <vector>
+#include <memory>
+
 namespace Tusk 
 {
 	class Input;
@@ -11,22 +14,22 @@ namespace Tusk
 	class Scene
 	{
 	public:
-		Scene() = default;
-		virtual ~Scene() = default;
+		Scene();
+		virtual ~Scene();
 
 		virtual bool Start();
 		virtual void FixedUpdate(Input& input, float deltaFixedTime);
 		void Render(Renderer& renderer);
 		virtual void Stop();
 
-		void SetStarted() { sceneStarted = true; };
-		bool HasStarted() { return sceneStarted; };
+		void SetStarted();
+		bool HasStarted() const;
 		Math::vec3 GetSceneColour();
 	protected:
-		void SetSceneColour(Math::vec3 colour);
+		void SetSceneColour(const Math::vec3& colour);
 		std::vector<std::unique_ptr<GameObject>> objects;
 	private:
-		bool sceneStarted = false;
-		Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
+		struct Impl;
+		std::unique_ptr<Impl> impl;
 	};
 }

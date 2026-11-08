@@ -221,6 +221,7 @@ add_library(Engine STATIC
     Engine/src/Asset.cpp
     Engine/src/Scene.cpp
     Engine/src/SceneManager.cpp
+    Engine/src/Physics.cpp
     Engine/src/Logging.cpp
 )
 add_library(Game STATIC 

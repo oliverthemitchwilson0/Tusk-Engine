@@ -1,9 +1,9 @@
 #pragma once
-#include <vector>
-#include <memory>
-
 #include <Tusk/Components/ComponentBase.h>
 #include <Tusk/Components/TransformComponent.h>
+
+#include <vector>
+#include <memory>
 
 namespace Tusk
 {

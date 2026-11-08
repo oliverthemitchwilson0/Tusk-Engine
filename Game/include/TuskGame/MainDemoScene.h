@@ -23,7 +23,6 @@ namespace TuskGame
 		float bananaAngle = 0.f;
 
 		//test
-		b3WorldId worldID;
 		b3BodyId bodyID;
 	};
 }
