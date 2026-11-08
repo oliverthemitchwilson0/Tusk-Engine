@@ -29,7 +29,7 @@ namespace TuskGame
         objects.push_back(std::make_unique<Tusk::GameObject>()); //Maybe this should be wrapped? Shouldn't expect the user to write the out everytime they need a new object.
         object = objects.at(objects.size() - 1).get();
 
-        auto* objectTransformComp = object->AddComponent<Tusk::TransformComponent>();
+        auto* objectTransformComp = object->GetComponent<Tusk::TransformComponent>();
         objectTransformComp->SetTranslation(Tusk::Math::vec3(2.f, 0.f, 3.f));
 
         auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
@@ -40,7 +40,8 @@ namespace TuskGame
 
         objects.push_back(std::make_unique<Tusk::GameObject>());
         object2 = objects.at(objects.size() - 1).get();
-        auto* object2TransformComp = object2->AddComponent<Tusk::TransformComponent>();
+
+        auto* object2TransformComp = object2->GetComponent<Tusk::TransformComponent>();
         object2TransformComp->SetTranslation(Tusk::Math::vec3(-2.f, 0.f, 3.f));
         object2TransformComp->SetRotation(Tusk::Math::angleAxis(Tusk::Math::radians(90.f), Tusk::Math::vec3(-1.f, 0.f, 0.f)));
 
@@ -52,9 +53,10 @@ namespace TuskGame
 
         objects.push_back(std::make_unique<Tusk::GameObject>());
         camera = objects.at(objects.size() - 1).get();
+
         auto* camComponent = camera->AddComponent<Tusk::CameraComponent>();
         camComponent->SetActive(true);
-        auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
+        //auto* camTransformComp = camera->AddComponent<Tusk::TransformComponent>();
 
         //Physics test
 

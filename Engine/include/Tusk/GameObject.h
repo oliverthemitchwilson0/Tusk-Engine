@@ -3,13 +3,14 @@
 #include <memory>
 
 #include <Tusk/Components/ComponentBase.h>
+#include <Tusk/Components/TransformComponent.h>
 
 namespace Tusk
 {
 	class GameObject
 	{
 	public:
-		GameObject() = default;
+		GameObject() { AddComponent<TransformComponent>(); };
 		~GameObject() = default;
 
 		template<class T>
