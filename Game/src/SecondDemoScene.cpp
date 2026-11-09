@@ -6,6 +6,7 @@
 #include <Tusk/Components/MeshComponent.h>
 #include <Tusk/Components/TextureComponent.h>
 #include <Tusk/Components/TransformComponent.h>
+#include <Tusk/Components/RigidBodyComponent.h>
 #include <Tusk/Math.h>
 
 namespace TuskGame
@@ -28,12 +29,19 @@ namespace TuskGame
         auto* objectTextureComp = object->AddComponent<Tusk::TextureComponent>();
         objectTextureComp->SetTexture("fruitTex");
 
+        auto* objectRigidBodyComp = object->AddComponent<Tusk::RigidBodyComponent>();
+        objectRigidBodyComp->Start();
+
         return true;
     }
 
     void SecondDemoScene::FixedUpdate(Tusk::Input& input, float fixedDeltaTime)
     {
-
+        Scene::FixedUpdate(input, fixedDeltaTime);
+        for (auto& object : objects)
+        {
+            object->FixedUpdate(fixedDeltaTime);
+        }
     }
 
     void SecondDemoScene::Stop()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Tusk/Components/ComponentBase.h>
+#include <Tusk/PhysicsTypes.h>
 
 namespace Tusk
 {
@@ -15,8 +16,8 @@ namespace Tusk
 
 		void Start() final;
 		void FixedUpdate(float deltaTime) final;
-		void Draw(Renderer& renderer) final;
+		void Draw(Renderer& renderer) final {};
 	private:
-		PhysBodyID ID;
+		PhysBodyID body;
 	};
 }

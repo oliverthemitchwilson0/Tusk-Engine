@@ -1,13 +1,12 @@
 #pragma once
 
 #include <Tusk/Math.h>
+#include <Tusk/PhysicsTypes.h>
 
 #include <memory>
 
 namespace Tusk
 {
-	struct PhysBodyID;
-
 	class Physics
 	{
 	public:
@@ -16,7 +15,8 @@ namespace Tusk
 
 		void FixedUpdate(float fixedDeltaTime);
 
-		PhysBodyID CreateBody(Math::vec3 position, Math::quat rotation);
+		PhysBodyID CreateBody(const Math::vec3& position, const Math::quat& rotation);
+		Math::vec3 GetBodyTranslation(const PhysBodyID& body);
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;
