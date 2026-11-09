@@ -11,7 +11,7 @@
 
 namespace TuskGame
 {
-    bool SecondDemoScene::Start()
+    bool SecondDemoScene::OnStart()
     {
         SetSceneColour(Tusk::Math::vec3(3.f / 255.f, 252.f / 255.f, 157.f / 255.f));
 
@@ -35,16 +35,12 @@ namespace TuskGame
         return true;
     }
 
-    void SecondDemoScene::FixedUpdate(Tusk::Input& input, float fixedDeltaTime)
+    void SecondDemoScene::OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime)
     {
-        Scene::FixedUpdate(input, fixedDeltaTime);
-        for (auto& object : objects)
-        {
-            object->FixedUpdate(fixedDeltaTime);
-        }
+
     }
 
-    void SecondDemoScene::Stop()
+    void SecondDemoScene::OnStop()
     {
 
     }

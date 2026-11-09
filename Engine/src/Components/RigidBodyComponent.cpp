@@ -20,7 +20,7 @@ namespace Tusk
 		auto* objTransform = GetParentObject()->GetComponent<TransformComponent>();
 
 		auto position = physicsSystem->GetBodyTranslation(body);
-		Logging::Log("Phys Position: %.1f, %.1f, %.1f", position.x, position.y, position.z);
+		//Logging::Log("Phys Position: %.1f, %.1f, %.1f", position.x, position.y, position.z);
 		objTransform->SetTranslation(position);
 	}
 }

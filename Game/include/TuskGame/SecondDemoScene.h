@@ -10,12 +10,9 @@ namespace TuskGame
 		SecondDemoScene() = default;
 		~SecondDemoScene() = default;
 
-		bool Start() final;
-		void FixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
-		void Stop() final;
 	private:
-		/*Tusk::GameObject* object = nullptr;
-		Tusk::GameObject* object2 = nullptr;
-		Tusk::GameObject* camera = nullptr;*/
+		bool OnStart() final;
+		void OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
+		void OnStop() final;
 	};
 }

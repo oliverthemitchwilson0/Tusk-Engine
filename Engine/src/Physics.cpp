@@ -30,10 +30,7 @@ namespace Tusk
 	void Physics::FixedUpdate(float fixedDeltaTime)
 	{
 		if (b3World_IsValid(impl->PhysWorldID) && !impl->bodyBin.empty())
-		{
-			Logging::Log("Stepping");
 			b3World_Step(impl->PhysWorldID, fixedDeltaTime, 4);
-		}
 	}
 
 	PhysBodyID Physics::CreateBody(const Math::vec3& position, const Math::quat& rotation)

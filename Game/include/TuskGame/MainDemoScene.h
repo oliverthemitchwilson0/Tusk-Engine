@@ -2,7 +2,7 @@
 #include <Tusk/Scene.h>
 #include <Tusk/GameObject.h>
 
-//#include <box3d/box3d.h>
+//https://en.wikipedia.org/wiki/Non-virtual_interface_pattern
 
 namespace TuskGame
 {
@@ -12,16 +12,16 @@ namespace TuskGame
 		MainDemoScene() = default;
 		~MainDemoScene() = default;
 
-		bool Start() final;
-		void FixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
-		void Stop() final;
 	private:
+		bool OnStart() final;
+		void OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
+		void OnStop() final;
+
+
 		Tusk::GameObject* object = nullptr;
 		Tusk::GameObject* object2 = nullptr;
 		Tusk::GameObject* camera = nullptr;
 
 		float bananaAngle = 0.f;
-
-		/*b3BodyId bodyID;*/
 	};
 }

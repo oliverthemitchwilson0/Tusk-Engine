@@ -14,13 +14,20 @@ namespace Tusk
 
 	bool Scene::Start()
 	{
-		//Logging::Log("Scene Started");
-		return true;
+		return OnStart();
 	}
 
 	void Scene::FixedUpdate(Input& input, float fixedDeltaTime)
 	{
         physics.FixedUpdate(fixedDeltaTime);
+        
+        //Update scene objects
+        for (auto& object : objects)
+        {
+            object->FixedUpdate(fixedDeltaTime);
+        }
+
+        OnFixedUpdate(input, fixedDeltaTime);
 	}
 
 	void Scene::Render(Renderer& renderer)
@@ -55,7 +62,7 @@ namespace Tusk
 
 	void Scene::Stop()
 	{
-		
+        OnStop();
 	}
 
     void Scene::SetStarted()

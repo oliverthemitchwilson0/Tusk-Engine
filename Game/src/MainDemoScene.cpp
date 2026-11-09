@@ -15,7 +15,7 @@
 
 namespace TuskGame
 {
-	bool MainDemoScene::Start()
+	bool MainDemoScene::OnStart()
 	{
 		Tusk::Logging::Log("Main Demo Scene Start");
 
@@ -87,10 +87,8 @@ namespace TuskGame
         return true;
 	}
 
-	void MainDemoScene::FixedUpdate(Tusk::Input& input, float fixedDeltaTime)
+	void MainDemoScene::OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime)
 	{
-        Scene::FixedUpdate(input, fixedDeltaTime);
-
         //Banana Test
 
         bananaAngle += Tusk::Math::radians(90.f * fixedDeltaTime);
@@ -141,7 +139,7 @@ namespace TuskGame
         d4cTransform->SetTranslation(Tusk::Math::vec3(position.x, position.y, position.z));*/
 	}
 
-	void MainDemoScene::Stop()
+	void MainDemoScene::OnStop()
 	{
 		
 	}
