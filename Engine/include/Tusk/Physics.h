@@ -15,8 +15,9 @@ namespace Tusk
 
 		void FixedUpdate(float fixedDeltaTime);
 
-		PhysBodyID CreateBody(const Math::vec3& position, const Math::quat& rotation);
+		PhysBodyID CreateBody(BodyType type, const Math::vec3& position, const Math::quat& rotation);
 		Math::vec3 GetBodyTranslation(const PhysBodyID& body);
+		Math::quat GetBodyRotation(const PhysBodyID& body);
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;

@@ -11,7 +11,7 @@ namespace Tusk
 		auto* physicsSystem = GetScene()->GetPhysicsSystem();
 		auto* transform = GetParentObject()->GetComponent<TransformComponent>();
 
-		body = physicsSystem->CreateBody(transform->GetTranslation(), transform->GetRotation());
+		body = physicsSystem->CreateBody(type, transform->GetTranslation(), transform->GetRotation());
 	}
 
 	void RigidBodyComponent::FixedUpdate(float fixedDeltaTime)
@@ -20,7 +20,18 @@ namespace Tusk
 		auto* objTransform = GetParentObject()->GetComponent<TransformComponent>();
 
 		auto position = physicsSystem->GetBodyTranslation(body);
-		//Logging::Log("Phys Position: %.1f, %.1f, %.1f", position.x, position.y, position.z);
+		auto rotation = physicsSystem->GetBodyRotation(body);
 		objTransform->SetTranslation(position);
+		objTransform->SetRotation(rotation);
+	}
+
+	void RigidBodyComponent::SetTypeToStatic()
+	{
+		type = StaticBody;
+	}
+
+	void RigidBodyComponent::SetTypeToDynamic()
+	{
+		type = DynamicBody;
 	}
 }

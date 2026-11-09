@@ -33,22 +33,36 @@ namespace Tusk
 			b3World_Step(impl->PhysWorldID, fixedDeltaTime, 4);
 	}
 
-	PhysBodyID Physics::CreateBody(const Math::vec3& position, const Math::quat& rotation)
+	PhysBodyID Physics::CreateBody(BodyType type, const Math::vec3& position, const Math::quat& rotation)
 	{
 		b3BodyDef bodyDef = b3DefaultBodyDef();
 	    bodyDef.position = b3Vec3{ position.x, position.y, position.z };
 		bodyDef.rotation = b3Quat{ rotation.x, rotation.y, rotation.z, rotation.w };
-		bodyDef.type = b3_dynamicBody;
+
+		switch(type)
+		{
+			case(StaticBody):
+				bodyDef.type = b3_staticBody;
+				break;
+			case(KinematicBody):
+				bodyDef.type = b3_kinematicBody;
+				break;
+			case(DynamicBody):
+				bodyDef.type = b3_dynamicBody;
+				break;
+		}
 
 		auto binID = impl->bodyBin.size();
 	    impl->bodyBin.push_back(b3CreateBody(impl->PhysWorldID, &bodyDef));
 
 		//temp
 
-		b3BoxHull groundBox = b3MakeBoxHull(1.f, 1.f, 1.f);
+		b3BoxHull groundBox = b3MakeBoxHull(.5f, .5f, .5f);
+
+		b3Sphere sphere = { b3Vec3_zero, .5f };
 
 		b3ShapeDef groundShapeDef = b3DefaultShapeDef();
-		b3CreateHullShape(impl->bodyBin[binID], &groundShapeDef, &groundBox.base);
+		b3CreateSphereShape(impl->bodyBin[binID], &groundShapeDef, &sphere);
 
 		Logging::Log("Body Created.");
 
@@ -62,5 +76,12 @@ namespace Tusk
 		auto& b3ID = impl->bodyBin[body];
 		auto position = b3Body_GetPosition(b3ID);
 		return Math::vec3(position.x, position.y, position.z);
+	}
+
+	Math::quat Physics::GetBodyRotation(const PhysBodyID& body)
+	{
+		auto& b3ID = impl->bodyBin[body];
+		auto rotation = b3Body_GetRotation(b3ID);
+		return Math::quat(rotation.s, rotation.v.x, rotation.v.y, rotation.v.z);
 	}
 }

@@ -34,6 +34,14 @@ namespace Tusk
 			return nullptr;
 		}
 
+		void Start()
+		{
+			for (auto& component : components)
+			{
+				component->Start();
+			}
+		}
+
 		void FixedUpdate(float fixedDeltaTime)
 		{
 			for(auto& component : components)

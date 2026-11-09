@@ -14,12 +14,19 @@ namespace Tusk
 
 	bool Scene::Start()
 	{
-		return OnStart();
+		bool result = OnStart();
+
+        for (auto& object : objects)
+        {
+            object->Start();
+        }
+
+        return result;
 	}
 
 	void Scene::FixedUpdate(Input& input, float fixedDeltaTime)
 	{
-        physics.FixedUpdate(fixedDeltaTime);
+        physicsSystem.FixedUpdate(fixedDeltaTime);
         
         //Update scene objects
         for (auto& object : objects)
@@ -87,6 +94,6 @@ namespace Tusk
 
     Physics* Scene::GetPhysicsSystem()
     {
-        return &physics;
+        return &physicsSystem;
     }
 }

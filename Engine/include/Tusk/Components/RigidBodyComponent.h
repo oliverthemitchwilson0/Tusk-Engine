@@ -17,7 +17,11 @@ namespace Tusk
 		void Start() final;
 		void FixedUpdate(float deltaTime) final;
 		void Draw(Renderer& renderer) final {};
+
+		void SetTypeToStatic();
+		void SetTypeToDynamic();
 	private:
 		PhysBodyID body;
+		BodyType type = StaticBody;
 	};
 }

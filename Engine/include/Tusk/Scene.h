@@ -39,6 +39,6 @@ namespace Tusk
 
 		bool sceneStarted = false;
 		Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
-		Physics physics;
+		Physics physicsSystem;
 	};
 }
