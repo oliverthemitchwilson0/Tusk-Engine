@@ -2,7 +2,7 @@
 #include <Tusk/Scene.h>
 #include <Tusk/GameObject.h>
 
-#include <box3d/box3d.h>
+//#include <box3d/box3d.h>
 
 namespace TuskGame
 {
@@ -22,6 +22,6 @@ namespace TuskGame
 
 		float bananaAngle = 0.f;
 
-		b3BodyId bodyID;
+		/*b3BodyId bodyID;*/
 	};
 }

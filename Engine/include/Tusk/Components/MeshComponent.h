@@ -27,7 +27,7 @@ namespace Tusk
 
 			Math::mat4 world = Math::identity<Math::mat4>();
 			std::string textureName;
-			if (parent)
+			if (auto* parent = GetParentObject())
 			{
 				if (auto* transfromComp = parent->GetComponent<TransformComponent>())
 					world = transfromComp->GetTransfromMatrix();

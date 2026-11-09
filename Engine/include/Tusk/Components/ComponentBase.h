@@ -2,6 +2,7 @@
 
 namespace Tusk
 {
+	class Scene;
 	class GameObject;
 	class Renderer;
 
@@ -15,6 +16,9 @@ namespace Tusk
 		virtual void FixedUpdate(float deltaTime) = 0;
 		virtual void Draw(Renderer& renderer) = 0;
 	protected:
+		GameObject* GetParentObject();
+		Scene* GetScene();
+	private:
 		GameObject* parent;
 	};
 }

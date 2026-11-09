@@ -1,10 +1,16 @@
 #include <Tusk/Physics.h>
+#include <Tusk/Math.h>
 
 #include <box3d/box3d.h>
 #include <thread>
 
 namespace Tusk
 {
+	struct PhysBodyID
+	{
+		b3BodyId mID;
+	};
+
 	struct Physics::Impl
 	{
 		b3WorldId PhysWorldID;
@@ -30,8 +36,15 @@ namespace Tusk
 			b3World_Step(impl->PhysWorldID, fixedDeltaTime, 4);
 	}
 
-	const b3WorldId& Physics::GetWorldID()
+	PhysBodyID Physics::CreateBody(Math::vec3 position, Math::quat rotation)
 	{
-		return impl->PhysWorldID;
+		b3BodyDef bodyDef = b3DefaultBodyDef();
+	    bodyDef.position = b3Vec3{ position.x, position.y, position.z };
+		bodyDef.rotation = b3Quat{ rotation.x, rotation.y, rotation.z, rotation.w };
+
+	    b3BodyId id = b3CreateBody(impl->PhysWorldID, &bodyDef);
+
+		PhysBodyID id_{ .mID = id };
+		return id_;
 	}
 }

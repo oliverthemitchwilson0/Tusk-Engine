@@ -1,11 +1,13 @@
 #pragma once
 
-#include <memory>
+#include <Tusk/Math.h>
 
-class b3WorldId;
+#include <memory>
 
 namespace Tusk
 {
+	struct PhysBodyID;
+
 	class Physics
 	{
 	public:
@@ -13,7 +15,8 @@ namespace Tusk
 		~Physics();
 
 		void FixedUpdate(float fixedDeltaTime);
-		const b3WorldId& GetWorldID();
+
+		PhysBodyID CreateBody(Math::vec3 position, Math::quat rotation);
 	private:
 		struct Impl;
 		std::unique_ptr<Impl> impl;

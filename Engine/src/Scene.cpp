@@ -77,4 +77,9 @@ namespace Tusk
     {
         clearColour = colour;
     }
+
+    Physics* Scene::GetPhysicsSystem()
+    {
+        return &physics;
+    }
 }

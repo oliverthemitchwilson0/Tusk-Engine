@@ -7,10 +7,12 @@
 
 namespace Tusk
 {
+	class Scene;
+
 	class GameObject
 	{
 	public:
-		GameObject() { AddComponent<TransformComponent>(); };
+		GameObject(Scene* parent) : parent(parent) { AddComponent<TransformComponent>(); };
 		~GameObject() = default;
 
 		template<class T>
@@ -40,7 +42,10 @@ namespace Tusk
 			}
 		}
 
+		Scene* GetParentScene() { return parent; }
+
 	private:
+		Scene* parent;
 		std::vector<std::unique_ptr<ComponentBase>> components;
 	};
 }

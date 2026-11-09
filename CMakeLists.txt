@@ -223,6 +223,8 @@ add_library(Engine STATIC
     Engine/src/SceneManager.cpp
     Engine/src/Physics.cpp
     Engine/src/Logging.cpp
+    Engine/src/Components/ComponentBase.cpp
+    Engine/src/Components/RigidBodyComponent.cpp
 )
 add_library(Game STATIC 
     Game/src/Game.cpp

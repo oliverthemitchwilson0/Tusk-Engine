@@ -23,7 +23,7 @@ namespace Tusk
 		{
 			Math::vec3 position(0.f, 0.f, 0.f);
 			Math::vec3 forward(0.f, 0.f, -1.f);
-			if(auto* transformComp = parent->GetComponent<TransformComponent>())
+			if(auto* transformComp = GetParentObject()->GetComponent<TransformComponent>())
 			{
 				position = transformComp->GetTranslation();
 				forward = transformComp->GetForward();
