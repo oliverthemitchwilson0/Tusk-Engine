@@ -55,20 +55,40 @@ namespace Tusk
 		auto binID = impl->bodyBin.size();
 	    impl->bodyBin.push_back(b3CreateBody(impl->PhysWorldID, &bodyDef));
 
-		//temp
-
-		b3BoxHull groundBox = b3MakeBoxHull(.5f, .5f, .5f);
-
-		b3Sphere sphere = { b3Vec3_zero, .5f };
-
-		b3ShapeDef groundShapeDef = b3DefaultShapeDef();
-		b3CreateSphereShape(impl->bodyBin[binID], &groundShapeDef, &sphere);
-
-		Logging::Log("Body Created.");
-
 		return PhysBodyID{
 			.id = binID,
 		};
+	}
+
+	void Physics::CreateBoxShape(const PhysBodyID& body, const Math::vec3& scale)
+	{
+		b3BoxHull box = b3MakeBoxHull(scale.x, scale.y, scale.z);
+		b3ShapeDef shapeDef = b3DefaultShapeDef();
+		b3CreateHullShape(impl->bodyBin[body], &shapeDef, &box.base);
+	}
+
+	void Physics::CreateSphereShape(const PhysBodyID& body, float radius)
+	{
+		b3Sphere sphere{
+			.center = b3Vec3_zero,
+			.radius = radius,
+		};
+		b3ShapeDef shapeDef = b3DefaultShapeDef();
+		b3CreateSphereShape(impl->bodyBin[body], &shapeDef, &sphere);
+	}
+
+	void Physics::AddVelocity(const PhysBodyID& body, const Math::vec3& vel)
+	{
+		auto& b3body = impl->bodyBin[body];
+		auto currentVel = b3Body_GetLinearVelocity(b3body);
+		
+		b3Vec3 newVelocity{
+			currentVel.x + vel.x,
+			currentVel.y + vel.y,
+			currentVel.z + vel.z,
+		};
+
+		b3Body_SetLinearVelocity(b3body, newVelocity);
 	}
 
 	Math::vec3 Physics::GetBodyTranslation(const PhysBodyID& body)

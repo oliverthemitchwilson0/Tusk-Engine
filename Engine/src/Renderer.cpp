@@ -2,6 +2,7 @@
 #include <Tusk/Graphics/CameraData.h>
 #include <Tusk/AssetTypes/MeshAsset.h>
 #include <Tusk/AssetTypes/TextureAsset.h>
+#include <Tusk/Graphics/DefaultMeshTypes.h>
 
 #include <SDL3/SDL.h>
 #include <imgui.h>
@@ -285,6 +286,19 @@ namespace Tusk
 		CreateTextureSampler();
 
 		CreateDefaultGPUTexture();
+
+		//Default Renderer Meshes.
+
+		{
+			CubeMesh mesh;
+
+			CreateGPUMeshBuffers(MeshAsset{
+				.name = "Cube",
+				.vertices = std::vector(mesh.vertices, mesh.vertices + 24),
+				.indices = std::vector(mesh.indices, mesh.indices + 36),
+				}
+			);
+		}
 
 		return true;
 	}

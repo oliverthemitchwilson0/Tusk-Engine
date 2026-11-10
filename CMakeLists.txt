@@ -207,7 +207,7 @@ target_sources(imgui PUBLIC
     ${imgui_SOURCE_DIR}/imgui_demo.cpp #Can be deleted after using demo window for test
     ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlgpu3.cpp
-)
+ "Engine/include/Tusk/Graphics/DefaultMeshTypes.h")
 
 target_link_libraries(imgui PUBLIC
     SDL3::SDL3
@@ -225,14 +225,14 @@ add_library(Engine STATIC
     Engine/src/Logging.cpp
     Engine/src/Components/ComponentBase.cpp
     Engine/src/Components/RigidBodyComponent.cpp
-)
+ "Engine/include/Tusk/Graphics/DefaultMeshTypes.h")
 add_library(Game STATIC 
     Game/src/Game.cpp
     Game/src/MainDemoScene.cpp
     Game/src/SecondDemoScene.cpp
-)
+ "Engine/include/Tusk/Graphics/DefaultMeshTypes.h")
 
-add_executable(GameApp GameApp/src/GameApp.cpp)
+add_executable(GameApp GameApp/src/GameApp.cpp "Engine/include/Tusk/Graphics/DefaultMeshTypes.h")
 
 target_include_directories(Engine PUBLIC Engine/include)
 target_include_directories(Game PUBLIC Game/include)

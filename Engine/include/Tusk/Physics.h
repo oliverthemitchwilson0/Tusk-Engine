@@ -16,6 +16,11 @@ namespace Tusk
 		void FixedUpdate(float fixedDeltaTime);
 
 		PhysBodyID CreateBody(BodyType type, const Math::vec3& position, const Math::quat& rotation);
+		void CreateBoxShape(const PhysBodyID& body, const Math::vec3& scale);
+		void CreateSphereShape(const PhysBodyID& body, float radius);
+
+		void AddVelocity(const PhysBodyID& body, const Math::vec3& vel);
+
 		Math::vec3 GetBodyTranslation(const PhysBodyID& body);
 		Math::quat GetBodyRotation(const PhysBodyID& body);
 	private:

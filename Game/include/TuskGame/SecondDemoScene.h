@@ -14,5 +14,7 @@ namespace TuskGame
 		bool OnStart() final;
 		void OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
 		void OnStop() final;
+
+		Tusk::GameObject* object = nullptr;
 	};
 }

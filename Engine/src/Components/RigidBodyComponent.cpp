@@ -12,6 +12,15 @@ namespace Tusk
 		auto* transform = GetParentObject()->GetComponent<TransformComponent>();
 
 		body = physicsSystem->CreateBody(type, transform->GetTranslation(), transform->GetRotation());
+		
+		switch(shape)
+		{
+		case(0):
+			physicsSystem->CreateBoxShape(body, transform->GetScale());
+			break;
+		case(1):
+			physicsSystem->CreateSphereShape(body, radius);
+		}
 	}
 
 	void RigidBodyComponent::FixedUpdate(float fixedDeltaTime)
@@ -33,5 +42,16 @@ namespace Tusk
 	void RigidBodyComponent::SetTypeToDynamic()
 	{
 		type = DynamicBody;
+	}
+
+	void RigidBodyComponent::SetShapeToCube()
+	{
+		shape = 0;
+	}
+
+	void RigidBodyComponent::SetShapeToSphere(float radius)
+	{
+		shape = 1;
+		RigidBodyComponent::radius = radius;
 	}
 }
