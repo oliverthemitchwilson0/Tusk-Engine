@@ -20,6 +20,7 @@ namespace Tusk
 		void CreateSphereShape(const PhysBodyID& body, const PhysShapeProperties& properties, float radius);
 
 		void AddVelocity(const PhysBodyID& body, const Math::vec3& vel);
+		void AddImpulse(const PhysBodyID& body, const Math::vec3& imp);
 
 		Math::vec3 GetBodyTranslation(const PhysBodyID& body);
 		Math::quat GetBodyRotation(const PhysBodyID& body);

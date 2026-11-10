@@ -86,7 +86,10 @@ namespace TuskGame
     void SecondDemoScene::OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime)
     {
         auto* comp = object->GetComponent<Tusk::RigidBodyComponent>();
-        //if(inpu)
+        
+        if (input.GetKeyPressed(Tusk::V))
+            GetPhysicsSystem()->AddImpulse(*comp, Tusk::Math::vec3(0.f, 8.f, 0.f));
+
         if(input.GetKeyDown(Tusk::W))
             GetPhysicsSystem()->AddVelocity(*comp, Tusk::Math::vec3(0.f, 0.f, 10.f) * fixedDeltaTime);
         else if (input.GetKeyDown(Tusk::S))

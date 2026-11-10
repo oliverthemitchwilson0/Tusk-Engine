@@ -93,6 +93,19 @@ namespace Tusk
 		b3Body_SetLinearVelocity(b3body, newVelocity);
 	}
 
+	void Physics::AddImpulse(const PhysBodyID& body, const Math::vec3& imp)
+	{
+		auto& b3body = impl->bodyBin[body];
+
+		b3Vec3 newImpulse{
+			imp.x,
+			imp.y,
+			imp.z,
+		};
+
+		b3Body_SetLinearVelocity(b3body, newImpulse);
+	}
+
 	Math::vec3 Physics::GetBodyTranslation(const PhysBodyID& body)
 	{
 		auto& b3ID = impl->bodyBin[body];
