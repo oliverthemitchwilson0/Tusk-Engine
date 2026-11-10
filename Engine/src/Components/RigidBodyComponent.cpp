@@ -16,10 +16,10 @@ namespace Tusk
 		switch(shape)
 		{
 		case(0):
-			physicsSystem->CreateBoxShape(body, transform->GetScale());
+			physicsSystem->CreateBoxShape(body, properties, transform->GetScale());
 			break;
 		case(1):
-			physicsSystem->CreateSphereShape(body, radius);
+			physicsSystem->CreateSphereShape(body, properties, radius);
 		}
 	}
 
@@ -53,5 +53,10 @@ namespace Tusk
 	{
 		shape = 1;
 		RigidBodyComponent::radius = radius;
+	}
+
+	void RigidBodyComponent::SetDensityModifier(float modifier)
+	{
+		properties.densityModifier = modifier;
 	}
 }

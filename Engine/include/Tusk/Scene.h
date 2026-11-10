@@ -30,7 +30,8 @@ namespace Tusk
 
 	protected:
 		void SetSceneColour(const Math::vec3& colour);
-		std::vector<std::unique_ptr<GameObject>> objects;
+		//Creates a new Game Object (with TransformComponent) within the scene.
+		GameObject* CreateGameObject();
 
 	private:
 		virtual bool OnStart() = 0;
@@ -39,6 +40,7 @@ namespace Tusk
 
 		bool sceneStarted = false;
 		Math::vec3 clearColour = Math::vec3(1, 165.f / 255.f, 0.f);
+		std::vector<std::unique_ptr<GameObject>> objects;
 		Physics physicsSystem;
 	};
 }

@@ -60,20 +60,22 @@ namespace Tusk
 		};
 	}
 
-	void Physics::CreateBoxShape(const PhysBodyID& body, const Math::vec3& scale)
+	void Physics::CreateBoxShape(const PhysBodyID& body, const PhysShapeProperties& properties, const Math::vec3& scale)
 	{
 		b3BoxHull box = b3MakeBoxHull(scale.x, scale.y, scale.z);
 		b3ShapeDef shapeDef = b3DefaultShapeDef();
+		shapeDef.density *= properties.densityModifier;
 		b3CreateHullShape(impl->bodyBin[body], &shapeDef, &box.base);
 	}
 
-	void Physics::CreateSphereShape(const PhysBodyID& body, float radius)
+	void Physics::CreateSphereShape(const PhysBodyID& body, const PhysShapeProperties& properties, float radius)
 	{
 		b3Sphere sphere{
 			.center = b3Vec3_zero,
 			.radius = radius,
 		};
 		b3ShapeDef shapeDef = b3DefaultShapeDef();
+		shapeDef.density *= properties.densityModifier;
 		b3CreateSphereShape(impl->bodyBin[body], &shapeDef, &sphere);
 	}
 

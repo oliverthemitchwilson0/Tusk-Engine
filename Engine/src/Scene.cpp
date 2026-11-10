@@ -96,4 +96,10 @@ namespace Tusk
     {
         return &physicsSystem;
     }
+
+    GameObject* Scene::CreateGameObject()
+    {
+        objects.push_back(std::make_unique<GameObject>(this));
+        return objects.at(objects.size() - 1).get();
+    }
 }

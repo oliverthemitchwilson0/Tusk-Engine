@@ -19,15 +19,15 @@ namespace TuskGame
         Tusk::Asset::LoadModel("Assets/io_food_pine_big.obj", "Pineapple");
         
         Tusk::Asset::LoadImage("Assets/container.jpg", "Container");
+        Tusk::Asset::LoadImage("Assets/prototype.png", "PrototypeTex");
 
         //Pineapple
 
-        objects.push_back(std::make_unique<Tusk::GameObject>(this)); //Maybe this should be wrapped? Shouldn't expect the user to write the out everytime they need a new object.
-        object = objects.at(objects.size() - 1).get();
+        object = CreateGameObject();
 
         auto* objectTransformComp = object->GetComponent<Tusk::TransformComponent>();
         objectTransformComp->SetTranslation(Tusk::Math::vec3(0.1f, 10.f, 8.f));
-        objectTransformComp->SetScale(Tusk::Math::vec3(2.f, 2.f, 2.f));
+        objectTransformComp->SetScale(Tusk::Math::vec3(1.5f, 1.5f, 1.5f));
 
         auto* objectMeshComp = object->AddComponent<Tusk::MeshComponent>();
         objectMeshComp->UseMesh("Pineapple");
@@ -37,37 +37,35 @@ namespace TuskGame
 
         auto* objectRigidBodyComp = object->AddComponent<Tusk::RigidBodyComponent>();
         objectRigidBodyComp->SetTypeToDynamic();
-        objectRigidBodyComp->SetShapeToSphere(1.f);
-
-        objects.push_back(std::make_unique<Tusk::GameObject>(this)); //Maybe this should be wrapped? Shouldn't expect the user to write the out everytime they need a new object.
-        auto* object2 = objects.at(objects.size() - 1).get();
-
-        auto* object2TransformComp = object2->GetComponent<Tusk::TransformComponent>();
-        object2TransformComp->SetTranslation(Tusk::Math::vec3(0.f, -4.f, 15.f));
-        object2TransformComp->SetScale(Tusk::Math::vec3(10.f, 1.f, 10.f));
+        objectRigidBodyComp->SetShapeToSphere(0.75f);
 
         //Floor
+
+        auto* object2 = CreateGameObject();
+
+        auto* object2TransformComp = object2->GetComponent<Tusk::TransformComponent>();
+        object2TransformComp->SetTranslation(Tusk::Math::vec3(0.f, -4.f, 25.f));
+        object2TransformComp->SetScale(Tusk::Math::vec3(30.f, 1.f, 30.f));
 
         auto* object2MeshComp = object2->AddComponent<Tusk::MeshComponent>();
         object2MeshComp->UseMesh("Cube");
 
         auto* object2TextureComp = object2->AddComponent<Tusk::TextureComponent>();
-        object2TextureComp->SetTexture("Container");
+        object2TextureComp->SetTexture("PrototypeTex");
 
         auto* object2RigidBodyComp = object2->AddComponent<Tusk::RigidBodyComponent>();
         object2RigidBodyComp->SetShapeToCube();
 
         //Box
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 10; i++)
         {
             float height = 4.f * (i + 1);
 
-            objects.push_back(std::make_unique<Tusk::GameObject>(this)); //Maybe this should be wrapped? Shouldn't expect the user to write the out everytime they need a new object.
-            auto* object3 = objects.at(objects.size() - 1).get();
+            auto* object3 = CreateGameObject();
 
             auto* object3TransformComp = object3->GetComponent<Tusk::TransformComponent>();
-            object3TransformComp->SetTranslation(Tusk::Math::vec3(0.f, height, 16.f));
+            object3TransformComp->SetTranslation(Tusk::Math::vec3(0.f, height, 25.f));
             //object3TransformComp->SetScale(Tusk::Math::vec3(10.f, 1.f, 10.f));
 
             auto* object3MeshComp = object3->AddComponent<Tusk::MeshComponent>();
@@ -79,6 +77,7 @@ namespace TuskGame
             auto* object3RigidBodyComp = object3->AddComponent<Tusk::RigidBodyComponent>();
             object3RigidBodyComp->SetTypeToDynamic();
             object3RigidBodyComp->SetShapeToCube();
+            object3RigidBodyComp->SetDensityModifier(0.01f);
         }
 
         return true;

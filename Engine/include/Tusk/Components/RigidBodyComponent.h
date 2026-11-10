@@ -24,9 +24,11 @@ namespace Tusk
 		void SetTypeToDynamic();
 		void SetShapeToCube();
 		void SetShapeToSphere(float radius);
+		void SetDensityModifier(float modifier);
 	private:
 		PhysBodyID body;
 		BodyType type = StaticBody;
+		PhysShapeProperties properties;
 		int shape = -1;
 		float radius = 0.f;
 	};

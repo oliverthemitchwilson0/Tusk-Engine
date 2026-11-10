@@ -21,4 +21,10 @@ namespace Tusk
 		operator size_t() const { return id; }
 		size_t id;
 	};
+
+	struct PhysShapeProperties
+	{
+		//Value that gets multiplied by the default density.
+		float densityModifier = 1.f;
+	};
 }

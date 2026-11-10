@@ -7,6 +7,10 @@
 #include <imgui_impl_sdlgpu3.h>
 #include <chrono>
 
+//To-Do (Stretch)
+//* Create a queue of GPU uploads instead of submiting each upload one at a time.
+//* Change the Asset Class.
+
 namespace Tusk
 {
 	namespace
