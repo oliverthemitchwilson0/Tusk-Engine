@@ -56,13 +56,12 @@ namespace TuskGame
 
         if(rotate)
         {
-            const float sensitivity = 0.1f;
+            const float sensitivity = 0.4f;
             yaw += x * sensitivity;
             pitch += y * sensitivity;
-            pitch = Tusk::Math::clamp(pitch, -90.f, 90.f);
+            pitch = Tusk::Math::clamp(pitch, -89.f, 89.f);
 
-
-            auto yawRotation = Tusk::Math::angleAxis(Tusk::Math::radians(yaw), Tusk::Math::vec3(0.f, -1.f, 0.f));
+            auto yawRotation = Tusk::Math::angleAxis(Tusk::Math::radians(yaw), Tusk::Math::vec3(0.f, 1.f, 0.f));
             auto pitchRotation = Tusk::Math::angleAxis(Tusk::Math::radians(pitch), Tusk::Math::vec3(-1.f, 0.f, 0.f));
 
             auto newRotation = pitchRotation * yawRotation;

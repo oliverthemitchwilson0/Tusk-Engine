@@ -224,6 +224,7 @@ add_library(Engine STATIC
     Engine/src/Physics.cpp
     Engine/src/Logging.cpp
     Engine/src/Components/ComponentBase.cpp
+    Engine/src/Components/TransformComponent.cpp
     Engine/src/Components/CameraComponent.cpp
     Engine/src/Components/MeshComponent.cpp
     Engine/src/Components/TextureComponent.cpp

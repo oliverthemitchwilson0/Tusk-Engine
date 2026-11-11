@@ -5,8 +5,6 @@
 
 namespace Tusk
 {
-	class Input;
-
 	class TransformComponent : public ComponentBase
 	{
 	public:
@@ -23,33 +21,21 @@ namespace Tusk
 		void FixedUpdate(float deltaTime) final {};
 		void Draw(Renderer& renderer) final {};
 
-		void SetTranslation(Math::vec3 newTranslation) { translation = newTranslation; }
-		void SetRotation(Math::quat newRotation) { rotation = newRotation; }
-		void SetScale(Math::vec3 newScale) { scale = newScale; }
-		Math::vec3 GetTranslation() { return translation; }
-		Math::quat GetRotation() { return rotation; }
-		Math::vec3 GetScale() { return scale; }
+		void SetTranslation(const Math::vec3& newTranslation);
+		void SetRotation(const Math::quat& newRotation);
+		void SetScale(const Math::vec3& newScale);
+		Math::vec3 GetTranslation();
+		Math::quat GetRotation();
+		Math::vec3 GetScale();
 
 		//Returns a matrix of the transform.
-		Math::mat4 GetTransfromMatrix() 
-		{
-			return Math::translate(translation) * Math::mat4_cast(rotation) * Math::scale(scale);
-		}
+		Math::mat4 GetTransfromMatrix();
 		//Returns a normalised forward vector of the transformation.
-		Math::vec3 GetForward()
-		{
-			return Math::normalize(Math::vec3(0.f, 0.f, 1.f) * rotation);
-		}
+		Math::vec3 GetForward();
 		//Returns a normalised right vector of the transformation.
-		Math::vec3 GetRight()
-		{
-			return Math::normalize(Math::vec3(-1.f, 0.f, 0.f) * rotation);
-		}
+		Math::vec3 GetRight();
 		//Returns a normalised up vector of the transformation.
-		Math::vec3 GetUp()
-		{
-			return Math::normalize(Math::vec3(0.f, 1.f, 0.f) * rotation);
-		}
+		Math::vec3 GetUp();
 	private:
 		Math::vec3 translation;
 		Math::quat rotation;

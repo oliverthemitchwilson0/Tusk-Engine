@@ -9,7 +9,10 @@
 
 //To-Do (Stretch)
 //* Create a queue of GPU uploads instead of submiting each upload one at a time.
-//* Change the Asset Class.
+//* Find better way to handle multiple render passes - for scene and ui rendering.
+//* Change the Asset Class from static.
+//* Use virtual file system for asset loading.
+//* Add more to the debug UI.
 
 namespace Tusk
 {

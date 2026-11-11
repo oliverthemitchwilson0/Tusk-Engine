@@ -93,6 +93,4 @@ namespace Tusk
 		*deltaX = impl->currentMousePos.x - impl->previousMousePos.x;
 		*deltaY = impl->currentMousePos.y - impl->previousMousePos.y;
 	}
-
-
 }
