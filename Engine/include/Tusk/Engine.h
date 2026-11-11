@@ -6,13 +6,6 @@
 #include <Tusk/SceneManager.h>
 #include <Tusk/Math.h>
 
-#include <Tusk/GameObject.h>
-#include <Tusk/Components/ComponentBase.h>
-#include <Tusk/Components/TransformComponent.h>
-#include <Tusk/Components/MeshComponent.h>
-#include <Tusk/Components/CameraComponent.h>
-#include <Tusk/Components/TextureComponent.h>
-
 #include <memory>
 
 namespace Tusk 

@@ -25,6 +25,8 @@ namespace Tusk::Math
 	using glm::radians;
 	using glm::degrees;
 
+	using glm::clamp;
+
 	using glm::normalize;
 	using glm::identity;
 	

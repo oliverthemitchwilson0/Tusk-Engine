@@ -90,8 +90,8 @@ namespace Tusk
 
 	void Tusk::Input::GetMouseDelta(float* deltaX, float* deltaY)
 	{
-		*deltaX = std::abs(impl->currentMousePos.x - impl->previousMousePos.x);
-		*deltaY = std::abs(impl->currentMousePos.y - impl->previousMousePos.y);
+		*deltaX = impl->currentMousePos.x - impl->previousMousePos.x;
+		*deltaY = impl->currentMousePos.y - impl->previousMousePos.y;
 	}
 
 
