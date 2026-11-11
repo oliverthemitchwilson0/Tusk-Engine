@@ -13,8 +13,6 @@ namespace TuskGame
         DemoGame() noexcept;
 
         bool Start(Tusk::SceneManager& sceneManager) override;
-        void FixedUpdate(Tusk::Input& engine, float seconds) override;
-        void Render(Tusk::Renderer& engine) override;
         void Stop(Tusk::SceneManager& sceneManager) override;
 
     private:

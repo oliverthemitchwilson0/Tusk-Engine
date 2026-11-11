@@ -4,6 +4,8 @@
 
 namespace Tusk
 {
+	class Input;
+
 	class TransformComponent : public ComponentBase
 	{
 	public:
@@ -16,6 +18,7 @@ namespace Tusk
 		~TransformComponent() final = default;
 
 		void Start() final {};
+		void HandleInput(Input& input) final {};
 		void FixedUpdate(float deltaTime) final {};
 		void Draw(Renderer& renderer) final {};
 

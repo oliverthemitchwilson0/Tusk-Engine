@@ -12,9 +12,12 @@ namespace TuskGame
 
 	private:
 		bool OnStart() final;
-		void OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime) final;
+		void OnHandleInput(Tusk::Input& input) final;
+		void OnFixedUpdate(float fixedDeltaTime) final;
 		void OnStop() final;
 
 		Tusk::GameObject* object = nullptr;
+
+		bool forward = false, back = false, left = false, right = false, up = false;
 	};
 }

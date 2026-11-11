@@ -23,6 +23,8 @@ namespace Tusk
 		}
 	}
 
+
+
 	void RigidBodyComponent::FixedUpdate(float fixedDeltaTime)
 	{
 		auto* physicsSystem = GetScene()->GetPhysicsSystem();

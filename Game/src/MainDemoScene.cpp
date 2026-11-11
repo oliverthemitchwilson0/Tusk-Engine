@@ -56,7 +56,33 @@ namespace TuskGame
         return true;
 	}
 
-	void MainDemoScene::OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime)
+    void MainDemoScene::OnHandleInput(Tusk::Input& input)
+    {
+        forward = back = right = left = up = down = false; //This is nasty
+
+        if (input.GetKeyDown(Tusk::W))
+            forward = true;
+        else if (input.GetKeyDown(Tusk::S))
+            back = true;
+
+        if (input.GetKeyDown(Tusk::D))
+            right = true;
+        else if (input.GetKeyDown(Tusk::A))
+            left = true;
+
+
+        if (input.GetKeyDown(Tusk::SPACE))
+            up = true;
+        else if (input.GetKeyDown(Tusk::LSHIFT))
+            down = true;
+
+            /*if (input.GetMouseBtnDown(Tusk::LEFT))
+                cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
+            else if (input.GetMouseBtnDown(Tusk::RIGHT))
+                cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));*/
+    }
+
+	void MainDemoScene::OnFixedUpdate(float fixedDeltaTime)
 	{
         //Banana Test
 
@@ -75,25 +101,25 @@ namespace TuskGame
             auto cameraUp = cameraTranasform->GetUp();
             auto rotation = cameraTranasform->GetRotation();
 
-            if (input.GetKeyDown(Tusk::W))
+            if (forward)
                 newCamTranslation += cameraForward * 8.f * fixedDeltaTime;
-            else if (input.GetKeyDown(Tusk::S))
+            else if (back)
                 newCamTranslation -= cameraForward * 8.f * fixedDeltaTime;
 
-            if (input.GetKeyDown(Tusk::D))
+            if (right)
                 newCamTranslation += cameraRight * 8.f * fixedDeltaTime;
-            else if (input.GetKeyDown(Tusk::A))
+            else if (left)
                 newCamTranslation -= cameraRight * 8.f * fixedDeltaTime;
 
-            if (input.GetKeyDown(Tusk::SPACE))
+            if (up)
                 newCamTranslation += cameraUp * 8.f * fixedDeltaTime;
-            else if (input.GetKeyDown(Tusk::LSHIFT))
+            else if (down)
                 newCamTranslation -= cameraUp * 8.f * fixedDeltaTime;
 
-            if (input.GetMouseBtnDown(Tusk::LEFT))
+            /*if (input.GetMouseBtnDown(Tusk::LEFT))
                 cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, -1.f, 0.f)));
             else if (input.GetMouseBtnDown(Tusk::RIGHT))
-                cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));
+                cameraTranasform->SetRotation(rotation * Tusk::Math::angleAxis(glm::radians(90.f * fixedDeltaTime), Tusk::Math::vec3(0.f, 1.f, 0.f)));*/
 
 
 

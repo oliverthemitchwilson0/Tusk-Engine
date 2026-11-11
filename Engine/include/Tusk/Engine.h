@@ -27,8 +27,8 @@ namespace Tusk
 	public:
 		virtual ~Application() = default;
 		virtual bool Start(SceneManager& sceneManager) = 0;
-		virtual void FixedUpdate(Input& input, float dt) = 0;
-		virtual void Render(Renderer& renderer) = 0;
+		/*virtual void FixedUpdate(Input& input, float dt) = 0;
+		virtual void Render(Renderer& renderer) = 0;*/
 		virtual void Stop(SceneManager& sceneManager) = 0;
 	};
 

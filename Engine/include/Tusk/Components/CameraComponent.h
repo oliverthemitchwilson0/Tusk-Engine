@@ -15,6 +15,7 @@ namespace Tusk
 		~CameraComponent() final = default;
 
 		void Start() final {};
+		void HandleInput(Input& input) final {};
 		void FixedUpdate(float deltaTime) final {};
 		void Draw(Renderer& renderer) final {};
 

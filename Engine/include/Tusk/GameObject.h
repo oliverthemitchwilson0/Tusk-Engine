@@ -42,6 +42,14 @@ namespace Tusk
 			}
 		}
 
+		void HandleInput(Input& input)
+		{
+			for (auto& component : components)
+			{
+				component->HandleInput(input);
+			}
+		}
+
 		void FixedUpdate(float fixedDeltaTime)
 		{
 			for(auto& component : components)

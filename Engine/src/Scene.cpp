@@ -25,7 +25,17 @@ namespace Tusk
         return result;
 	}
 
-	void Scene::FixedUpdate(Input& input, float fixedDeltaTime)
+    void Scene::HandleInput(Input& input)
+    {
+        OnHandleInput(input);
+
+        for(auto& object : objects)
+        {
+            object->HandleInput(input);
+        }
+    }
+
+	void Scene::FixedUpdate(float fixedDeltaTime)
 	{
         auto start = std::chrono::high_resolution_clock::now();
         physicsSystem.FixedUpdate(fixedDeltaTime);
@@ -38,7 +48,7 @@ namespace Tusk
             object->FixedUpdate(fixedDeltaTime);
         }
 
-        OnFixedUpdate(input, fixedDeltaTime);
+        OnFixedUpdate(fixedDeltaTime);
 	}
 
 	void Scene::Render(Renderer& renderer)

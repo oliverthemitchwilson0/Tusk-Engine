@@ -5,6 +5,8 @@
 
 namespace Tusk
 {
+	class Input;
+
 	class RigidBodyComponent : public ComponentBase
 	{
 	public:
@@ -17,6 +19,7 @@ namespace Tusk
 		operator PhysBodyID() const { return body; }
 
 		void Start() final;
+		void HandleInput(Input& input) final {};
 		void FixedUpdate(float deltaTime) final;
 		void Draw(Renderer& renderer) final {};
 

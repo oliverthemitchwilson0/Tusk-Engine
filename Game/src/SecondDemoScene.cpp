@@ -58,7 +58,7 @@ namespace TuskGame
 
         //Box
 
-        for(int i = 0; i < 1000; i++)
+        for(int i = 0; i < 10; i++)
         {
             float height = 4.f * (i + 1);
 
@@ -83,21 +83,39 @@ namespace TuskGame
         return true;
     }
 
-    void SecondDemoScene::OnFixedUpdate(Tusk::Input& input, float fixedDeltaTime)
+    void SecondDemoScene::OnHandleInput(Tusk::Input& input)
+    {
+        up = forward = back = left = right = false;
+
+        if (input.GetKeyPressed(Tusk::SPACE))
+            up = true;
+
+        if (input.GetKeyDown(Tusk::W))
+            forward = true;
+        else if (input.GetKeyDown(Tusk::S))
+            back = true;
+
+        if (input.GetKeyDown(Tusk::A))
+            left = true;
+        else if (input.GetKeyDown(Tusk::D))
+            right = true;
+    }
+
+    void SecondDemoScene::OnFixedUpdate(float fixedDeltaTime)
     {
         auto* comp = object->GetComponent<Tusk::RigidBodyComponent>();
         
-        if (input.GetKeyPressed(Tusk::SPACE))
+        if (up)
             GetPhysicsSystem()->AddImpulse(*comp, Tusk::Math::vec3(0.f, 8.f, 0.f));
 
-        if(input.GetKeyDown(Tusk::W))
+        if(forward)
             GetPhysicsSystem()->AddVelocity(*comp, Tusk::Math::vec3(0.f, 0.f, 10.f) * fixedDeltaTime);
-        else if (input.GetKeyDown(Tusk::S))
+        else if (back)
             GetPhysicsSystem()->AddVelocity(*comp, Tusk::Math::vec3(0.f, 0.f, -10.f) * fixedDeltaTime);
 
-        if (input.GetKeyDown(Tusk::A))
+        if (left)
             GetPhysicsSystem()->AddVelocity(*comp, Tusk::Math::vec3(10.f, 0.f, 0.f) * fixedDeltaTime);
-        else if (input.GetKeyDown(Tusk::D))
+        else if (right)
             GetPhysicsSystem()->AddVelocity(*comp, Tusk::Math::vec3(-10.f, 0.f, 0.f) * fixedDeltaTime);
     }
 

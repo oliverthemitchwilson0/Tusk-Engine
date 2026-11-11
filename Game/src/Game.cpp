@@ -21,16 +21,7 @@ namespace TuskGame {
         return true;
     }
 
-    void DemoGame::FixedUpdate(Tusk::Input& input, float deltaTime) 
+    void TuskGame::DemoGame::Stop(Tusk::SceneManager& sceneManager)
     {
-    
     }
-
-    void DemoGame::Render(Tusk::Renderer& renderer) 
-    {
-
-    }
-
-    void DemoGame::Stop(Tusk::SceneManager& sceneManager) {}
-
 }

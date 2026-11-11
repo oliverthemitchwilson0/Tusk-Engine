@@ -58,10 +58,16 @@ namespace Tusk
 		return sceneBin.size();
 	}
 
-	void SceneManager::FixedUpdate(Input& input, float fixedDeltaTime)
+	void SceneManager::HandleInput(Input& input)
+	{
+		if (currentScene)
+			currentScene->HandleInput(input);
+	}
+
+	void SceneManager::FixedUpdate(float fixedDeltaTime)
 	{
 		if(currentScene)
-			currentScene->FixedUpdate(input, fixedDeltaTime);
+			currentScene->FixedUpdate(fixedDeltaTime);
 	}
 
 	void SceneManager::Render(Renderer& renderer)

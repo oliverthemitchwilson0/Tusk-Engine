@@ -39,7 +39,8 @@ namespace Tusk
 
 		size_t GetSceneCount();
 
-		void FixedUpdate(Input& input, float fixedDeltaTime);
+		void HandleInput(Input& input);
+		void FixedUpdate(float fixedDeltaTime);
 		void Render(Renderer& renderer);
 		//void Stop();
 	private:

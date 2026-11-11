@@ -19,7 +19,8 @@ namespace Tusk
 		virtual ~Scene();
 
 		bool Start();
-		void FixedUpdate(Input& input, float fixedDeltaTime);
+		void HandleInput(Input& input);
+		void FixedUpdate(float fixedDeltaTime);
 		void Render(Renderer& renderer);
 		void Stop();
 
@@ -35,7 +36,8 @@ namespace Tusk
 
 	private:
 		virtual bool OnStart() = 0;
-		virtual void OnFixedUpdate(Input& input, float fixedDeltaTime) = 0;
+		virtual void OnHandleInput(Input& input) = 0;
+		virtual void OnFixedUpdate(float fixedDeltaTime) = 0;
 		virtual void OnStop() = 0;
 
 		bool sceneStarted = false;
