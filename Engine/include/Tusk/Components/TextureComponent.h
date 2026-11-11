@@ -18,8 +18,8 @@ namespace Tusk
 		void FixedUpdate(float deltaTime) final {};
 		void Draw(Renderer& renderer) final {};
 
-		void SetTexture(std::string name) { texName = name; }
-		std::string GetTexture() { return texName; }
+		void SetTexture(std::string name);
+		std::string GetTexture();
 	private:
 		std::string texName;
 	};

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Tusk/Components/ComponentBase.h>
 #include <Tusk/Math.h>
 
 namespace Tusk

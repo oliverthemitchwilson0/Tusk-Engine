@@ -20,27 +20,12 @@ namespace Tusk
 		void Draw(Renderer& renderer) final {};
 
 		//Returns a CameraData Struct containing all relative data for supplying to the renderer.
-		CameraData GetCameraData()
-		{
-			Math::vec3 position(0.f, 0.f, 0.f);
-			Math::vec3 forward(0.f, 0.f, -1.f);
-			if(auto* transformComp = GetParentObject()->GetComponent<TransformComponent>())
-			{
-				position = transformComp->GetTranslation();
-				forward = transformComp->GetForward();
-			}
-			
-			return CameraData{
-				.position = position,
-				.forward = forward,
-				.fovDegrees = fovDegrees,
-				.nearPlane = nearPlane,
-				.farPlane = farPlane,
-			};
-		}
+		CameraData GetCameraData();
 
-		void SetActive(bool activeIn) { active = activeIn; };
-		bool IsActive() { return active; };
+		void SetActive(bool activeIn);
+		bool IsActive();
+		void SetFov(float degreesIn);
+
 	private:
 		float fovDegrees = 90.f;
 		float nearPlane = 0.1f;

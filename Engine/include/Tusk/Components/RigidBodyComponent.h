@@ -5,8 +5,6 @@
 
 namespace Tusk
 {
-	class Input;
-
 	class RigidBodyComponent : public ComponentBase
 	{
 	public:

@@ -1,6 +1,7 @@
 #pragma once
 #include <Tusk/Math.h>
 #include <Tusk/Graphics/Vertex.h>
+#include <Tusk/Graphics/MeshID.h>
 
 #include <memory>
 #include <span>
@@ -19,7 +20,6 @@ namespace Tusk
 	struct MeshAsset;
 	struct TextureAsset;
 
-	struct MeshID {	size_t id = -1; };
 	struct TextureID { size_t id = -1; };
 
 	class Renderer
