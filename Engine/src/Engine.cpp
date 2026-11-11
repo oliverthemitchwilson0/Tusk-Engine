@@ -189,7 +189,10 @@ namespace Tusk
 				accumulator += elapsed;
 				while (accumulator >= fixedStepTime && !impl->quit) {
 					application.FixedUpdate(GetInput(), static_cast<float>(fixedStepTime)); //Call FixedUpdate once the time waiting has accumulated to the fixedStepTime.
+					auto start = std::chrono::high_resolution_clock::now();
 					mSceneManager.FixedUpdate(GetInput(), static_cast<float>(fixedStepTime));
+					auto end = std::chrono::high_resolution_clock::now();
+					Logging::Log("Scene Update Time: %d", std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
 					accumulator -= fixedStepTime;
 				}
 				if (impl->quit) break;

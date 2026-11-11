@@ -6,6 +6,7 @@
 #include <Tusk/Components/CameraComponent.h>
 
 #include <box3d/box3d.h>
+#include <chrono>
 
 namespace Tusk
 {
@@ -26,8 +27,11 @@ namespace Tusk
 
 	void Scene::FixedUpdate(Input& input, float fixedDeltaTime)
 	{
+        auto start = std::chrono::high_resolution_clock::now();
         physicsSystem.FixedUpdate(fixedDeltaTime);
-        
+        auto end = std::chrono::high_resolution_clock::now();
+        Logging::Log("Physics Step Time: %d", std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count());
+
         //Update scene objects
         for (auto& object : objects)
         {

@@ -58,7 +58,7 @@ namespace TuskGame
 
         //Box
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 1000; i++)
         {
             float height = 4.f * (i + 1);
 
@@ -87,7 +87,7 @@ namespace TuskGame
     {
         auto* comp = object->GetComponent<Tusk::RigidBodyComponent>();
         
-        if (input.GetKeyPressed(Tusk::V))
+        if (input.GetKeyPressed(Tusk::SPACE))
             GetPhysicsSystem()->AddImpulse(*comp, Tusk::Math::vec3(0.f, 8.f, 0.f));
 
         if(input.GetKeyDown(Tusk::W))
