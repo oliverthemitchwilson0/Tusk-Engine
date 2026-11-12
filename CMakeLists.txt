@@ -234,10 +234,10 @@ add_library(Game STATIC
     Game/src/Game.cpp
     Game/src/MainDemoScene.cpp
     Game/src/SecondDemoScene.cpp
-    "Game/src/Components/CameraControllerComponent.cpp"
+    Game/src/Components/CameraControllerComponent.cpp
 )
 
-add_executable(GameApp GameApp/src/GameApp.cpp "Engine/include/Tusk/Graphics/DefaultMeshTypes.h")
+add_executable(GameApp GameApp/src/GameApp.cpp)
 
 target_include_directories(Engine PUBLIC Engine/include)
 target_include_directories(Game PUBLIC Game/include)
